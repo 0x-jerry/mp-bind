@@ -8,7 +8,7 @@
   // Example:
   "New Page": {
     "scope": "javascript,typescript",
-    "prefix": "wx.page",
+    "prefix": "mp.page",
     "body": [
       "/// <reference path=\"$1@types/index.d.ts\" />",
       "",
@@ -20,7 +20,7 @@
   },
   "Reference Wx.d.ts": {
     "scope": "javascript,typescript",
-    "prefix": "wx.reference",
+    "prefix": "mp.reference",
     "body": [
       "/// <reference path=\"$1@types/index.d.ts\" />",
       ""
