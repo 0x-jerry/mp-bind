@@ -1,20 +1,24 @@
 {
 	"description": "Project configuration file",
 	"packOptions": {
-		"ignore": []
+		"ignore": [
+      "@types",
+      ".vscode"
+		]
 	},
 	"setting": {
-		"urlCheck": true,
+		"urlCheck": false,
 		"es6": true,
 		"postcss": true,
 		"minified": true,
 		"newFeature": true,
+		"nodeModules": true,
 		"autoAudits": false
 	},
 	"compileType": "miniprogram",
 	"libVersion": "2.6.0",
 	"appid": "wxd9cc9ad539edef86",
-	"projectname": "mp-ts",
+	"projectname": "wechat-mp",
 	"debugOptions": {
 		"hidedInDevtools": []
 	},
