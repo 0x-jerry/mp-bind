@@ -73,6 +73,19 @@ class BasePage {
     return this.target && this.target.route;
   }
 
+  /**
+   * Helper function, useing in wxml file
+   * update data accord to data-name
+   */
+  inputHelper(e) {
+    const name = e.currentTarget.dataset.name;
+    this.data[name] = e.detail.value;
+  }
+
+  checkboxHelper(e) {
+    this.inputHelper(e);
+  }
+
   setData(obj, cb) {
     this.target.setData(obj, cb);
   }

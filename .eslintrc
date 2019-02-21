@@ -1,0 +1,22 @@
+{
+  "env": {
+    "browser": true,
+    "es6": true
+  },
+  "extends": "eslint:recommended",
+  "parserOptions": {
+    "ecmaVersion": 2018,
+    "sourceType": "module"
+  },
+  "parser": "babel-eslint",
+  "rules": {
+    "no-console": "warn"
+  },
+  "globals": {
+    "wx": true,
+    "App": true,
+    "Page": true,
+    "Component": true,
+    "getApp": true
+  }
+}
