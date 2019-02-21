@@ -38,7 +38,7 @@ function bindPage(target) {
     data: JSONClone(target.data),
     onLoad() {
       target.target = this;
-      target.onLoad && target.onLoad.bind(this)();
+      target.onLoad && target.onLoad();
     }
   };
 
