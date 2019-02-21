@@ -11,10 +11,16 @@
     "prefix": "mp.page",
     "body": [
       "/// <reference path=\"$1@types/index.d.ts\" />",
+      "import { BasePage, bindPage } from \"$2../../utils/base\"",
       "",
-      "Page({", 
-      "  data:{$2}", 
-      "});"
+      "export class Index extends BasePage {",
+      "  data = {",
+      "    $3",
+      "  }",
+      "  $0",
+      "}",
+      "",
+      "bindPage(new Index());",
     ],
     "description": "小程序新页面"
   },

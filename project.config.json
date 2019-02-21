@@ -2,8 +2,9 @@
 	"description": "Project configuration file",
 	"packOptions": {
 		"ignore": [
-      "@types",
-      ".vscode"
+			"@types",
+			".vscode",
+			"node_modules"
 		]
 	},
 	"setting": {
