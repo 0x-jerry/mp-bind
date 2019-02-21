@@ -1,7 +1,8 @@
 <!-- index.wxml -->
 <view class="container">
-  <view>{{count}}</view>
+  <view>count: {{count}}</view>
   <view>{{motto}}</view>
-  <input bindinput="inputHelper" data-name="count" />
-  <button bind:tap="bindViewTap"></button>
+  input:
+  <input class="input" bindinput="inputHelper" data-name="count" />
+  <button bind:tap="bindViewTap">更改文字</button>
 </view>
