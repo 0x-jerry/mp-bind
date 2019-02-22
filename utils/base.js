@@ -180,7 +180,7 @@ function bindPage(target) {
   let waitUpdateData = {};
 
   new Observer(target.data, (newData, oldData) => {
-    // Update sync, both target.data.xxx and target.target.data.xxx is update sync
+    // Update sync, both target.data.xxx and target.target.data.xxx are updated
     // target.target.setData(arg);
 
     // Watch

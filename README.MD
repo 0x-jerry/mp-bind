@@ -6,6 +6,7 @@
 - 用 `Class` + `d.ts` 开发 `Page`，提升开发体验
 - 引入 [JSON Schema](.vscode/settings.json#json-schema) 提升配置文件编写体验 (感谢 @qiu8310  [minapp](https://github.com/qiu8310/minapp) 项目的 `json schema`)
 - 添加 [snippets](.vscode/mp.code-snippets)
+- 支持 `Watch` data 里面的数据
 
 ## Data 更新详情
 
@@ -18,13 +19,13 @@
 - [ ] BaseComponent 类设计
 - [ ] decrator 引入
 
-## Update Data Flow
+## Data Update Flow
 
 1. script start
 2. `data.a.b = 2` => update self data => push to micro task - update `a.b = 2`, wait update
 3. `data.a.c = 3` => update self data => push to micro task - update `a.c = 3`, wait udpate
 4. script end
 5. micro task begin
-6. update `a.b = 2` & `a.c = 3` use `setData`
+6. use `setData` update `a.b = 2` & `a.c = 3`
 7. micro task end
 8. macro task ...
