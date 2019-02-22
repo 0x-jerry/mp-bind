@@ -24,7 +24,7 @@ function def(obj, prop, val, enumerable = false) {
   });
 }
 
-class Observe {
+class Observer {
   /**
    *
    * @param {JSON} data
@@ -35,8 +35,7 @@ class Observe {
     this.dataChanged = dataChanged;
     this.prefix = prePath;
     this.data = {};
-    this.subOb = {};
-    def(data, "__observed__", true);
+    def(data, "__ob__", this);
 
     Object.keys(data).forEach(key => {
       const value = data[key];
@@ -63,8 +62,6 @@ class Observe {
    * @param {string} key
    */
   observeArrayMethods(arr, key) {
-    this.data[key] = arr;
-
     const methods = [
       "push",
       "pop",
@@ -104,17 +101,17 @@ class Observe {
    * @param {any} value
    */
   attachObserve(key, value) {
-    if (value["__observed__"]) {
-      this.data[key] = value;
-    } else if (Array.isArray(value)) {
+    this.data[key] = value;
+
+    if (value["__ob__"]) {
+      return;
+    }
+
+    if (Array.isArray(value)) {
       this.observeArrayMethods(value, key);
     } else if (typeof value === "object") {
       const prefix = this.prefix ? this.prefix + "." + key : key;
-
-      this.data[key] = value;
-      this.subOb[key] = new Observe(value, this.dataChanged, prefix);
-    } else {
-      this.data[key] = value;
+      new Observer(value, this.dataChanged, prefix);
     }
   }
 
@@ -159,13 +156,9 @@ function bindPage(target) {
 
   Page(registerObj);
 
-  def(
-    target.data,
-    "__ob__",
-    new Observe(target.data, arg => {
-      target.target.setData(arg);
-    })
-  );
+  new Observer(target.data, arg => {
+    target.target.setData(arg);
+  });
 }
 
 class BasePage {
