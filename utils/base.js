@@ -174,7 +174,7 @@ class BasePage {
   }
 
   /**
-   * Helper function, useing in wxml file
+   * Helper function, using in wxml file
    * update data accord to data-name
    */
   inputHelper(e) {

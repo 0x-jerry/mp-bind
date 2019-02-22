@@ -4,7 +4,7 @@
 
 - 更新 `data` 抛弃 `this.setData`，直接更改数据 `this.data.a = 1`
 - 用 `Class` + `d.ts` 开发 `Page`，提升开发体验
-- 引入 [JSON Schema](.vscode/settings.json#json-schema) 提升配置文件编写体验
+- 引入 [JSON Schema](.vscode/settings.json#json-schema) 提升配置文件编写体验 (感谢 @qiu8310  [minapp](https://github.com/qiu8310/minapp) 项目的 `json schema`)
 - 添加 [snippets](.vscode/mp.code-snippets)
 
 ## Data 更新详情
