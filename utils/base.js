@@ -91,8 +91,10 @@ class Observer {
     const changedData = {};
     const path = this.prefix ? this.prefix + "." + key : key;
     changedData[path] = value;
+    const oldData = {};
+    oldData[path] = this.data[key];
 
-    this.dataChanged(changedData);
+    this.dataChanged(changedData, oldData);
   }
 
   /**
@@ -125,6 +127,26 @@ class Observer {
 }
 
 /**
+ * Use micro task to exec the last callback
+ */
+const UpdateTaskQueue = {
+  tasks: [],
+  push(cb) {
+    this.tasks.push(cb);
+
+    if (this.tasks.length > 1) {
+      return;
+    }
+
+    //micro task
+    Promise.resolve().then(() => {
+      this.tasks.pop()();
+      this.tasks = [];
+    });
+  }
+};
+
+/**
  *
  * @param {BasePage} target
  */
@@ -155,9 +177,32 @@ function bindPage(target) {
   }
 
   Page(registerObj);
+  let waitUpdateData = {};
 
-  new Observer(target.data, arg => {
-    target.target.setData(arg);
+  new Observer(target.data, (newData, oldData) => {
+    // Update sync, both target.data.xxx and target.target.data.xxx is update sync
+    // target.target.setData(arg);
+
+    // Watch
+    Object.keys(newData).forEach(key => {
+      waitUpdateData[key] = newData[key];
+
+      if (typeof target.watch[key] === "function") {
+        target.watch[key](newData[key], oldData[key]);
+      }
+    });
+
+    /**
+     * update merge test (update in micro task)
+     * notice： target.data.xxx is update sync
+     *          but, target.target.data.xxx not update
+     *          it will update in micro task, one solution is use `setTimeout(() => data.xxx)`
+     *          if you want update sync, use target.setData
+     */
+    UpdateTaskQueue.push(() => {
+      target.target.setData(waitUpdateData);
+      waitUpdateData = {};
+    });
   });
 }
 
@@ -168,6 +213,8 @@ class BasePage {
   target = null;
 
   data = {};
+
+  watch = {};
 
   get route() {
     return this.target && this.target.route;

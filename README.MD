@@ -17,3 +17,14 @@
 - [ ] Component `d.ts` 引入
 - [ ] BaseComponent 类设计
 - [ ] decrator 引入
+
+## Update Data Flow
+
+1. script start
+2. `data.a.b = 2` => update self data => push to micro task - update `a.b = 2`, wait update
+3. `data.a.c = 3` => update self data => push to micro task - update `a.c = 3`, wait udpate
+4. script end
+5. micro task begin
+6. update `a.b = 2` & `a.c = 3` use `setData`
+7. micro task end
+8. macro task ...

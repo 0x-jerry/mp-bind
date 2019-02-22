@@ -1,6 +1,10 @@
 interface BasePage extends Page.PageInstance {
   target: Page.PageInstance;
 
+  watch: {
+    [key: string]: <T>(newVal: T, oldVal: T) => void;
+  };
+
   /**
    * Helper function, useing in wxml file
    * update data accord to data-name attribute
@@ -11,7 +15,7 @@ interface BasePage extends Page.PageInstance {
    * Helper function, useing in wxml file
    * update data accord to data-name attribute
    */
-  checkboxHelper(e: any) :void;
+  checkboxHelper(e: any): void;
 }
 
 class BasePage {}
