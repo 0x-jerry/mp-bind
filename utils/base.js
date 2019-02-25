@@ -5,7 +5,7 @@
  * @param {JSON} data
  */
 function JSONClone(data) {
-  return JSON.parse(JSON.stringify(data || {}));
+  return JSON.parse(JSON.stringify(data));
 }
 
 /**
@@ -24,6 +24,30 @@ function def(obj, prop, val, enumerable = false) {
   });
 }
 
+class ComputedValue {
+  static current = null;
+
+  /**
+   *
+   * @param {BasePage} page
+   * @param {string} name
+   * @param {() => any} getFunc
+   */
+  constructor(page, name, getFunc) {
+    this.page = page;
+    this.get = getFunc;
+    this.name = name;
+  }
+
+  update() {
+    this.value = this.get();
+
+    const updated = {};
+    updated[this.name] = this.value;
+    this.page.setData(updated);
+  }
+}
+
 class Observer {
   /**
    *
@@ -35,6 +59,8 @@ class Observer {
     this.dataChanged = dataChanged;
     this.prefix = prePath;
     this.data = {};
+    this.deps = [];
+
     def(data, '__ob__', this);
 
     Object.keys(data).forEach((key) => {
@@ -46,8 +72,17 @@ class Observer {
           this.updateData(key, val);
 
           this.attachObserve(key, val);
+          this.deps.forEach((target) => {
+            target.update();
+          });
         },
         get: () => {
+          if (ComputedValue.current) {
+            if (!this.deps.find((d) => d === ComputedValue.current)) {
+              this.deps.push(ComputedValue.current);
+            }
+          }
+
           return this.safeGet(key);
         },
         configurable: true,
@@ -151,42 +186,6 @@ const UpdateTaskQueue = {
  * @param {BasePage} target
  */
 function bindPage(target) {
-  let proto = target;
-
-  const initData = JSONClone(target.data);
-  def(target, '__init_data__', initData);
-
-  const registerObj = {
-    data: initData,
-    onLoad(...args) {
-      target.target = this;
-      const _initData = target['__init_data__'];
-
-      // Update init data
-      Object.keys(_initData).forEach((key) => {
-        target.data[key] = JSONClone(_initData[key]);
-      });
-
-      target.onLoad && target.onLoad(...args);
-    },
-  };
-
-  const filterKeys = ['constructor', 'onLoad', 'data', 'setData'];
-
-  while (!proto.isPrototypeOf(Object)) {
-    Object.getOwnPropertyNames(proto)
-      .filter(
-        (key) =>
-          filterKeys.indexOf(key) === -1 && typeof target[key] === 'function',
-      )
-      .forEach((key) => {
-        registerObj[key] = (...args) => target[key](...args);
-      });
-
-    proto = Object.getPrototypeOf(proto);
-  }
-
-  Page(registerObj);
   let waitUpdateData = {};
 
   new Observer(target.data, (newData, oldData) => {
@@ -214,6 +213,55 @@ function bindPage(target) {
       waitUpdateData = {};
     });
   });
+
+  const initData = JSONClone(target.data);
+  def(target, '__init_data__', initData);
+
+  const registerObj = {
+    data: initData,
+    onLoad(...args) {
+      target.target = this;
+      const _initData = target['__init_data__'];
+
+      // Update init data
+      Object.keys(_initData).forEach((key) => {
+        target.data[key] = JSONClone(_initData[key]);
+      });
+
+      // Trigger computed and attach computed to data
+      Object.keys(target.computed).forEach((key) => {
+        const currentComputed = new ComputedValue(
+          target,
+          key,
+          target.computed[key],
+        );
+        ComputedValue.current = currentComputed;
+        currentComputed.update();
+      });
+      ComputedValue.current = null;
+
+      // onload
+      target.onLoad && target.onLoad(...args);
+    },
+  };
+
+  const filterKeys = ['constructor', 'onLoad', 'data', 'setData'];
+
+  let proto = target;
+  while (!proto.isPrototypeOf(Object)) {
+    Object.getOwnPropertyNames(proto)
+      .filter(
+        (key) =>
+          filterKeys.indexOf(key) === -1 && typeof target[key] === 'function',
+      )
+      .forEach((key) => {
+        registerObj[key] = (...args) => target[key](...args);
+      });
+
+    proto = Object.getPrototypeOf(proto);
+  }
+
+  Page(registerObj);
 }
 
 class BasePage {
@@ -226,8 +274,17 @@ class BasePage {
 
   watch = {};
 
+  computed = {};
+
   get route() {
     return this.target && this.target.route;
+  }
+
+  constructor() {
+    /*eslint-disable-next-line */
+    global.pages = global.pages || [];
+    /*eslint-disable-next-line */
+    global.pages.push(this);
   }
 
   /**
