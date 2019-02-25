@@ -20,7 +20,7 @@ function def(obj, prop, val, enumerable = false) {
     value: val,
     enumerable,
     writable: true,
-    configurable: true
+    configurable: true,
   });
 }
 
@@ -31,18 +31,18 @@ class Observer {
    * @param {(data:any)=>void} dataChanged
    * @param {string} [prePath]
    */
-  constructor(data, dataChanged, prePath = "") {
+  constructor(data, dataChanged, prePath = '') {
     this.dataChanged = dataChanged;
     this.prefix = prePath;
     this.data = {};
-    def(data, "__ob__", this);
+    def(data, '__ob__', this);
 
-    Object.keys(data).forEach(key => {
+    Object.keys(data).forEach((key) => {
       const value = data[key];
       this.attachObserve(key, value);
 
       Object.defineProperty(data, key, {
-        set: val => {
+        set: (val) => {
           this.updateData(key, val);
 
           this.attachObserve(key, val);
@@ -51,7 +51,7 @@ class Observer {
           return this.safeGet(key);
         },
         configurable: true,
-        enumerable: true
+        enumerable: true,
       });
     });
   }
@@ -63,16 +63,16 @@ class Observer {
    */
   observeArrayMethods(arr, key) {
     const methods = [
-      "push",
-      "pop",
-      "shift",
-      "unshift",
-      "splice",
-      "sort",
-      "reverse"
+      'push',
+      'pop',
+      'shift',
+      'unshift',
+      'splice',
+      'sort',
+      'reverse',
     ];
 
-    methods.forEach(method => {
+    methods.forEach((method) => {
       def(arr, method, (...args) => {
         const originMethod = Array.prototype[method];
         originMethod.apply(arr, args);
@@ -89,7 +89,7 @@ class Observer {
    */
   updateData(key, value) {
     const changedData = {};
-    const path = this.prefix ? this.prefix + "." + key : key;
+    const path = this.prefix ? this.prefix + '.' + key : key;
     changedData[path] = value;
     const oldData = {};
     oldData[path] = this.data[key];
@@ -105,14 +105,14 @@ class Observer {
   attachObserve(key, value) {
     this.data[key] = value;
 
-    if (value["__ob__"]) {
+    if (value['__ob__']) {
       return;
     }
 
     if (Array.isArray(value)) {
       this.observeArrayMethods(value, key);
-    } else if (typeof value === "object") {
-      const prefix = this.prefix ? this.prefix + "." + key : key;
+    } else if (typeof value === 'object') {
+      const prefix = this.prefix ? this.prefix + '.' + key : key;
       new Observer(value, this.dataChanged, prefix);
     }
   }
@@ -143,7 +143,7 @@ const UpdateTaskQueue = {
       this.tasks.pop()();
       this.tasks = [];
     });
-  }
+  },
 };
 
 /**
@@ -153,23 +153,33 @@ const UpdateTaskQueue = {
 function bindPage(target) {
   let proto = target;
 
+  const initData = JSONClone(target.data);
+  def(target, '__init_data__', initData);
+
   const registerObj = {
-    data: JSONClone(target.data),
-    onLoad() {
+    data: initData,
+    onLoad(...args) {
       target.target = this;
-      target.onLoad && target.onLoad();
-    }
+      const _initData = target['__init_data__'];
+
+      // Update init data
+      Object.keys(_initData).forEach((key) => {
+        target.data[key] = JSONClone(_initData[key]);
+      });
+
+      target.onLoad && target.onLoad(...args);
+    },
   };
 
-  const filterKeys = ["constructor", "onLoad", "data", "setData"];
+  const filterKeys = ['constructor', 'onLoad', 'data', 'setData'];
 
   while (!proto.isPrototypeOf(Object)) {
     Object.getOwnPropertyNames(proto)
       .filter(
-        key =>
-          filterKeys.indexOf(key) === -1 && typeof target[key] === "function"
+        (key) =>
+          filterKeys.indexOf(key) === -1 && typeof target[key] === 'function',
       )
-      .forEach(key => {
+      .forEach((key) => {
         registerObj[key] = (...args) => target[key](...args);
       });
 
@@ -184,10 +194,10 @@ function bindPage(target) {
     // target.target.setData(arg);
 
     // Watch
-    Object.keys(newData).forEach(key => {
+    Object.keys(newData).forEach((key) => {
       waitUpdateData[key] = newData[key];
 
-      if (typeof target.watch[key] === "function") {
+      if (typeof target.watch[key] === 'function') {
         target.watch[key](newData[key], oldData[key]);
       }
     });
