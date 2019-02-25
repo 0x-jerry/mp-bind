@@ -26,6 +26,7 @@ function def(obj, prop, val, enumerable = false) {
 
 class ComputedValue {
   static current = null;
+  static all = [];
 
   /**
    *
@@ -37,6 +38,7 @@ class ComputedValue {
     this.page = page;
     this.get = getFunc;
     this.name = name;
+    ComputedValue.all.push(this);
   }
 
   update() {
@@ -59,7 +61,7 @@ class Observer {
     this.dataChanged = dataChanged;
     this.prefix = prePath;
     this.data = {};
-    this.deps = [];
+    this.deps = {};
 
     def(data, '__ob__', this);
 
@@ -69,17 +71,39 @@ class Observer {
 
       Object.defineProperty(data, key, {
         set: (val) => {
+          if (this.data[key] === val) {
+            return;
+          }
+
           this.updateData(key, val);
 
           this.attachObserve(key, val);
-          this.deps.forEach((target) => {
-            target.update();
-          });
+
+          // Trigger computed to update deps
+          if (typeof val === 'object') {
+            ComputedValue.all.forEach((c) => {
+              ComputedValue.current = c;
+              c.update();
+            });
+            ComputedValue.current = null;
+          }
+
+          const deps = this.deps[key];
+          if (deps) {
+            deps.forEach((target) => {
+              target.update();
+            });
+          }
         },
         get: () => {
           if (ComputedValue.current) {
-            if (!this.deps.find((d) => d === ComputedValue.current)) {
-              this.deps.push(ComputedValue.current);
+            if (!this.deps[key]) {
+              this.deps[key] = [];
+            }
+
+            const deps = this.deps[key];
+            if (!deps.find((d) => d === ComputedValue.current)) {
+              deps.push(ComputedValue.current);
             }
           }
 
@@ -175,6 +199,10 @@ const UpdateTaskQueue = {
 
     //micro task
     Promise.resolve().then(() => {
+      if (!this.tasks.length) {
+        return;
+      }
+
       this.tasks.pop()();
       this.tasks = [];
     });
@@ -292,8 +320,17 @@ class BasePage {
    * update data accord to data-name
    */
   inputHelper(e) {
-    const name = e.currentTarget.dataset.name;
-    this.data[name] = e.detail.value;
+    const names = e.currentTarget.dataset.name.split('.');
+    let data = this.data;
+
+    for (let i = 0; i < names.length; i++) {
+      const name = names[i];
+      if (i === names.length - 1) {
+        data[name] = e.detail.value;
+      } else {
+        data = data[names[i]];
+      }
+    }
   }
 
   checkboxHelper(e) {

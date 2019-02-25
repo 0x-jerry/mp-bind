@@ -28,7 +28,7 @@ export class Index extends BasePage {
 
   computed = {
     dbCount: () => {
-      return this.data.count * 2;
+      return this.data.count * 2 + this.data.deep.a + (this.data.deep.b || 0);
     },
   };
 
@@ -37,17 +37,7 @@ export class Index extends BasePage {
   }
 
   bindViewTap() {
-    console.log('before update: self data', this.data.deep.a);
-    console.log('before update: wx data', this.target.data.deep.a);
-    this.data.deep.a = 2;
-    console.log('after update: self data', this.data.deep.a);
-    console.log('after update: wx data', this.target.data.deep.a);
-
-    setTimeout(() => {
-      console.log('timeout: wx data', this.target.data.deep.a);
-    });
-
-    this.data.motto = 'ok';
+    this.data.deep = { a: 2, b: 3 };
   }
 
   onLoad() {
