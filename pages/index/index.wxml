@@ -4,5 +4,6 @@
   <view>{{motto}}</view>
   input:
   <input class="input" bindinput="inputHelper" data-name="count" />
+  <navigator url="../login/login">login</navigator>
   <button bind:tap="bindViewTap">更改文字</button>
 </view>
