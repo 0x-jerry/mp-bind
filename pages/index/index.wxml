@@ -1,6 +1,7 @@
 <!-- index.wxml -->
 <view class="container">
   <view>count: {{count}}</view>
+  <view>double count: {{dbCount}}</view>
   <view>{{motto}}</view>
   input:
   <input class="input" bindinput="inputHelper" data-name="count" />

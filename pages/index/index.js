@@ -5,7 +5,7 @@ import { BasePage, bindPage } from '../../utils/base';
 export class Index extends BasePage {
   data = {
     motto: 'Hello World',
-    count: 0,
+    count: 1,
     deep: {
       a: 1,
     },
@@ -23,6 +23,12 @@ export class Index extends BasePage {
     motto(val, old) {
       // here the `this` is point to `watch` object
       console.log('watch motto', 'new:', val, 'old:', old);
+    },
+  };
+
+  computed = {
+    dbCount: () => {
+      return this.data.count * 2;
     },
   };
 
