@@ -85,6 +85,7 @@ class Observer {
       enumerable: true,
     });
 
+    // Update computed dependence
     if (this.isArray) {
       const deps = this.parent.deps[this.name] || [];
       deps.forEach((dep) => {
@@ -168,7 +169,7 @@ class Observer {
           this.observerKey(arr, key);
         });
 
-        // Update computed
+        // Update computed value
         if (this.parent) {
           this.parent.updateDeps(this.name);
         }
