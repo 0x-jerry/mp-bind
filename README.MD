@@ -17,11 +17,11 @@
 - 添加 [snippets](.vscode/mp.code-snippets)
 - 支持 `Watch`，类似于 `Vue` 的 `Watch`
 - 支持 `Computed`，类似于 `Vue` 的 `Computed`
+- 支持直接修改数组的内容
 
 ## Notice
 
 - 不支持直接更新 `data` 中没有定义的数据
-- 数组暂不支持直接修改数组里面的内容
 - `Watch` 暂看不支持 `deep`
 - `Computed` 只支持数组长度改变或者直接直接改变整个数组
 
