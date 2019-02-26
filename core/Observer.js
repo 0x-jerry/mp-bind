@@ -6,10 +6,14 @@ class Observer {
    *
    * @param {object} data
    * @param {(data:any)=>void} dataChanged update data function
+   * @param {string} [name]
    * @param {string} [prePath]
+   * @param {Observer} [parentOb]
    */
-  constructor(data, dataChanged, prePath = '') {
+  constructor(data, dataChanged, name = '', prePath = '', parentOb = null) {
+    this.parent = parentOb;
     this.dataChanged = dataChanged;
+    this.name = name;
     this.prefix = prePath;
     this.data = {};
     // dependence computed value
@@ -58,12 +62,7 @@ class Observer {
         }
 
         // Update computed value
-        const deps = this.deps[key];
-        if (deps) {
-          deps.forEach((target) => {
-            target.update();
-          });
-        }
+        this.updateDeps(key);
       },
       get: () => {
         // For calculate compted dependence
@@ -85,6 +84,16 @@ class Observer {
     });
 
     this.attachObserve(key, value);
+  }
+
+  updateDeps(key) {
+    // Update computed value
+    const deps = this.deps[key];
+    if (deps) {
+      deps.forEach((target) => {
+        target.update();
+      });
+    }
   }
 
   calcDeps(data) {
@@ -119,11 +128,9 @@ class Observer {
   }
 
   /**
-   *
    * @param {any[]} arr
-   * @param {string} key
    */
-  observeArrayMethods(arr, key) {
+  observeArrayMethods(arr) {
     const methods = [
       'push',
       'pop',
@@ -136,10 +143,9 @@ class Observer {
 
     methods.forEach((method) => {
       def(arr, method, (...args) => {
+        logger('Observer set', this.prePath(), method, ...args);
         const originMethod = Array.prototype[method];
         originMethod.apply(arr, args);
-
-        this.updateData(key, arr);
 
         /**
          * @type {Observer}
@@ -154,6 +160,11 @@ class Observer {
             }
             this.observerKey(arr, key);
           });
+        }
+
+        // Update computed
+        if (this.parent) {
+          this.parent.updateDeps(this.name);
         }
       });
     });
@@ -189,7 +200,7 @@ class Observer {
     }
 
     if (typeof value === 'object') {
-      new Observer(value, this.dataChanged, this.prePath(key));
+      new Observer(value, this.dataChanged, key, this.prePath(key), this);
     }
   }
 

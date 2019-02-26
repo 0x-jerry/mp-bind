@@ -42,6 +42,7 @@ export class Index extends BasePage {
   bindViewTap() {
     this.data.arr[3] = 5;
     // const updated = {};
+    // updated['arr[4]'] = 5;
     // this.setData(updated);
     this.data.deep = { a: 4, b: 2 };
   }
