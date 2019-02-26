@@ -30,6 +30,9 @@ export class Index extends BasePage {
     dbCount: () => {
       return this.data.count * 2 + this.data.deep.a + (this.data.deep.b || 0);
     },
+    threeCount: () => {
+      return this.data.motto + '2';
+    },
   };
 
   log(name, newVal, oldVal) {
@@ -42,7 +45,6 @@ export class Index extends BasePage {
 
   onLoad() {
     this.data.arr.push(1);
-    console.log('app loaded');
   }
 }
 

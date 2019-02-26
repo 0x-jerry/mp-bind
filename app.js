@@ -3,7 +3,5 @@
 
 App({
   onLaunch() {},
-  globalData: {
-    userInfo: null
-  }
+  globalData: {},
 });

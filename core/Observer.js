@@ -4,7 +4,7 @@ import { ComputedValue } from './Computed';
 class Observer {
   /**
    *
-   * @param {JSON} data
+   * @param {object} data
    * @param {(data:any)=>void} dataChanged update data function
    * @param {string} [prePath]
    */
@@ -19,9 +19,12 @@ class Observer {
 
     def(data, '__ob__', this);
 
+    if (Array.isArray(data)) {
+      this.observeArrayMethods(data);
+    }
+
     Object.keys(data).forEach((key) => {
       const value = data[key];
-      this.attachObserve(key, value);
 
       Object.defineProperty(data, key, {
         set: (val) => {
@@ -31,15 +34,34 @@ class Observer {
 
           logger('Observer set', this.prePath(key), val);
 
+          // Calc needed update deps
+          let computedDeps = [];
+          if (typeof val === 'object') {
+            const calcDeps = (data) => {
+              /**
+               * @type {Observer}
+               */
+              const _ob = data['__ob__'];
+              if(!_ob) return;
+
+              Object.keys(_ob.deps).forEach((key) => {
+                computedDeps = computedDeps.concat(_ob.deps[key]);
+                if (typeof _ob.data[key] === 'object') {
+                  calcDeps(_ob.data[key]);
+                }
+              });
+            };
+            calcDeps(this.data[key])
+          }
+
           this.updateData(key, val);
 
           this.attachObserve(key, val);
 
           // When set a new Object
           // Trigger computed and update dependence
-          // TODO: calc old computed dependence to reduce update number
           if (typeof val === 'object') {
-            ComputedValue.all.forEach((c) => {
+            computedDeps.forEach((c) => {
               ComputedValue.current = c;
               c.update();
             });
@@ -72,10 +94,15 @@ class Observer {
         configurable: true,
         enumerable: true,
       });
+
+      this.attachObserve(key, value);
     });
   }
 
   prePath(key) {
+    if (!key) {
+      return this.prefix;
+    }
     return this.prefix ? this.prefix + '.' + key : key;
   }
 
@@ -112,7 +139,7 @@ class Observer {
    */
   updateData(key, value) {
     const changedData = {};
-    const path = this.prefix ? this.prefix + '.' + key : key;
+    const path = this.prePath(key);
     changedData[path] = value;
     const oldData = {};
     oldData[path] = this.data[key];
@@ -126,15 +153,15 @@ class Observer {
    * @param {any} value
    */
   attachObserve(key, value) {
-    this.data[key] = value;
+    if(this.data[key] !== value) {
+      this.data[key] = value;
+    }
 
     if (value['__ob__']) {
       return;
     }
 
-    if (Array.isArray(value)) {
-      this.observeArrayMethods(value, key);
-    } else if (typeof value === 'object') {
+    if (typeof value === 'object') {
       new Observer(value, this.dataChanged, this.prePath(key));
     }
   }
