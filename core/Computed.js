@@ -1,3 +1,6 @@
+// eslint-disable-next-line no-unused-vars
+import { BasePageConfig, UpdateTaskQueue } from './BasePage';
+
 class ComputedValue {
   static current = null;
   static all = [];
@@ -18,7 +21,12 @@ class ComputedValue {
   update() {
     this.value = this.get();
 
-    this.page['__update_queue__'].addUpdateData(this.name, this.value);
+    /**
+     * @type {UpdateTaskQueue}
+     */
+    const queue = this.page[BasePageConfig.keys.updateQueue];
+
+    queue.addUpdateData(this.name, this.value);
   }
 }
 

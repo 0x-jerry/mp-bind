@@ -1,6 +1,7 @@
-import { Observer } from "./Observer";
-import { JSONClone, def } from "./utils";
-import { ComputedValue } from "./Computed";
+import { Observer } from './Observer';
+import { JSONClone, def } from './utils';
+import { ComputedValue } from './Computed';
+import { BasePageConfig } from './BasePage';
 
 /**
  *
@@ -59,14 +60,7 @@ function bindPage(target) {
     },
   };
 
-  const filterKeys = [
-    'constructor',
-    'onLoad',
-    'data',
-    'setData',
-    '__update_queue__',
-    '$forceUpdate',
-  ];
+  const filterKeys = BasePageConfig.ignoreKeys;
 
   let proto = target;
   while (!proto.isPrototypeOf(Object)) {
@@ -84,4 +78,4 @@ function bindPage(target) {
   Page(registerObj);
 }
 
-export {bindPage};
+export { bindPage };
