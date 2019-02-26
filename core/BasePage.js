@@ -3,7 +3,7 @@
 import { def, logger } from './utils';
 
 /**
- * Use micro task to exec the last callback
+ * Use micro task to update data
  */
 class UpdateTaskQueue {
   /**
@@ -29,7 +29,7 @@ class UpdateTaskQueue {
 
   updateData() {
     Promise.resolve().then(() => {
-      logger('Update data',  this.waitForUpdate);
+      logger('Update data', this.waitForUpdate);
       this.page.target.setData(this.waitForUpdate);
       this.waitForUpdate = {};
       this.dirty = false;
@@ -54,10 +54,12 @@ class BasePage {
   }
 
   constructor() {
-    /*eslint-disable-next-line */
-    global.pages = global.pages || [];
-    /*eslint-disable-next-line */
-    global.pages.push(this);
+    if (BasePageConfig.debug) {
+      /*eslint-disable-next-line */
+      global.pages = global.pages || [];
+      /*eslint-disable-next-line */
+      global.pages.push(this);
+    }
 
     def(this, BasePageConfig.keys.setData, (obj, cb) =>
       this.target.setData(obj, cb),
@@ -69,8 +71,9 @@ class BasePage {
   }
 
   /**
-   * Helper function, using in wxml file
+   * Helper function, uss in wxml file
    * update data accord to data-name
+   * support `a.b.c`
    */
   inputHelper(e) {
     const names = e.currentTarget.dataset.name.split('.');
@@ -94,10 +97,10 @@ class BasePage {
 const BasePageConfig = {
   debug: true,
   keys: {
-    constructor: 'constructor',
-    onLoad: 'onLoad',
     data: 'data',
     initData: '__initData__',
+    constructor: 'constructor',
+    onLoad: 'onLoad',
     setData: 'setData',
     updateQueue: '__update_queue__',
     forceUpdate: '$forceUpdate',

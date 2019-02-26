@@ -10,17 +10,9 @@ import { BasePageConfig, BasePage } from './BasePage';
  */
 function bindPage(target) {
   new Observer(target.data, (newData, oldData) => {
-    // Update sync, both target.data.xxx and target.target.data.xxx are updated
-    // target.target.setData(arg);
 
     Object.keys(newData).forEach((key) => {
-      /**
-       * update merge test (update in micro task)
-       * notice： target.data.xxx is update sync
-       *          but, target.target.data.xxx not update
-       *          it will update in micro task, one solution is use `setTimeout(() => data.xxx)`
-       *          if you want update sync, use target.setData
-       */
+      // Use update task queue to update data in micro task
       target[BasePageConfig.keys.updateQueue].addUpdateData(key, newData[key]);
 
       // Watch
@@ -39,12 +31,13 @@ function bindPage(target) {
       target.target = this;
       const _initData = target[BasePageConfig.keys.initData];
 
-      // Update init data
+      // Update init data, because BasePage only register once
+      // So, here should update initialize data
       Object.keys(_initData).forEach((key) => {
         target.data[key] = JSONClone(_initData[key]);
       });
 
-      // Trigger computed and attach computed to data
+      // Trigger computed and calculate dependence
       Object.keys(target.computed).forEach((key) => {
         const currentComputed = new ComputedValue(
           target,
@@ -52,6 +45,7 @@ function bindPage(target) {
           target.computed[key],
         );
         ComputedValue.current = currentComputed;
+        // update computed and attach to data
         currentComputed.update();
         def(target.computed[key], '__computed__', currentComputed);
       });
@@ -65,6 +59,7 @@ function bindPage(target) {
   const filterKeys = BasePageConfig.ignoreKeys;
 
   let proto = target;
+  // Attach function recursively
   while (!proto.isPrototypeOf(Object)) {
     Object.getOwnPropertyNames(proto)
       .filter(
@@ -77,6 +72,8 @@ function bindPage(target) {
 
     proto = Object.getPrototypeOf(proto);
   }
+
+  // Register Page
   Page(registerObj);
 }
 

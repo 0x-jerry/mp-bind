@@ -3,6 +3,7 @@ import { BasePageConfig, UpdateTaskQueue } from './BasePage';
 import { logger } from './utils';
 
 class ComputedValue {
+  // current `ComputedValue`, for calculate dependence
   static current = null;
   static all = [];
 

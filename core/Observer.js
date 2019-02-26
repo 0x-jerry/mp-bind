@@ -5,13 +5,15 @@ class Observer {
   /**
    *
    * @param {JSON} data
-   * @param {(data:any)=>void} dataChanged
+   * @param {(data:any)=>void} dataChanged update data function
    * @param {string} [prePath]
    */
   constructor(data, dataChanged, prePath = '') {
     this.dataChanged = dataChanged;
     this.prefix = prePath;
     this.data = {};
+    // dependence computed value
+    // key => ComputedValue[]
     this.deps = {};
     logger('Observer new', this.prefix, data);
 
@@ -33,7 +35,9 @@ class Observer {
 
           this.attachObserve(key, val);
 
-          // Trigger computed to update deps
+          // When set a new Object
+          // Trigger computed and update dependence
+          // TODO: calc old computed dependence to reduce update number
           if (typeof val === 'object') {
             ComputedValue.all.forEach((c) => {
               ComputedValue.current = c;
@@ -42,6 +46,7 @@ class Observer {
             ComputedValue.current = null;
           }
 
+          // Update computed value
           const deps = this.deps[key];
           if (deps) {
             deps.forEach((target) => {
@@ -50,6 +55,7 @@ class Observer {
           }
         },
         get: () => {
+          // For calculate compted dependence
           if (ComputedValue.current) {
             if (!this.deps[key]) {
               this.deps[key] = [];
