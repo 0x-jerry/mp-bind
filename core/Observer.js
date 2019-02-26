@@ -16,20 +16,23 @@ class Observer {
     this.name = name;
     this.prefix = prePath;
     this.data = {};
+    this.isArray = Array.isArray(data);
+
     // dependence computed value
     // key => ComputedValue[]
     this.deps = {};
     logger('Observer new', this.prefix, data);
 
     def(data, '__ob__', this);
+    def(this.data, '__ob__', this);
 
-    if (Array.isArray(data)) {
+    if (this.isArray) {
       this.observeArrayMethods(data);
+    } else {
+      Object.keys(data).forEach((key) => {
+        this.observerKey(data, key);
+      });
     }
-
-    Object.keys(data).forEach((key) => {
-      this.observerKey(data, key);
-    });
   }
 
   observerKey(data, key) {
@@ -44,8 +47,7 @@ class Observer {
         logger('Observer set', this.prePath(key), val);
 
         // Calc needed update deps
-        const computedDeps =
-          typeof val === 'object' ? this.calcDeps(this.data[key]) : [];
+        const computedDeps = this.calcDeps(this.data[key]);
 
         this.updateData(key, val);
 
@@ -53,16 +55,16 @@ class Observer {
 
         // When set a new Object
         // Trigger computed and update dependence
-        if (typeof val === 'object') {
+        if (computedDeps.length) {
           computedDeps.forEach((c) => {
             ComputedValue.current = c;
             c.update();
           });
           ComputedValue.current = null;
+        } else {
+          // Update computed value
+          this.updateDeps(key);
         }
-
-        // Update computed value
-        this.updateDeps(key);
       },
       get: () => {
         // For calculate compted dependence
@@ -83,6 +85,15 @@ class Observer {
       enumerable: true,
     });
 
+    if (this.isArray) {
+      const deps = this.parent.deps[this.name] || [];
+      deps.forEach((dep) => {
+        ComputedValue.current = dep;
+        dep.update();
+      });
+      ComputedValue.current = null;
+    }
+
     this.attachObserve(key, value);
   }
 
@@ -102,7 +113,7 @@ class Observer {
      * @type {Observer}
      */
     const _ob = data['__ob__'];
-    if (!_ob) return;
+    if (!_ob) return computedDeps;
 
     Object.keys(_ob.deps).forEach((key) => {
       computedDeps = computedDeps.concat(_ob.deps[key]);
@@ -147,20 +158,15 @@ class Observer {
         const originMethod = Array.prototype[method];
         originMethod.apply(arr, args);
 
-        /**
-         * @type {Observer}
-         */
-        const _ob = arr['__ob__'];
-
         // TODO reduce traverse times
-        if (_ob) {
-          Object.keys(arr).forEach((key) => {
-            if (Object.getOwnPropertyDescriptor(arr, key).get) {
-              return;
-            }
-            this.observerKey(arr, key);
-          });
-        }
+        Object.keys(arr).forEach((key) => {
+          const obKeys = Object.keys(this.data);
+          if (obKeys.indexOf(key) !== -1) {
+            return;
+          }
+
+          this.observerKey(arr, key);
+        });
 
         // Update computed
         if (this.parent) {

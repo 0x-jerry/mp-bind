@@ -4,34 +4,23 @@ import { BasePage, bindPage } from '../../core/index';
 
 export class Index extends BasePage {
   data = {
-    motto: 'Hello World',
-    count: 1,
-    deep: {
-      a: 1,
-    },
-    arr: [1, 2, 3],
+    arr: [],
   };
 
   /**
    * Notice: If you want `this` point to this page, please use arrow function
    */
   watch = {
-    'deep.a': (val, old) => {
-      // here the `this` is point to this class
-      this.log('deep.a', val, old);
-    },
-    motto(val, old) {
-      // here the `this` is point to `watch` object
-      console.log('watch motto', 'new:', val, 'old:', old);
+    arr: (newVal, oldVal) => {
+      this.log('arr', newVal, oldVal);
     },
   };
 
   computed = {
-    dbCount: () => {
-      return this.data.count * 2 + this.data.deep.a + (this.data.deep.b || 0);
-    },
-    arrLength: () => {
-      return this.data.arr.length;
+    arrLength: () => this.data.arr.length,
+    fistArr: () => {
+      const arr = this.data.arr;
+      return (arr && arr[5]) || '';
     },
   };
 
@@ -40,17 +29,18 @@ export class Index extends BasePage {
   }
 
   bindViewTap() {
-    this.data.arr[3] = 5;
-    // const updated = {};
-    // updated['arr[4]'] = 5;
-    // this.setData(updated);
-    this.data.deep = { a: 4, b: 2 };
+    // this.data.arr = [1, 2, 3, 4];
+    this.data.arr[0] = 5;
+    this.data.arr.push(44);
+    this.data.arr.push(55);
   }
 
   onLoad() {
-    // this.data.arr.push(1, 2, 3);
-    this.data.arr[1] = 4;
-    this.data.arr.push(32);
+    this.data.arr.push(3);
+    this.data.arr.push(2);
+    this.data.arr.push(1);
+    this.data.arr.push(22);
+    this.data.arr.push(33);
   }
 }
 
