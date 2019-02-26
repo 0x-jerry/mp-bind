@@ -1,4 +1,4 @@
-import { def } from './utils';
+import { def, logger } from './utils';
 import { ComputedValue } from './Computed';
 
 class Observer {
@@ -13,6 +13,7 @@ class Observer {
     this.prefix = prePath;
     this.data = {};
     this.deps = {};
+    logger('Observer new', this.prefix, data);
 
     def(data, '__ob__', this);
 
@@ -25,6 +26,8 @@ class Observer {
           if (this.data[key] === val) {
             return;
           }
+
+          logger('Observer set', this.prePath(key), val);
 
           this.updateData(key, val);
 
@@ -64,6 +67,10 @@ class Observer {
         enumerable: true,
       });
     });
+  }
+
+  prePath(key) {
+    return this.prefix ? this.prefix + '.' + key : key;
   }
 
   /**
@@ -122,8 +129,7 @@ class Observer {
     if (Array.isArray(value)) {
       this.observeArrayMethods(value, key);
     } else if (typeof value === 'object') {
-      const prefix = this.prefix ? this.prefix + '.' + key : key;
-      new Observer(value, this.dataChanged, prefix);
+      new Observer(value, this.dataChanged, this.prePath(key));
     }
   }
 

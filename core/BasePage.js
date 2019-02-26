@@ -1,6 +1,6 @@
 /// <reference path="../@types/index.d.ts" />
 
-import { def } from './utils';
+import { def, logger } from './utils';
 
 /**
  * Use micro task to exec the last callback
@@ -29,6 +29,7 @@ class UpdateTaskQueue {
 
   updateData() {
     Promise.resolve().then(() => {
+      logger('Update data',  this.waitForUpdate);
       this.page.target.setData(this.waitForUpdate);
       this.waitForUpdate = {};
       this.dirty = false;
@@ -91,6 +92,7 @@ class BasePage {
 }
 
 const BasePageConfig = {
+  debug: true,
   keys: {
     constructor: 'constructor',
     onLoad: 'onLoad',

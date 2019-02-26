@@ -1,3 +1,5 @@
+import { BasePageConfig } from './BasePage';
+
 /**
  *
  * @param {JSON} data
@@ -22,4 +24,11 @@ function def(obj, prop, val, enumerable = false) {
   });
 }
 
-export { JSONClone, def };
+function logger(...args) {
+  if (BasePageConfig.debug) {
+    const prefix = `${new Date().toISOString()}: `;
+    console.log(prefix, ...args);
+  }
+}
+
+export { JSONClone, def, logger };
