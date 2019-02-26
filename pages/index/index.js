@@ -9,7 +9,7 @@ export class Index extends BasePage {
     deep: {
       a: 1,
     },
-    arr: [],
+    arr: [1, 2, 3],
   };
 
   /**
@@ -30,8 +30,8 @@ export class Index extends BasePage {
     dbCount: () => {
       return this.data.count * 2 + this.data.deep.a + (this.data.deep.b || 0);
     },
-    threeCount: () => {
-      return this.data.motto + '2';
+    arrLength: () => {
+      return this.data.arr.length;
     },
   };
 
@@ -40,11 +40,15 @@ export class Index extends BasePage {
   }
 
   bindViewTap() {
-    this.data.deep = { a: 2, b: 3 };
+    this.data.arr[3] = 5;
+    // const updated = {};
+    // this.setData(updated);
   }
 
   onLoad() {
-    this.data.arr.push(1);
+    // this.data.arr.push(1, 2, 3);
+    this.data.arr[1] = 4;
+    this.data.arr.push(32);
   }
 }
 

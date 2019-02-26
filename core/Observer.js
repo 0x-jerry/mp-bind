@@ -24,85 +24,94 @@ class Observer {
     }
 
     Object.keys(data).forEach((key) => {
-      const value = data[key];
-
-      Object.defineProperty(data, key, {
-        set: (val) => {
-          if (this.data[key] === val) {
-            return;
-          }
-
-          logger('Observer set', this.prePath(key), val);
-
-          // Calc needed update deps
-          let computedDeps = [];
-          if (typeof val === 'object') {
-            const calcDeps = (data) => {
-              /**
-               * @type {Observer}
-               */
-              const _ob = data['__ob__'];
-              if(!_ob) return;
-
-              Object.keys(_ob.deps).forEach((key) => {
-                computedDeps = computedDeps.concat(_ob.deps[key]);
-                if (typeof _ob.data[key] === 'object') {
-                  calcDeps(_ob.data[key]);
-                }
-              });
-            };
-            calcDeps(this.data[key])
-          }
-
-          this.updateData(key, val);
-
-          this.attachObserve(key, val);
-
-          // When set a new Object
-          // Trigger computed and update dependence
-          if (typeof val === 'object') {
-            computedDeps.forEach((c) => {
-              ComputedValue.current = c;
-              c.update();
-            });
-            ComputedValue.current = null;
-          }
-
-          // Update computed value
-          const deps = this.deps[key];
-          if (deps) {
-            deps.forEach((target) => {
-              target.update();
-            });
-          }
-        },
-        get: () => {
-          // For calculate compted dependence
-          if (ComputedValue.current) {
-            if (!this.deps[key]) {
-              this.deps[key] = [];
-            }
-
-            const deps = this.deps[key];
-            if (!deps.find((d) => d === ComputedValue.current)) {
-              deps.push(ComputedValue.current);
-            }
-          }
-
-          return this.safeGet(key);
-        },
-        configurable: true,
-        enumerable: true,
-      });
-
-      this.attachObserve(key, value);
+      this.observerKey(data, key);
     });
+  }
+
+  observerKey(data, key) {
+    const value = data[key];
+
+    Object.defineProperty(data, key, {
+      set: (val) => {
+        if (this.data[key] === val) {
+          return;
+        }
+
+        logger('Observer set', this.prePath(key), val);
+
+        // Calc needed update deps
+        let computedDeps = [];
+        if (typeof val === 'object') {
+          const calcDeps = (data) => {
+            /**
+             * @type {Observer}
+             */
+            const _ob = data['__ob__'];
+            if (!_ob) return;
+
+            Object.keys(_ob.deps).forEach((key) => {
+              computedDeps = computedDeps.concat(_ob.deps[key]);
+              if (typeof _ob.data[key] === 'object') {
+                calcDeps(_ob.data[key]);
+              }
+            });
+          };
+          calcDeps(this.data[key]);
+        }
+
+        this.updateData(key, val);
+
+        this.attachObserve(key, val);
+
+        // When set a new Object
+        // Trigger computed and update dependence
+        if (typeof val === 'object') {
+          computedDeps.forEach((c) => {
+            ComputedValue.current = c;
+            c.update();
+          });
+          ComputedValue.current = null;
+        }
+
+        // Update computed value
+        const deps = this.deps[key];
+        if (deps) {
+          deps.forEach((target) => {
+            target.update();
+          });
+        }
+      },
+      get: () => {
+        // For calculate compted dependence
+        if (ComputedValue.current) {
+          if (!this.deps[key]) {
+            this.deps[key] = [];
+          }
+
+          const deps = this.deps[key];
+          if (!deps.find((d) => d === ComputedValue.current)) {
+            deps.push(ComputedValue.current);
+          }
+        }
+
+        return this.safeGet(key);
+      },
+      configurable: true,
+      enumerable: true,
+    });
+
+    this.attachObserve(key, value);
   }
 
   prePath(key) {
     if (!key) {
       return this.prefix;
     }
+
+    if (Number.isInteger(+key)) {
+      return this.prefix ? this.prefix + `[${key}]` : key;
+    }
+
     return this.prefix ? this.prefix + '.' + key : key;
   }
 
@@ -128,6 +137,21 @@ class Observer {
         originMethod.apply(arr, args);
 
         this.updateData(key, arr);
+
+        /**
+         * @type {Observer}
+         */
+        const _ob = arr['__ob__'];
+
+        // TODO reduce traverse times
+        if (_ob) {
+          Object.keys(arr).forEach((key) => {
+            if (Object.getOwnPropertyDescriptor(arr, key).get) {
+              return;
+            }
+            this.observerKey(arr, key);
+          });
+        }
       });
     });
   }
@@ -153,7 +177,7 @@ class Observer {
    * @param {any} value
    */
   attachObserve(key, value) {
-    if(this.data[key] !== value) {
+    if (this.data[key] !== value) {
       this.data[key] = value;
     }
 
