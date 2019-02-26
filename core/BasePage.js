@@ -58,11 +58,13 @@ class BasePage {
     /*eslint-disable-next-line */
     global.pages.push(this);
 
-    def(this, 'setData', (obj, cb) => this.target.setData(obj, cb));
+    def(this, BasePageConfig.keys.setData, (obj, cb) =>
+      this.target.setData(obj, cb),
+    );
 
     const updateQueue = new UpdateTaskQueue(this);
-    def(this, '__update_queue__', updateQueue);
-    def(this, '$forceUpdate', () => updateQueue.updateData);
+    def(this, BasePageConfig.keys.updateQueue, updateQueue);
+    def(this, BasePageConfig.keys.forceUpdate, () => updateQueue.updateData);
   }
 
   /**
@@ -88,4 +90,18 @@ class BasePage {
   }
 }
 
-export { BasePage };
+const BasePageConfig = {
+  keys: {
+    constructor: 'constructor',
+    onLoad: 'onLoad',
+    data: 'data',
+    setData: 'setData',
+    updateQueue: '__update_queue__',
+    forceUpdate: '$forceUpdate',
+  },
+  get ignoreKeys() {
+    return Object.keys(this.keys).map((key) => this.keys[key]);
+  },
+};
+
+export { BasePage, BasePageConfig, UpdateTaskQueue };

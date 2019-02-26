@@ -5,6 +5,10 @@ interface BasePage extends Page.PageInstance {
     [key: string]: <T>(newVal: T, oldVal: T) => void;
   };
 
+  computed: {
+    [key: string]: <T>() => T;
+  };
+
   /**
    * Helper function, useing in wxml file
    * update data accord to data-name attribute
@@ -16,6 +20,11 @@ interface BasePage extends Page.PageInstance {
    * update data accord to data-name attribute
    */
   checkboxHelper(e: any): void;
+
+  /**
+   * Force update data
+   */
+  $forceUpdate(): void;
 }
 
 class BasePage {}
