@@ -1,5 +1,5 @@
-import { def } from "./utils";
-import { ComputedValue } from "./Computed";
+import { def } from './utils';
+import { ComputedValue } from './Computed';
 
 class Observer {
   /**
