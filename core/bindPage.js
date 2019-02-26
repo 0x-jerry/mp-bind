@@ -1,7 +1,8 @@
 import { Observer } from './Observer';
 import { JSONClone, def } from './utils';
 import { ComputedValue } from './Computed';
-import { BasePageConfig } from './BasePage';
+// eslint-disable-next-line no-unused-vars
+import { BasePageConfig, BasePage } from './BasePage';
 
 /**
  *
@@ -20,7 +21,7 @@ function bindPage(target) {
        *          it will update in micro task, one solution is use `setTimeout(() => data.xxx)`
        *          if you want update sync, use target.setData
        */
-      target['__update_queue__'].addUpdateData(key, newData[key]);
+      target[BasePageConfig.keys.updateQueue].addUpdateData(key, newData[key]);
 
       // Watch
       if (typeof target.watch[key] === 'function') {
@@ -30,13 +31,13 @@ function bindPage(target) {
   });
 
   const initData = JSONClone(target.data);
-  def(target, '__init_data__', initData);
+  def(target, BasePageConfig.keys.initData, initData);
 
   const registerObj = {
     data: initData,
     onLoad(...args) {
       target.target = this;
-      const _initData = target['__init_data__'];
+      const _initData = target[BasePageConfig.keys.initData];
 
       // Update init data
       Object.keys(_initData).forEach((key) => {
@@ -52,6 +53,7 @@ function bindPage(target) {
         );
         ComputedValue.current = currentComputed;
         currentComputed.update();
+        def(target.computed[key], '__computed__', currentComputed);
       });
       ComputedValue.current = null;
 

@@ -95,6 +95,7 @@ const BasePageConfig = {
     constructor: 'constructor',
     onLoad: 'onLoad',
     data: 'data',
+    initData: '__initData__',
     setData: 'setData',
     updateQueue: '__update_queue__',
     forceUpdate: '$forceUpdate',
