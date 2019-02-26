@@ -1,5 +1,6 @@
 // eslint-disable-next-line no-unused-vars
 import { BasePageConfig, UpdateTaskQueue } from './BasePage';
+import { logger } from './utils';
 
 class ComputedValue {
   static current = null;
@@ -20,6 +21,7 @@ class ComputedValue {
 
   update() {
     this.value = this.get();
+    logger('Computed update', this.name, this.value);
 
     /**
      * @type {UpdateTaskQueue}
