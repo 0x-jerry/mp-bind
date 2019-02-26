@@ -43,6 +43,7 @@ export class Index extends BasePage {
     this.data.arr[3] = 5;
     // const updated = {};
     // this.setData(updated);
+    this.data.deep = { a: 4, b: 2 };
   }
 
   onLoad() {

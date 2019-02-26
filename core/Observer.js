@@ -40,24 +40,8 @@ class Observer {
         logger('Observer set', this.prePath(key), val);
 
         // Calc needed update deps
-        let computedDeps = [];
-        if (typeof val === 'object') {
-          const calcDeps = (data) => {
-            /**
-             * @type {Observer}
-             */
-            const _ob = data['__ob__'];
-            if (!_ob) return;
-
-            Object.keys(_ob.deps).forEach((key) => {
-              computedDeps = computedDeps.concat(_ob.deps[key]);
-              if (typeof _ob.data[key] === 'object') {
-                calcDeps(_ob.data[key]);
-              }
-            });
-          };
-          calcDeps(this.data[key]);
-        }
+        const computedDeps =
+          typeof val === 'object' ? this.calcDeps(this.data[key]) : [];
 
         this.updateData(key, val);
 
@@ -101,6 +85,25 @@ class Observer {
     });
 
     this.attachObserve(key, value);
+  }
+
+  calcDeps(data) {
+    let computedDeps = [];
+    /**
+     * @type {Observer}
+     */
+    const _ob = data['__ob__'];
+    if (!_ob) return;
+
+    Object.keys(_ob.deps).forEach((key) => {
+      computedDeps = computedDeps.concat(_ob.deps[key]);
+      if (typeof _ob.data[key] === 'object') {
+        const childDeps = this.calcDeps(_ob.data[key]);
+        computedDeps = computedDeps.concat(childDeps);
+      }
+    });
+
+    return computedDeps;
   }
 
   prePath(key) {
