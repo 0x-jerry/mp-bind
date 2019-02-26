@@ -11,7 +11,7 @@
     "prefix": "mp.page",
     "body": [
       "/// <reference path=\"$1@types/index.d.ts\" />",
-      "import { BasePage, bindPage } from \"$2../../utils/base\"",
+      "import { BasePage, bindPage } from \"$2../../core/index\"",
       "",
       "export class Index extends BasePage {",
       "  data = {",
