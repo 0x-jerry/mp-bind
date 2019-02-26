@@ -1,5 +1,5 @@
 <!-- index.wxml -->
-<view class="container">
+<view>
   <view>count: {{count}}</view>
   <view>double count: {{dbCount}}</view>
   <view>{{motto}}</view>
