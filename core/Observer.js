@@ -39,6 +39,50 @@ class Observer {
     });
   }
 
+  setter(key, value) {
+    if (this.data[key] === value) {
+      return;
+    }
+
+    logger('Observer set', this.prePath(key), value);
+
+    // Calc needed update deps
+    const computedDeps = this.calcDeps(this.data[key]);
+
+    this.updateData(key, value);
+
+    this.attachObserve(key, value);
+
+    // When set a new Object
+    // Trigger computed and update dependence
+    if (computedDeps.length) {
+      computedDeps.forEach((c) => {
+        ComputedValue.current = c;
+        c.update();
+      });
+      ComputedValue.current = null;
+    } else {
+      // Update computed value
+      this.updateDeps(key);
+    }
+  }
+
+  getter(key) {
+    // For calculate compted dependence
+    if (ComputedValue.current) {
+      if (!this.deps[key]) {
+        this.deps[key] = [];
+      }
+
+      const deps = this.deps[key];
+      if (!deps.find((d) => d === ComputedValue.current)) {
+        deps.push(ComputedValue.current);
+      }
+    }
+
+    return this.safeGet(key);
+  }
+
   observerKey(data, key) {
     const value = data[key];
     // Fix computed array, the getter is undefined
@@ -46,46 +90,10 @@ class Observer {
 
     Object.defineProperty(data, key, {
       set: (val) => {
-        if (this.data[key] === val) {
-          return;
-        }
-
-        logger('Observer set', this.prePath(key), val);
-
-        // Calc needed update deps
-        const computedDeps = this.calcDeps(this.data[key]);
-
-        this.updateData(key, val);
-
-        this.attachObserve(key, val);
-
-        // When set a new Object
-        // Trigger computed and update dependence
-        if (computedDeps.length) {
-          computedDeps.forEach((c) => {
-            ComputedValue.current = c;
-            c.update();
-          });
-          ComputedValue.current = null;
-        } else {
-          // Update computed value
-          this.updateDeps(key);
-        }
+        this.setter(key, val);
       },
       get: () => {
-        // For calculate compted dependence
-        if (ComputedValue.current) {
-          if (!this.deps[key]) {
-            this.deps[key] = [];
-          }
-
-          const deps = this.deps[key];
-          if (!deps.find((d) => d === ComputedValue.current)) {
-            deps.push(ComputedValue.current);
-          }
-        }
-
-        return this.safeGet(key);
+        return this.getter(key);
       },
       configurable: true,
       enumerable: true,
@@ -171,7 +179,8 @@ class Observer {
           if (obKeys.indexOf(key) !== -1) {
             return;
           }
-
+          // Fix update data when `arr[xxx] = xxx`
+          this.updateData(key, arr[key]);
           this.observerKey(arr, key);
         });
 

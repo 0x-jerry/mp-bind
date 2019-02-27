@@ -1,6 +1,6 @@
 /// <reference path="../@types/index.d.ts" />
 
-import { def, logger } from './utils';
+import { def, logger, JSONClone } from './utils';
 
 /**
  * Use micro task to update data
@@ -29,7 +29,7 @@ class UpdateTaskQueue {
 
   updateData() {
     Promise.resolve().then(() => {
-      logger('Update data', this.waitForUpdate);
+      logger('Update data', JSONClone(this.waitForUpdate));
       this.page.target.setData(this.waitForUpdate);
       this.waitForUpdate = {};
       this.dirty = false;
