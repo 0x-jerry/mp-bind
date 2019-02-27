@@ -1,5 +1,5 @@
 /*! *****************************************************************************
-Copyright (c) 2018 Tencent, Inc. All rights reserved. 
+Copyright (c) 2018 Tencent, Inc. All rights reserved.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -7,6 +7,7 @@ The above copyright notice and this permission notice shall be included in all c
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ***************************************************************************** */
+/// <reference path="./utils.d.ts" />
 
 declare namespace wx {
   /** 账号信息 */
@@ -4768,7 +4769,7 @@ declare namespace wx {
   wx.onNetworkStatusChange(function (res) {
     console.log(res.isConnected)
     console.log(res.networkType)
-  }) 
+  })
   ```
   *
   * 最低基础库： `1.1.0` */
@@ -5743,7 +5744,7 @@ declare namespace wx {
     key: 'key',
     success (res) {
       console.log(res.data)
-    } 
+    }
   })
   ```
   *
@@ -5769,7 +5770,7 @@ declare namespace wx {
     key: 'key',
     success (res) {
       console.log(res.data)
-    } 
+    }
   })
   ```
   *
@@ -5841,7 +5842,7 @@ declare namespace wx {
     key: 'key',
     success (res) {
       console.log(res.data)
-    } 
+    }
   })
   ```
   *
@@ -5864,7 +5865,7 @@ declare namespace wx {
     key: 'key',
     success (res) {
       console.log(res.data)
-    } 
+    }
   })
   ```
   *
@@ -6364,12 +6365,12 @@ declare namespace wx {
   *
   * ```js
   wx.createBLEConnection({
-    // 这里的 deviceId 需要已经通过 createBLEConnection 与对应设备建立链接 
+    // 这里的 deviceId 需要已经通过 createBLEConnection 与对应设备建立链接
     deviceId,
     success (res) {
       console.log(res)
     }
-  }) 
+  })
   ```
   *
   * 最低基础库： `1.1.0` */
@@ -6506,7 +6507,7 @@ declare namespace wx {
   * ```js
   wx.notifyBLECharacteristicValueChange({
     state: true, // 启用 notify 功能
-    // 这里的 deviceId 需要已经通过 createBLEConnection 与对应设备建立链接  
+    // 这里的 deviceId 需要已经通过 createBLEConnection 与对应设备建立链接
     deviceId,
     // 这里的 serviceId 需要在 getBLEDeviceServices 接口中获取
     serviceId,
