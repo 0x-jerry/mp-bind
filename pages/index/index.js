@@ -4,7 +4,7 @@ import { BasePage, bindPage } from '../../core/index';
 
 export class Index extends BasePage {
   data = {
-    arr: [],
+    arr: [1, 2, 3],
   };
 
   /**
@@ -36,11 +36,11 @@ export class Index extends BasePage {
   }
 
   onLoad() {
-    this.data.arr.push(3);
-    this.data.arr.push(2);
-    this.data.arr.push(1);
-    this.data.arr.push(22);
-    this.data.arr.push(33);
+    // this.data.arr.push(3);
+    // this.data.arr.push(2);
+    // this.data.arr.push(1);
+    // this.data.arr.push(22);
+    // this.data.arr.push(33);
   }
 }
 

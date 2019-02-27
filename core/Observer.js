@@ -28,11 +28,15 @@ class Observer {
 
     if (this.isArray) {
       this.observeArrayMethods(data);
-    } else {
-      Object.keys(data).forEach((key) => {
-        this.observerKey(data, key);
-      });
     }
+
+    const obKeys = Object.keys(this.data);
+    Object.keys(data).forEach((key) => {
+      if (obKeys.indexOf(key) !== -1) {
+        return;
+      }
+      this.observerKey(data, key);
+    });
   }
 
   observerKey(data, key) {
@@ -160,8 +164,8 @@ class Observer {
         originMethod.apply(arr, args);
 
         // TODO reduce traverse times
+        const obKeys = Object.keys(this.data);
         Object.keys(arr).forEach((key) => {
-          const obKeys = Object.keys(this.data);
           if (obKeys.indexOf(key) !== -1) {
             return;
           }

@@ -99,6 +99,7 @@ const BasePageConfig = {
   keys: {
     data: 'data',
     initData: '__initData__',
+    computed: '__computed__',
     constructor: 'constructor',
     onLoad: 'onLoad',
     setData: 'setData',
