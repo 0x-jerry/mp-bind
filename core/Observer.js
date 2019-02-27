@@ -217,10 +217,6 @@ class Observer {
       this.data[key] = value;
     }
 
-    if (value['__ob__']) {
-      return;
-    }
-
     if (typeof value === 'object') {
       new Observer(value, this.dataChanged, key, this.prePath(key), this);
     }
