@@ -2,7 +2,8 @@ import { Observer } from './Observer';
 import { JSONClone, def } from './utils';
 import { ComputedValue } from './Computed';
 // eslint-disable-next-line no-unused-vars
-import { BasePageConfig, BasePage } from './BasePage';
+import { BasePage } from './BasePage';
+import { BasePageConfig } from './config';
 
 /**
  *

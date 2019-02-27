@@ -1,6 +1,7 @@
 /// <reference path="../@types/index.d.ts" />
 
-import { def, logger, JSONClone } from './utils';
+import { def, logger } from './utils';
+import { BasePageConfig } from './config';
 
 /**
  * Use micro task to update data
@@ -29,7 +30,7 @@ class UpdateTaskQueue {
 
   updateData() {
     Promise.resolve().then(() => {
-      logger('Update data', JSONClone(this.waitForUpdate));
+      logger('Update data', this.waitForUpdate);
       this.page.target.setData(this.waitForUpdate);
       this.waitForUpdate = {};
       this.dirty = false;
@@ -94,21 +95,4 @@ class BasePage {
   }
 }
 
-const BasePageConfig = {
-  debug: true,
-  keys: {
-    data: 'data',
-    initData: '__initData__',
-    computed: '__computed__',
-    constructor: 'constructor',
-    onLoad: 'onLoad',
-    setData: 'setData',
-    updateQueue: '__update_queue__',
-    forceUpdate: '$forceUpdate',
-  },
-  get ignoreKeys() {
-    return Object.keys(this.keys).map((key) => this.keys[key]);
-  },
-};
-
-export { BasePage, BasePageConfig, UpdateTaskQueue };
+export { BasePage, UpdateTaskQueue };

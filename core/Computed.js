@@ -1,6 +1,7 @@
 // eslint-disable-next-line no-unused-vars
-import { BasePageConfig, UpdateTaskQueue } from './BasePage';
+import { UpdateTaskQueue } from './BasePage';
 import { logger } from './utils';
+import { BasePageConfig } from './config';
 
 class ComputedValue {
   // current `ComputedValue`, for calculate dependence

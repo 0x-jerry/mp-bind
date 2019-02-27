@@ -1,4 +1,4 @@
-import { BasePageConfig } from './BasePage';
+import { BasePageConfig } from './config';
 
 /**
  *
@@ -27,7 +27,7 @@ function def(obj, prop, val, enumerable = false) {
 function logger(...args) {
   if (BasePageConfig.debug) {
     const prefix = `${new Date().toISOString()}: `;
-    console.log(prefix, ...args);
+    console.log(prefix, ...args.map((arg) => JSONClone(arg)));
   }
 }
 
