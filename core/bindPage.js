@@ -10,6 +10,11 @@ import { BasePageConfig } from './config';
  * @param {BasePage} page
  */
 function triggerComputed(page) {
+  // Avoid trigger computed twice
+  if (page[BasePageConfig.keys.computed]) {
+    return;
+  }
+
   // Trigger computed and calculate dependence
   def(page, BasePageConfig.keys.computed, {});
 
