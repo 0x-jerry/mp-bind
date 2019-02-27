@@ -1,7 +1,7 @@
 // eslint-disable-next-line no-unused-vars
-import { UpdateTaskQueue } from './BasePage';
+import { UpdateTaskQueue } from './Base';
 import { logger } from './utils';
-import { BasePageConfig } from './config';
+import { BaseConfigs } from './config';
 
 class ComputedValue {
   // current `ComputedValue`, for calculate dependence
@@ -21,14 +21,18 @@ class ComputedValue {
     ComputedValue.all.push(this);
   }
 
-  update() {
+  update(onlyTrigger = false) {
     this.value = this.get();
     logger('Computed update', this.name, this.value);
+
+    if(onlyTrigger) {
+      return;
+    }
 
     /**
      * @type {UpdateTaskQueue}
      */
-    const queue = this.page[BasePageConfig.keys.updateQueue];
+    const queue = this.page[BaseConfigs.keys.updateQueue];
 
     queue.addUpdateData(this.name, this.value);
   }

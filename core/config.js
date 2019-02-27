@@ -1,4 +1,4 @@
-const BasePageConfig = {
+const BaseConfigs = {
   debug: true,
   keys: {
     data: 'data',
@@ -15,4 +15,4 @@ const BasePageConfig = {
   },
 };
 
-export { BasePageConfig };
+export { BaseConfigs };

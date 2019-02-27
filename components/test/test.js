@@ -1,28 +1,27 @@
 // components/test/test.js
 /// <reference path="../../@types/index.d.ts" />
+import { BaseComponent } from '../../core/index';
+import { bindComponent } from '../../core/bindComponent';
 
-Component({
-  /**
-   * Component properties
-   */
-  properties: {
+class Index extends BaseComponent {
+  properties = {
     a: String,
     b: Number,
-  },
+  };
 
-  /**
-   * Component initial data
-   */
-  data: {},
+  data = {
+    c: 3,
+  };
 
-  /**
-   * Component methods
-   */
-  methods: {},
+  onTap() {
+    console.log(this.data.c);
+  }
 
-  lifetimes: {
-    attached() {
-      console.log(this);
+  lifetimes = {
+    created: () => {
+      console.log('created', this);
     },
-  },
-});
+  };
+}
+
+bindComponent(new Index());

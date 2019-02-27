@@ -1,6 +1,4 @@
-interface BasePage extends Page.PageInstance {
-  target: Page.PageInstance;
-
+interface Base {
   watch: {
     [key: string]: <T>(newVal: T, oldVal: T) => void;
   };
@@ -27,8 +25,24 @@ interface BasePage extends Page.PageInstance {
   $forceUpdate(): void;
 }
 
+interface BasePage extends Base, Page.PageInstance {
+  target: Page.PageInstance;
+}
+
+interface BaseComponent
+  extends Base,
+    Component.ComponentInstance,
+    Component.ComponentOptions {
+
+  target: Component.ComponentInstance;
+}
+
 class BasePage {}
+
+class BaseComponent {}
 
 function bindPage<T extends BasePage>(target: T): void;
 
-export { bindPage, BasePage };
+function bindComponent<T extends BaseComponent>(target: T): void;
+
+export { bindPage, BasePage, bindComponent, BaseComponent };

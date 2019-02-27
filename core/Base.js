@@ -1,7 +1,7 @@
 /// <reference path="../@types/index.d.ts" />
 
 import { def, logger } from './utils';
-import { BasePageConfig } from './config';
+import { BaseConfigs } from './config';
 
 /**
  * Use micro task to update data
@@ -38,37 +38,28 @@ class UpdateTaskQueue {
   }
 }
 
-class BasePage {
-  /**
-   * @type {Page.PageInstance}
-   */
-  target = null;
-
+class Base {
   data = {};
 
   watch = {};
 
   computed = {};
 
-  get route() {
-    return this.target && this.target.route;
-  }
-
   constructor() {
-    if (BasePageConfig.debug) {
+    if (BaseConfigs.debug) {
       /*eslint-disable-next-line */
       global.pages = global.pages || [];
       /*eslint-disable-next-line */
       global.pages.push(this);
     }
 
-    def(this, BasePageConfig.keys.setData, (obj, cb) =>
+    def(this, BaseConfigs.keys.setData, (obj, cb) =>
       this.target.setData(obj, cb),
     );
 
     const updateQueue = new UpdateTaskQueue(this);
-    def(this, BasePageConfig.keys.updateQueue, updateQueue);
-    def(this, BasePageConfig.keys.forceUpdate, () => updateQueue.updateData);
+    def(this, BaseConfigs.keys.updateQueue, updateQueue);
+    def(this, BaseConfigs.keys.forceUpdate, () => updateQueue.updateData);
   }
 
   /**
@@ -95,4 +86,22 @@ class BasePage {
   }
 }
 
-export { BasePage, UpdateTaskQueue };
+class BasePage extends Base {
+  /**
+   * @type {Page.PageInstance}
+   */
+  target = null;
+
+  get route() {
+    return this.target && this.target.route;
+  }
+}
+
+class BaseComponent extends Base {
+  /**
+   * @type {Component.ComponentConstructor}
+   */
+  target = null;
+}
+
+export { BasePage, UpdateTaskQueue, BaseComponent };

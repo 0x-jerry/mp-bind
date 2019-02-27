@@ -4,11 +4,11 @@ import { BasePage, bindPage } from '../../core/index';
 
 export class Index extends BasePage {
   data = {
-    arr: [],
+    arr: 1,
   };
 
   onLoad() {
-    this.data.arr.push('1');
+    this.data.arr = 20;
   }
 }
 

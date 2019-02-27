@@ -1,4 +1,6 @@
 <!-- pages/login/login.wxml -->
 <view class="page">
+  <test a='20'></test>
+  <test a='10'></test>
   <view class="text">{{arr}}</view>
 </view>

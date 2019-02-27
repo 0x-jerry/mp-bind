@@ -123,9 +123,7 @@ declare namespace Component {
     };
   }
 
-  interface ComponentConstructor extends ComponentOptions {
-    (options: ComponentOptions): ComponentConstructor;
-
+  interface ComponentInstance {
     /**组件的文件路径 */
     is: string;
 
@@ -164,6 +162,10 @@ declare namespace Component {
     triggerEvent?(name: string, detail: IAnyObject, options: IAnyObject): void;
 
     [key: string]: any;
+  }
+
+  interface ComponentConstructor extends ComponentOptions {
+    (options: ComponentOptions): ComponentInstance;
   }
 }
 

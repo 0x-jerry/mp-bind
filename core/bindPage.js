@@ -1,116 +1,45 @@
 import { Observer } from './Observer';
-import { JSONClone, def } from './utils';
-import { ComputedValue } from './Computed';
+import { JSONClone, def, logger } from './utils';
 // eslint-disable-next-line no-unused-vars
-import { BasePage } from './BasePage';
-import { BasePageConfig } from './config';
+import { BasePage } from './Base';
+import { BaseConfigs } from './config';
+import { attachFunctions, triggerComputed, updateData } from './helper';
 
 /**
  *
- * @param {BasePage} page
+ * @param {BasePage} base
  */
-function triggerComputed(page) {
-  // Avoid trigger computed twice
-  if (page[BasePageConfig.keys.computed]) {
-    return;
-  }
+function bindPage(base) {
+  logger('register page', base);
 
-  // Trigger computed and calculate dependence
-  def(page, BasePageConfig.keys.computed, {});
-
-  Object.keys(page.computed).forEach((key) => {
-    const currentComputed = new ComputedValue(page, key, page.computed[key]);
-    ComputedValue.current = currentComputed;
-    // update computed and attach to data
-    currentComputed.update();
-    page[BasePageConfig.keys.computed][key] = currentComputed;
-
-    Object.defineProperty(page.computed, key, {
-      get: () => {
-        return currentComputed.value;
-      },
-      configurable: true,
-      enumerable: true,
-    });
+  new Observer(base.data, (newData, oldData) => {
+    updateData(base, newData, oldData);
   });
 
-  ComputedValue.current = null;
-}
-
-/**
- *
- * @param {BasePage} page
- * @param {*} registerObj
- */
-function attachFunctions(page, registerObj) {
-  const filterKeys = BasePageConfig.ignoreKeys;
-  let proto = page;
-  // Attach function recursively
-  while (!proto.isPrototypeOf(Object)) {
-    Object.getOwnPropertyNames(proto)
-      .filter(
-        (key) =>
-          filterKeys.indexOf(key) === -1 && typeof page[key] === 'function',
-      )
-      .forEach((key) => {
-        registerObj[key] = (...args) => page[key](...args);
-      });
-
-    proto = Object.getPrototypeOf(proto);
-  }
-}
-
-/**
- *
- * @param {BasePage} page
- * @param {*} newData
- * @param {*} oldData
- */
-function updateData(page, newData, oldData) {
-  Object.keys(newData).forEach((key) => {
-    // Use update task queue to update data in micro task
-    page[BasePageConfig.keys.updateQueue].addUpdateData(key, newData[key]);
-
-    // Watch
-    if (typeof page.watch[key] === 'function') {
-      page.watch[key](newData[key], oldData[key]);
-    }
-  });
-}
-
-/**
- *
- * @param {BasePage} target
- */
-function bindPage(target) {
-  new Observer(target.data, (newData, oldData) => {
-    updateData(target, newData, oldData);
-  });
-
-  const initData = JSONClone(target.data);
-  def(target, BasePageConfig.keys.initData, initData);
+  const initData = JSONClone(base.data);
+  def(base, BaseConfigs.keys.initData, initData);
 
   const registerObj = {
     data: initData,
     onLoad(...args) {
-      target.target = this;
-      const _initData = target[BasePageConfig.keys.initData];
+      base.target = this;
+      const _initData = base[BaseConfigs.keys.initData];
 
       // Update init data, because BasePage only register once
       // So, here should update initialize data
       Object.keys(_initData).forEach((key) => {
-        target.data[key] = JSONClone(_initData[key]);
+        base.data[key] = JSONClone(_initData[key]);
       });
 
       // Trigger computed and calculate dependence
-      triggerComputed(target);
+      triggerComputed(base);
 
       // onload
-      target.onLoad && target.onLoad(...args);
+      base.onLoad && base.onLoad(...args);
     },
   };
 
-  attachFunctions(target, registerObj);
+  attachFunctions(base, registerObj, BaseConfigs.ignoreKeys);
 
   // Register Page
   Page(registerObj);
