@@ -3,24 +3,27 @@
 import { BasePage, bindPage } from '../../core/index';
 
 export class Index extends BasePage {
-  data = {
+  $data = {
     arr: [1, 2, 3],
+    deep: {
+      a: 1,
+    },
+    count: 11,
   };
 
-  /**
-   * Notice: If you want `this` point to this page, please use arrow function
-   */
   watch = {
-    arr: (newVal, oldVal) => {
-      this.log('arr', newVal, oldVal);
+    count(newVal, oldVal) {
+      console.log(this, newVal, oldVal);
     },
   };
 
   computed = {
-    arrLength: () => this.data.arr.length,
-    fistArr: () => {
-      const arr = this.data.arr;
-      return (arr && arr[5]) || '';
+    arrLength() {
+      return this.$data.arr.length;
+    },
+    fistArr() {
+      const arr = this.$data.arr;
+      return (arr && arr[1]) || 'default';
     },
   };
 
@@ -30,18 +33,14 @@ export class Index extends BasePage {
 
   bindViewTap() {
     // this.data.arr = [1, 2, 3, 4];
-    this.data.arr[0] = 5;
-    this.data.arr.push(44);
-    this.data.arr.push(55);
+    this.$data.arr[0] = 5;
+    this.$data.arr.push(44);
+    this.$data.arr.push(55);
   }
 
   onLoad() {
-    // this.data.arr.push(3);
-    // this.data.arr.push(2);
-    // this.data.arr.push(1);
-    // this.data.arr.push(22);
-    // this.data.arr.push(33);
+    console.log('loaded', this);
   }
 }
 
-bindPage(new Index());
+bindPage(Index);

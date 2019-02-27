@@ -1,46 +1,46 @@
 import { Observer } from './Observer';
-import { JSONClone, def, logger } from './utils';
+import { logger, def, JSONClone } from './utils';
 // eslint-disable-next-line no-unused-vars
-import { BasePage } from './Base';
+import { BasePage, UpdateTaskQueue } from './Base';
 import { BaseConfigs } from './config';
 import { attachFunctions, triggerComputed, updateData } from './helper';
 
 /**
  *
- * @param {BasePage} base
+ * @param {BasePage} Base
  */
-function bindPage(base) {
-  logger('register page', base);
-
-  new Observer(base.data, (newData, oldData) => {
-    updateData(base, newData, oldData);
-  });
-
-  const initData = JSONClone(base.data);
-  def(base, BaseConfigs.keys.initData, initData);
+function bindPage(Base) {
+  const tpl = new Base();
 
   const registerObj = {
-    data: initData,
+    data: tpl.$data,
+    ...tpl,
     onLoad(...args) {
-      base.target = this;
-      const _initData = base[BaseConfigs.keys.initData];
+      if(BaseConfigs.debug) {
+        // eslint-disable-next-line no-undef
+        global.page = this;
+      }
 
-      // Update init data, because BasePage only register once
-      // So, here should update initialize data
-      Object.keys(_initData).forEach((key) => {
-        base.data[key] = JSONClone(_initData[key]);
+      const updateQueue = new UpdateTaskQueue(this);
+      def(this, BaseConfigs.keys.updateQueue, updateQueue);
+      def(this, BaseConfigs.keys.forceUpdate, () => updateQueue.updateData);
+
+      this.$data = JSONClone(this.data);
+      new Observer(this.$data, (newData, oldData) => {
+        updateData(this, newData, oldData);
       });
 
       // Trigger computed and calculate dependence
-      triggerComputed(base);
+      triggerComputed(this);
 
       // onload
-      base.onLoad && base.onLoad(...args);
+      tpl.onLoad && tpl.onLoad.call(this, args);
     },
   };
 
-  attachFunctions(base, registerObj, BaseConfigs.ignoreKeys);
+  attachFunctions(tpl, registerObj, BaseConfigs.ignoreKeys);
 
+  logger('register page', registerObj);
   // Register Page
   Page(registerObj);
 }

@@ -12,4 +12,4 @@ export class Index extends BasePage {
   }
 }
 
-bindPage(new Index());
+bindPage(Index);

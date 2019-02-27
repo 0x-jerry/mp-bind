@@ -16,7 +16,7 @@ class ComputedValue {
    */
   constructor(page, name, getFunc) {
     this.page = page;
-    this.get = getFunc;
+    this.get = getFunc.bind(this.page);
     this.name = name;
     ComputedValue.all.push(this);
   }

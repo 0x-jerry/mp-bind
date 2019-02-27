@@ -1,6 +1,5 @@
 /// <reference path="../@types/index.d.ts" />
-
-import { def, logger } from './utils';
+import { logger } from './utils';
 import { BaseConfigs } from './config';
 
 /**
@@ -9,7 +8,7 @@ import { BaseConfigs } from './config';
 class UpdateTaskQueue {
   /**
    *
-   * @param {BasePage} page
+   * @param {Page.PageInstance} page
    */
   constructor(page) {
     this.page = page;
@@ -31,7 +30,7 @@ class UpdateTaskQueue {
   updateData() {
     Promise.resolve().then(() => {
       logger('Update data', this.waitForUpdate);
-      this.page.target.setData(this.waitForUpdate);
+      this.page.setData(this.waitForUpdate);
       this.waitForUpdate = {};
       this.dirty = false;
     });
@@ -39,27 +38,19 @@ class UpdateTaskQueue {
 }
 
 class Base {
-  data = {};
+  $data = {};
 
   watch = {};
 
   computed = {};
 
-  constructor() {
-    if (BaseConfigs.debug) {
+  constructor(base) {
+    if (BaseConfigs.debug && base) {
       /*eslint-disable-next-line */
       global.pages = global.pages || [];
       /*eslint-disable-next-line */
       global.pages.push(this);
     }
-
-    def(this, BaseConfigs.keys.setData, (obj, cb) =>
-      this.target.setData(obj, cb),
-    );
-
-    const updateQueue = new UpdateTaskQueue(this);
-    def(this, BaseConfigs.keys.updateQueue, updateQueue);
-    def(this, BaseConfigs.keys.forceUpdate, () => updateQueue.updateData);
   }
 
   /**
@@ -69,15 +60,18 @@ class Base {
    */
   inputHelper(e) {
     const names = e.currentTarget.dataset.name.split('.');
-    let data = this.data;
-
-    for (let i = 0; i < names.length; i++) {
-      const name = names[i];
-      if (i === names.length - 1) {
-        data[name] = e.detail.value;
-      } else {
-        data = data[names[i]];
+    let data = this.$data;
+    try {
+      for (let i = 0; i < names.length; i++) {
+        const name = names[i];
+        if (i === names.length - 1) {
+          data[name] = e.detail.value;
+        } else {
+          data = data[name];
+        }
       }
+    } catch (e) {
+      console.warn(e);
     }
   }
 
@@ -88,20 +82,22 @@ class Base {
 
 class BasePage extends Base {
   /**
-   * @type {Page.PageInstance}
+   *
+   * @param {Page.PageInstance} base
    */
-  target = null;
-
-  get route() {
-    return this.target && this.target.route;
+  constructor(base) {
+    super(base);
   }
 }
 
 class BaseComponent extends Base {
   /**
-   * @type {Component.ComponentConstructor}
+   *
+   * @param {Component.ComponentConstructor} base
    */
-  target = null;
+  constructor(base) {
+    super(base);
+  }
 }
 
 export { BasePage, UpdateTaskQueue, BaseComponent };

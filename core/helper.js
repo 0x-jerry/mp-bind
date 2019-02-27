@@ -1,6 +1,8 @@
 import { ComputedValue } from './Computed';
 import { BaseConfigs } from './config';
-import { def } from './utils';
+import { def, logger } from './utils';
+// eslint-disable-next-line no-unused-vars
+import { BasePage } from './Base';
 
 /**
  *
@@ -53,9 +55,9 @@ function attachFunctions(obj, registerObj, filterKeys = [], override = false) {
       )
       .forEach((key) => {
         if (!registerObj[key]) {
-          registerObj[key] = (...args) => obj[key](...args);
+          registerObj[key] = obj[key];
         } else if (override) {
-          registerObj[key] = (...args) => obj[key](...args);
+          registerObj[key] = obj[key];
         }
       });
 
@@ -76,7 +78,8 @@ function updateData(page, newData, oldData) {
 
     // Watch
     if (typeof page.watch[key] === 'function') {
-      page.watch[key](newData[key], oldData[key]);
+      logger('Watch update', key);
+      page.watch[key].call(page, newData[key], oldData[key]);
     }
   });
 }
