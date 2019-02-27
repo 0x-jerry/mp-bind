@@ -41,6 +41,8 @@ class Observer {
 
   observerKey(data, key) {
     const value = data[key];
+    // Fix computed array, the getter is undefined
+    this.data[key] = data[key];
 
     Object.defineProperty(data, key, {
       set: (val) => {
