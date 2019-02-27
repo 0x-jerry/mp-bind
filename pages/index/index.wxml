@@ -2,6 +2,7 @@
 <view>
   <view>count: {{count}}</view>
   <view>double count: {{dbCount}}</view>
+  <test a="ok" b='3'></test>
   <view>{{motto}}</view>
   input:
   <input class="input" bindinput="inputHelper" data-name="deep.a" />
