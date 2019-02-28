@@ -3,6 +3,7 @@
     "allowJs": true,
     "checkJs": true,
     "typeRoots": ["@types"],
-    "lib": ["es6", "dom"]
+    "lib": ["es6", "dom"],
+    "target": "es6"
   }
 }

@@ -4,25 +4,25 @@ import { def, logger } from './utils';
 
 /**
  *
- * @param {import('./Base').Base} page
+ * @param {import('./Base').Base} base
  */
-function triggerComputed(page) {
+function triggerComputed(base) {
   // Avoid trigger computed twice
-  if (page[BaseConfigs.keys.computed]) {
+  if (base[BaseConfigs.keys.computed]) {
     return;
   }
 
   // Trigger computed and calculate dependence
-  def(page, BaseConfigs.keys.computed, {});
+  def(base, BaseConfigs.keys.computed, {});
 
-  Object.keys(page.computed).forEach((key) => {
-    const currentComputed = new ComputedValue(page, key, page.computed[key]);
+  Object.keys(base.computed).forEach((key) => {
+    const currentComputed = new ComputedValue(base, key, base.computed[key]);
     ComputedValue.current = currentComputed;
     // update computed and attach to data
     currentComputed.update();
-    page[BaseConfigs.keys.computed][key] = currentComputed;
+    base[BaseConfigs.keys.computed][key] = currentComputed;
 
-    Object.defineProperty(page.computed, key, {
+    Object.defineProperty(base.computed, key, {
       get: () => {
         return currentComputed.value;
       },
@@ -83,19 +83,19 @@ function attachFunctions(
 
 /**
  *
- * @param {import('./Base').Base} page
+ * @param {import('./Base').Base} base
  * @param {*} newData
  * @param {*} oldData
  */
-function updateData(page, newData, oldData) {
+function updateData(base, newData, oldData) {
   Object.keys(newData).forEach((key) => {
     // Use update task queue to update data in micro task
-    page[BaseConfigs.keys.updateQueue].addUpdateData(key, newData[key]);
+    base[BaseConfigs.keys.updateQueue].addUpdateData(key, newData[key]);
 
     // Watch
-    if (typeof page.watch[key] === 'function') {
+    if (typeof base.watch[key] === 'function') {
       logger('Watch update', key);
-      page.watch[key].call(page, newData[key], oldData[key]);
+      base.watch[key].call(base, newData[key], oldData[key]);
     }
   });
 }
