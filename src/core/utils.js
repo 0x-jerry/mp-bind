@@ -2,7 +2,7 @@ import { BaseConfigs } from './config';
 
 /**
  *
- * @param {JSON} data
+ * @param {object} data
  */
 function JSONClone(data) {
   return data === undefined ? undefined : JSON.parse(JSON.stringify(data));

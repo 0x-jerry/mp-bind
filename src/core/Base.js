@@ -1,4 +1,3 @@
-/// <reference path="../@types/index.d.ts" />
 import { logger } from './utils';
 import { BaseConfigs } from './config';
 
@@ -46,9 +45,7 @@ class Base {
 
   constructor(base) {
     if (BaseConfigs.debug && base) {
-      /*eslint-disable-next-line */
       global.pages = global.pages || [];
-      /*eslint-disable-next-line */
       global.pages.push(this);
     }
   }

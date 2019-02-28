@@ -1,5 +1,4 @@
 // components/test/test.js
-/// <reference path="../../@types/index.d.ts" />
 import { BaseComponent } from '../../core/index';
 import { bindComponent } from '../../core/bindComponent';
 

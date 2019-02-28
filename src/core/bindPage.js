@@ -1,6 +1,5 @@
 import { Observer } from './Observer';
 import { logger, def, JSONClone } from './utils';
-// eslint-disable-next-line no-unused-vars
 import { BasePage, UpdateTaskQueue } from './Base';
 import { BaseConfigs } from './config';
 import { attachFunctions, triggerComputed, updateData } from './helper';
@@ -18,20 +17,22 @@ function bindPage(Base) {
     onLoad(...args) {
       logger('Page loaded', this);
       if (BaseConfigs.debug) {
-        // eslint-disable-next-line no-undef
         global.page = this;
       }
 
+      // @ts-ignore
       const updateQueue = new UpdateTaskQueue(this);
       def(this, BaseConfigs.keys.updateQueue, updateQueue);
       def(this, BaseConfigs.keys.forceUpdate, () => updateQueue.updateData);
 
       this.$data = JSONClone(this.data);
       new Observer(this.$data, (newData, oldData) => {
+        // @ts-ignore
         updateData(this, newData, oldData);
       });
 
       // Trigger computed and calculate dependence
+      // @ts-ignore
       triggerComputed(this);
 
       // onload

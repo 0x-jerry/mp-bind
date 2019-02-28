@@ -5,7 +5,7 @@ class Observer {
   /**
    *
    * @param {object} data
-   * @param {(data:any)=>void} dataChanged update data function
+   * @param {(newVal:any, oldVal:any)=>void} dataChanged update data function
    * @param {string} [name]
    * @param {string} [prePath]
    * @param {Observer} [parentOb]

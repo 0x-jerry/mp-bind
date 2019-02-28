@@ -24,9 +24,11 @@ declare namespace Component {
      * 应用于数据绑定时采用驼峰写法（attr="{{propertyName}}"）
      *
      */
-    properties?: {
-      [key: string]: IProperty;
-    };
+    properties?:
+      | {
+          [key: string]: IProperty;
+        }
+      | any;
 
     /** 页面的初始数据
      *
@@ -54,27 +56,27 @@ declare namespace Component {
     /**
      * 组件生命周期函数，在组件实例刚刚被创建时执行，注意此时不能调用 setData
      */
-    created?: () => void;
+    created?(): void;
 
     /**
      * 组件生命周期函数，在组件实例进入页面节点树时执行
      */
-    attached?: () => void;
+    attached?(): void;
 
     /**
      * 组件生命周期函数，在组件布局完成后执行
      */
-    ready?: () => void;
+    ready?(): void;
 
     /**
      * 组件生命周期函数，在组件实例被移动到节点树另一个位置时执行
      */
-    moved?: () => void;
+    moved?(): void;
 
     /**
      * 组件生命周期函数，在组件实例被从页面节点树移除时执行
      */
-    detached?: () => void;
+    detached?(): void;
 
     options?: {
       /**激活全局样式 */
@@ -83,19 +85,19 @@ declare namespace Component {
 
     lifetimes?: {
       /**组件生命周期函数，在组件实例刚刚被创建时执行，注意此时不能调用 setData */
-      created?: () => void;
+      created?(): void;
 
       /**组件生命周期函数，在组件实例进入页面节点树时执行 */
-      attached?: () => void;
+      attached?(): void;
 
       /**组件生命周期函数，在组件布局完成后执行 */
-      ready?: () => void;
+      ready?(): void;
 
       /**组件生命周期函数，在组件实例被移动到节点树另一个位置时执行 */
-      moved?: () => void;
+      moved?(): void;
 
       /**组件生命周期函数，在组件实例被从页面节点树移除时执行 */
-      detached?: () => void;
+      detached?(): void;
     };
 
     /** 生命周期回调—监听页面显示

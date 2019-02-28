@@ -1,10 +1,26 @@
-interface Base {
-  watch: {
+export class UpdateTaskQueue<T extends Base> {
+  constructor(page: T);
+
+  addUpdateData(key: string, value: any): void;
+
+  updateData(): void;
+}
+
+export interface Base {
+  new (): Base;
+
+  [key: string]: any;
+
+  $data?: {
+    [key: string]: any;
+  };
+
+  watch?: {
     [key: string]: <T>(newVal: T, oldVal: T) => void;
   };
 
-  computed: {
-    [key: string]: <T>() => T;
+  computed?: {
+    [key: string]: () => any;
   };
 
   /**
@@ -25,24 +41,17 @@ interface Base {
   $forceUpdate(): void;
 }
 
-interface BasePage extends Base, Page.PageInstance {
+export interface BasePage extends Base, Page.PageInstance {
   target: Page.PageInstance;
 }
 
-interface BaseComponent
+export interface BaseComponent
   extends Base,
     Component.ComponentInstance,
     Component.ComponentOptions {
-
   target: Component.ComponentInstance;
 }
 
-class BasePage {}
+export class BasePage {}
 
-class BaseComponent {}
-
-function bindPage<T extends BasePage>(target: T): void;
-
-function bindComponent<T extends BaseComponent>(target: T): void;
-
-export { bindPage, BasePage, bindComponent, BaseComponent };
+export class BaseComponent {}

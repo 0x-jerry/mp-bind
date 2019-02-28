@@ -1,0 +1,131 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema",
+  "description": "微信小程序 project.config.json 的 schema",
+  "type": "object",
+  "definitions": {
+    "pathReg": {
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "字段的值若表示文件或文件夹路径，以小程序目录 (miniprogramRoot) 为根目录"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "string",
+              "description": "路径或取值"
+            },
+            "type": {
+              "type": "string",
+              "description": "类型",
+              "enum": ["folder", "file", "suffix", "regexp", "glob"]
+            }
+          }
+        }
+      ]
+    }
+  },
+  "properties": {
+    "miniprogramRoot": {
+      "type": "string",
+      "default": "./dist",
+      "description": "指定小程序源码的目录(需为相对路径)"
+    },
+    "qcloudRoot": {
+      "type": "string",
+      "description": "指定腾讯云项目的目录(需为相对路径)"
+    },
+    "pluginRoot": {
+      "type": "string",
+      "description": "指定插件项目的目录(需为相对路径)"
+    },
+    "compileType": {
+      "type": "string",
+      "enum": ["miniprogram", "plugin"],
+      "description": "编译类型"
+    },
+    "setting": {
+      "type": "object",
+      "description": "项目设置",
+      "properties": {
+        "es6": {
+          "type": "boolean",
+          "description": "是否启用 es6 转 es5"
+        },
+        "postcss": {
+          "type": "boolean",
+          "description": "上传代码时样式是否自动补全"
+        },
+        "minified": {
+          "type": "boolean",
+          "description": "上传代码时是否自动压缩"
+        },
+        "urlCheck": {
+          "type": "boolean",
+          "description": "是否检查安全域名和 TLS 版本"
+        },
+        "uglifyFileName": {
+          "type": "boolean",
+          "description": "是否进行代码保护"
+        }
+      }
+    },
+    "libVersion": {
+      "type": "string",
+      "description": "基础库版本"
+    },
+    "appid": {
+      "type": "string",
+      "description": "项目的 appid，只在新建项目时读取"
+    },
+    "projectname": {
+      "type": "string",
+      "description": "项目名字，只在新建项目时读取"
+    },
+    "packOptions": {
+      "type": "object",
+      "description": "打包配置选项",
+      "properties": {
+        "ignore": {
+          "description": "用以配置打包时对符合指定规则的文件或文件夹进行忽略",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/pathReg"
+          }
+        }
+      }
+    },
+    "debugOptions": {
+      "type": "object",
+      "description": "调试配置选项",
+      "properties": {
+        "hidedInDevtools": {
+          "type": "array",
+          "description": "用以配置调试时于调试器 Sources 面板隐藏源代码的文件",
+          "items": {
+            "$ref": "#/definitions/pathReg"
+          }
+        }
+      }
+    },
+    "scripts": {
+      "type": "object",
+      "description": "自定义预处理",
+      "properties": {
+        "beforeCompile": {
+          "type": "string",
+          "description": "编译前预处理命令"
+        },
+        "beforePreview": {
+          "type": "string",
+          "description": "预览前预处理命令"
+        },
+        "beforeUpload": {
+          "type": "string",
+          "description": "上传前预处理命令"
+        }
+      }
+    }
+  }
+}

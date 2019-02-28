@@ -9,3 +9,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 ***************************************************************************** */
 
 /// <reference path="./wx/index.d.ts" />
+
+declare interface global {
+  [key: string]: any;
+}
+
+declare const global: global;

@@ -1,12 +1,10 @@
 import { ComputedValue } from './Computed';
 import { BaseConfigs } from './config';
 import { def, logger } from './utils';
-// eslint-disable-next-line no-unused-vars
-import { BasePage } from './Base';
 
 /**
  *
- * @param {BasePage} page
+ * @param {import('./Base').Base} page
  */
 function triggerComputed(page) {
   // Avoid trigger computed twice
@@ -85,7 +83,7 @@ function attachFunctions(
 
 /**
  *
- * @param {BasePage} page
+ * @param {import('./Base').Base} page
  * @param {*} newData
  * @param {*} oldData
  */

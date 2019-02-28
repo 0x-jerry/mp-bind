@@ -10,27 +10,17 @@
     "scope": "javascript,typescript",
     "prefix": "mp.page",
     "body": [
-      "/// <reference path=\"$1@types/index.d.ts\" />",
-      "import { BasePage, bindPage } from \"$2../../core/index\"",
+      "import { BasePage, bindPage } from \"$1../../core/index\"",
       "",
       "export class Index extends BasePage {",
       "  data = {",
-      "    $3",
+      "    $2",
       "  }",
       "  $0",
       "}",
       "",
-      "bindPage(new Index());",
+      "bindPage(Index);"
     ],
     "description": "小程序新页面"
-  },
-  "Reference Wx.d.ts": {
-    "scope": "javascript,typescript",
-    "prefix": "mp.reference",
-    "body": [
-      "/// <reference path=\"$1@types/index.d.ts\" />",
-      ""
-    ],
-    "description": "引入 wx.d.ts"
   }
 }

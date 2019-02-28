@@ -1,4 +1,3 @@
-// eslint-disable-next-line no-unused-vars
 import { BaseComponent, UpdateTaskQueue } from './Base';
 import { attachFunctions, updateData, triggerComputed } from './helper';
 import { Observer } from './Observer';
@@ -7,7 +6,7 @@ import { BaseConfigs } from './config';
 
 /**
  *
- * @param {BaseComponent} Base
+ * @param {InstanceType<BaseComponent>} Base
  */
 function bindComponent(Base) {
   const tpl = new Base();
@@ -20,6 +19,7 @@ function bindComponent(Base) {
     lifetimes: {
       attached() {
         logger('Component attached', this);
+        // @ts-ignore
         const updateQueue = new UpdateTaskQueue(this);
         this.computed = {};
         this.watch = {};
@@ -36,10 +36,12 @@ function bindComponent(Base) {
 
         this.$data = JSONClone(this.data);
         new Observer(this.$data, (newData, oldData) => {
+          // @ts-ignore
           updateData(this, newData, oldData);
         });
 
         // Trigger computed and calculate dependence
+        // @ts-ignore
         triggerComputed(this);
 
         // onload

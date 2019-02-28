@@ -1,16 +1,20 @@
 {
   "json.schemas": [
     {
-      "fileMatch": ["/app.json"],
+      "fileMatch": ["/src/app.json"],
       "url": "https://raw.githubusercontent.com/qiu8310/minapp/master/schema/app.json"
     },
     {
-      "fileMatch": ["/pages/**.json"],
+      "fileMatch": ["/src/pages/**.json"],
       "url": "https://raw.githubusercontent.com/qiu8310/minapp/master/schema/page.json"
     },
     {
-      "fileMatch": ["/components/**.json"],
+      "fileMatch": ["/src/components/**.json"],
       "url": "https://raw.githubusercontent.com/qiu8310/minapp/master/schema/component.json"
+    },
+    {
+      "fileMatch": ["/project.config.json"],
+      "url": ".vscode/project.config.schema.json"
     }
   ]
 }

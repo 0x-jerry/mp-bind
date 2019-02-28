@@ -10,7 +10,7 @@ class ComputedValue {
 
   /**
    *
-   * @param {BasePage} page
+   * @param {import('./Base').Base} page
    * @param {string} name
    * @param {() => any} getFunc
    */
