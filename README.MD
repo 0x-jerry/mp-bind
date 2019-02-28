@@ -31,10 +31,11 @@
 
 ## Todo
 
-- [ ] Component `d.ts` 引入
-- [ ] BaseComponent 类设计
-- [ ] Decorator 引入
-- [ ] Async/Await 引入
+- [x] Component `d.ts` 引入
+- [x] BaseComponent 类设计
+- [ ] 添加生命周期函数(注意设计的时候要考虑易扩展)
+- [ ] Decorator 引入(待定)
+- [ ] Async/Await 引入(待定)
 
 ## Data Update Flow
 
