@@ -29,10 +29,24 @@ function bindPage(Base) {
       def(this, BaseConfigs.keys.updateQueue, updateQueue);
       def(this, BaseConfigs.keys.forceUpdate, () => updateQueue.updateData);
 
-      this.$data = JSONClone(this.data);
-      new Observer(this.$data, (newData, oldData) => {
+      def(this, '$$data$$', JSONClone(this.data));
+      new Observer(this.$$data$$, (newData, oldData) => {
         // @ts-ignore
         updateData(this, newData, oldData);
+      });
+
+      // Proxy observed data
+      Object.keys(this.data).forEach((key) => {
+        Object.defineProperty(this, key, {
+          get: () => {
+            return this.$$data$$[key];
+          },
+          set: (val) => {
+            this.$$data$$[key] = val;
+          },
+          configurable: true,
+          enumerable: true,
+        });
       });
 
       // Trigger computed and calculate dependence

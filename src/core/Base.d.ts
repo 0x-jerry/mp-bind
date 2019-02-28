@@ -11,17 +11,9 @@ export interface Base {
 
   [key: string]: any;
 
-  $data?: {
-    [key: string]: any;
-  };
-
-  watch?: {
-    [key: string]: <T>(newVal: T, oldVal: T) => void;
-  };
-
-  computed?: {
-    [key: string]: () => any;
-  };
+  // readonly $$data$$?: {
+  //   [key: string]: any;
+  // };
 
   /**
    * Helper function, useing in wxml file
@@ -42,14 +34,19 @@ export interface Base {
 }
 
 export interface BasePage extends Base, Page.PageInstance {
-  target: Page.PageInstance;
 }
 
 export interface BaseComponent
   extends Base,
     Component.ComponentInstance,
     Component.ComponentOptions {
-  target: Component.ComponentInstance;
+  watch?: {
+    [key: string]: <T>(newVal: T, oldVal: T) => void;
+  };
+
+  computed?: {
+    [key: string]: () => any;
+  };
 }
 
 export class BasePage {}
