@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-unused-vars
-import { BaseComponent } from './Base';
+import { BaseComponent, UpdateTaskQueue } from './Base';
 import { attachFunctions, updateData, triggerComputed } from './helper';
 import { Observer } from './Observer';
 import { JSONClone, def, logger } from './utils';
@@ -7,57 +7,60 @@ import { BaseConfigs } from './config';
 
 /**
  *
- * @param {BaseComponent} base
+ * @param {BaseComponent} Base
  */
-function bindComponent(base) {
-  logger('register component', base);
-
-  new Observer(base.data, (newData, oldData) => {
-    updateData(base, newData, oldData);
-  });
-
-  const initData = JSONClone(base.data);
-  def(base, BaseConfigs.keys.initData, initData);
+function bindComponent(Base) {
+  const tpl = new Base();
 
   const registerObj = {
-    properties: base.properties,
-    data: initData,
+    data: tpl.$data,
+    properties: tpl.properties,
     methods: {},
     pageLifetimes: {},
     lifetimes: {
       attached() {
-        console.log('bind', base.target, base.target === this);
-        base.target = this;
-        const _initData = base[BaseConfigs.keys.initData];
+        logger('Component attached', this);
+        const updateQueue = new UpdateTaskQueue(this);
+        this.computed = {};
+        this.watch = {};
+        Object.keys(tpl.computed).forEach((key) => {
+          this.computed[key] = tpl.computed[key].bind(this);
+        });
 
-        // Update init data, because BasePage only register once
-        // So, here should update initialize data
-        Object.keys(_initData).forEach((key) => {
-          base.data[key] = JSONClone(_initData[key]);
+        Object.keys(tpl.watch).forEach((key) => {
+          this.watch[key] = tpl.watch[key].bind(this);
+        });
+
+        def(this, BaseConfigs.keys.updateQueue, updateQueue);
+        def(this, BaseConfigs.keys.forceUpdate, () => updateQueue.updateData);
+
+        this.$data = JSONClone(this.data);
+        new Observer(this.$data, (newData, oldData) => {
+          updateData(this, newData, oldData);
         });
 
         // Trigger computed and calculate dependence
-        triggerComputed(base);
+        triggerComputed(this);
 
-        // attached
-        base.lifetimes && base.lifetimes.attached && base.lifetimes.attached();
+        // onload
+        tpl.attached && tpl.attached.call(this);
       },
     },
   };
 
-  if (base.lifetimes) {
-    attachFunctions(base.lifetimes, registerObj.lifetimes);
-  }
+  const lifetimes = ['created', 'attached', 'ready', 'moved', 'detached'];
 
-  if (base.pageLifetimes) {
-    attachFunctions(base.pageLifetimes, registerObj.pageLifetimes);
-  }
+  attachFunctions(tpl, registerObj.lifetimes, [], lifetimes);
 
-  attachFunctions(base, registerObj.methods);
+  const pageLifetimes = ['onShow', 'onHide', 'resize'];
+  attachFunctions(tpl, registerObj.pageLifetimes, [], pageLifetimes);
 
+  const exclude = pageLifetimes.concat(['constructor', 'attached']);
+  attachFunctions(tpl, registerObj.methods, exclude);
+
+  logger('Register component', registerObj);
   // Register Component
   Component(registerObj);
-  console.log(registerObj);
 }
 
 export { bindComponent };

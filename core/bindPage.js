@@ -16,7 +16,8 @@ function bindPage(Base) {
     data: tpl.$data,
     ...tpl,
     onLoad(...args) {
-      if(BaseConfigs.debug) {
+      logger('Page loaded', this);
+      if (BaseConfigs.debug) {
         // eslint-disable-next-line no-undef
         global.page = this;
       }
@@ -38,9 +39,9 @@ function bindPage(Base) {
     },
   };
 
-  attachFunctions(tpl, registerObj, BaseConfigs.ignoreKeys);
+  attachFunctions(tpl, registerObj, ['constructor', 'onLoad']);
 
-  logger('register page', registerObj);
+  logger('Register page', registerObj);
   // Register Page
   Page(registerObj);
 }

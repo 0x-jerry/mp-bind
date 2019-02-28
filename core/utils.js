@@ -29,10 +29,14 @@ function def(obj, prop, val, enumerable = false) {
   });
 }
 
+/**
+ *
+ * @param  {...any} args
+ */
 function logger(...args) {
   if (BaseConfigs.debug) {
     const prefix = `${new Date().toISOString()}: `;
-    console.log(prefix, ...args.map((arg) => JSONClone(arg)));
+    console.log(prefix, ...args);
   }
 }
 

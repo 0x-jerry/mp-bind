@@ -40,19 +40,37 @@ function triggerComputed(page) {
  *
  * @param {object} obj
  * @param {*} registerObj
- * @param {string[]} [filterKeys]
+ * @param {string[]} [exclude]
+ * @param {string[]} [include]
  * @param {boolean} [override]
  */
-function attachFunctions(obj, registerObj, filterKeys = [], override = false) {
+function attachFunctions(
+  obj,
+  registerObj,
+  exclude = [],
+  include = [],
+  override = false,
+) {
   // const filterKeys = BaseConfigs.ignoreKeys;
   let proto = obj;
   // Attach function recursively
   while (!proto.isPrototypeOf(Object)) {
     Object.getOwnPropertyNames(proto)
-      .filter(
-        (key) =>
-          filterKeys.indexOf(key) === -1 && typeof obj[key] === 'function',
-      )
+      .filter((key) => {
+        if (typeof obj[key] !== 'function') {
+          return false;
+        }
+
+        if (exclude.indexOf(key) !== -1) {
+          return false;
+        }
+
+        if (include.length > 0) {
+          return include.indexOf(key) !== -1;
+        }
+
+        return true;
+      })
       .forEach((key) => {
         if (!registerObj[key]) {
           registerObj[key] = obj[key];

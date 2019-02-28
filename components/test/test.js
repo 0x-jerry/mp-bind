@@ -9,19 +9,25 @@ class Index extends BaseComponent {
     b: Number,
   };
 
-  data = {
+  $data = {
     c: 3,
   };
 
-  onTap() {
-    console.log(this.data.c);
+  computed = {
+    dc(){
+      return this.$data.c * 2;
+    }
   }
 
-  lifetimes = {
-    created: () => {
-      console.log('created', this);
-    },
-  };
+  onTap() {
+    this.$data.c = 44;
+    this.$data.a = 55;
+    console.log(this.$data.c);
+  }
+
+  created() {
+    console.log('created', this);
+  }
 }
 
-bindComponent(new Index());
+bindComponent(Index);
