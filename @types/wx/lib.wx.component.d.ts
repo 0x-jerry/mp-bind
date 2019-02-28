@@ -52,31 +52,26 @@ declare namespace Component {
     behaviors?: string[];
 
     /**
-     * @deprecated 用 lifetimes 声明，主要兼容 < 2.2.3
      * 组件生命周期函数，在组件实例刚刚被创建时执行，注意此时不能调用 setData
      */
     created?: () => void;
 
     /**
-     * @deprecated 用 lifetimes 声明，主要兼容 < 2.2.3
      * 组件生命周期函数，在组件实例进入页面节点树时执行
      */
     attached?: () => void;
 
     /**
-     * @deprecated 用 lifetimes 声明，主要兼容 < 2.2.3
      * 组件生命周期函数，在组件布局完成后执行
      */
     ready?: () => void;
 
     /**
-     * @deprecated 用 lifetimes 声明，主要兼容 < 2.2.3
      * 组件生命周期函数，在组件实例被移动到节点树另一个位置时执行
      */
     moved?: () => void;
 
     /**
-     * @deprecated 用 lifetimes 声明，主要兼容 < 2.2.3
      * 组件生命周期函数，在组件实例被从页面节点树移除时执行
      */
     detached?: () => void;
@@ -102,6 +97,20 @@ declare namespace Component {
       /**组件生命周期函数，在组件实例被从页面节点树移除时执行 */
       detached?: () => void;
     };
+
+    /** 生命周期回调—监听页面显示
+     *
+     * 页面显示/切入前台时触发。
+     */
+    onShow?(): void;
+    /** 生命周期回调—监听页面隐藏
+     *
+     * 页面隐藏/切入后台时触发。 如 `navigateTo` 或底部 `tab` 切换到其他页面，小程序切入后台等。
+     */
+    onHide?(): void;
+
+    /**组件所在的页面尺寸变化时执行 */
+    resize?(size: any): void;
 
     /**
      * 组件所在页面的生命周期声明对象
