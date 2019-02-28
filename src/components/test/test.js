@@ -1,6 +1,5 @@
 // components/test/test.js
-import { BaseComponent } from '../../core/index';
-import { bindComponent } from '../../core/bindComponent';
+import { BaseComponent, bindComponent } from '../../core/index';
 
 class Index extends BaseComponent {
   properties = {
@@ -13,15 +12,15 @@ class Index extends BaseComponent {
   };
 
   computed = {
-    dc(){
+    dc() {
       return this.$data.c * 2;
-    }
-  }
+    },
+  };
 
   onTap() {
-    this.$data.c = 44;
-    this.$data.a = 55;
-    console.log(this.$data.c);
+    this.$data.a += '-';
+    this.$data.b += 1;
+    this.$data.c += 1;
   }
 
   created() {
