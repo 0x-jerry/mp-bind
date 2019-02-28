@@ -37,12 +37,6 @@ class UpdateTaskQueue {
 }
 
 class Base {
-  $data = {};
-
-  watch = {};
-
-  computed = {};
-
   constructor(base) {
     if (BaseConfigs.debug && base) {
       global.pages = global.pages || [];
@@ -57,7 +51,8 @@ class Base {
    */
   inputHelper(e) {
     const names = e.currentTarget.dataset.name.split('.');
-    let data = this.$data;
+    //@ts-ignore
+    let data = this.$$data$$;
     try {
       for (let i = 0; i < names.length; i++) {
         const name = names[i];
@@ -95,6 +90,12 @@ class BaseComponent extends Base {
   constructor(base) {
     super(base);
   }
+
+  $data = {};
+
+  watch = {};
+
+  computed = {};
 }
 
 export { BasePage, UpdateTaskQueue, BaseComponent };

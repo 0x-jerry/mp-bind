@@ -4,12 +4,15 @@ import { BasePage, bindPage } from '../../core/index';
 export class Index extends BasePage {
   arr = [1, 2, 3];
 
-  $$count(newval, oldval) {
-    this.log('count changed', newval, oldval);
+  count = 3;
+
+  // watch count
+  $$count(val, old) {
+    this.log('count changed', val, old);
   }
 
   get arrLength() {
-    return this.$data.arr.length;
+    return this.arr.length
   }
 
   log(name, newVal, oldVal) {
@@ -17,7 +20,8 @@ export class Index extends BasePage {
   }
 
   bindViewTap() {
-    this.$data.arr.push(1);
+    this.count += 1;
+    this.arr.push(1);
   }
 }
 

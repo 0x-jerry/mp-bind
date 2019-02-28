@@ -2,18 +2,16 @@
 import { BasePage, bindPage } from '../../core/index';
 
 export class Index extends BasePage {
-  $data = {
-    arr: [],
-  };
+  arr = [];
 
   computed = {
     arrLength() {
-      return this.$data.arr.length;
-    }
-  }
+      return this.arr.length;
+    },
+  };
 
   onLoad() {
-    this.$data.arr.push(1);
+    this.arr.push(1);
   }
 }
 
