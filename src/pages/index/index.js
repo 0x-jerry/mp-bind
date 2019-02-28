@@ -20,6 +20,7 @@ export class Index extends BasePage {
   }
 
   bindViewTap() {
+    console.log('tap', this);
     this.count += 1;
     this.arr.push(1);
   }

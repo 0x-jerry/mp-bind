@@ -1,7 +1,6 @@
 // eslint-disable-next-line no-unused-vars
 import { UpdateTaskQueue } from './Base';
 import { logger } from './utils';
-import { BaseConfigs } from './config';
 
 class ComputedValue {
   // current `ComputedValue`, for calculate dependence
@@ -9,14 +8,12 @@ class ComputedValue {
   static all = [];
 
   /**
-   *
-   * @param {import('./Base').Base} page
    * @param {string} name
    * @param {() => any} getFunc
    */
-  constructor(page, name, getFunc) {
-    this.page = page;
-    this.get = getFunc.bind(this.page);
+  constructor(proxyObj, name, getFunc) {
+    this.get = getFunc;
+    this.proxyObj = proxyObj;
     this.name = name;
     ComputedValue.all.push(this);
   }
@@ -32,7 +29,7 @@ class ComputedValue {
     /**
      * @type {UpdateTaskQueue}
      */
-    const queue = this.page[BaseConfigs.keys.updateQueue];
+    const queue = this.proxyObj.updateQueue;
 
     queue.addUpdateData(this.name, this.value);
   }

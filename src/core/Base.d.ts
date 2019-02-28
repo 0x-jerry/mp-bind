@@ -6,6 +6,14 @@ export class UpdateTaskQueue<T extends Base> {
   updateData(): void;
 }
 
+export interface ITargetProxy {
+  data: any;
+  computed: any;
+  watch: any;
+  updateQueue: any;
+  target: Page.PageInstance;
+}
+
 export interface Base {
   new (): Base;
 
@@ -31,10 +39,11 @@ export interface Base {
    * Force update data
    */
   $forceUpdate(): void;
+
+  readonly _$PROXY$_: ITargetProxy;
 }
 
-export interface BasePage extends Base, Page.PageInstance {
-}
+export interface BasePage extends Base, Page.PageInstance {}
 
 export interface BaseComponent
   extends Base,

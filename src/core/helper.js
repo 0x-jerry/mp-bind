@@ -1,28 +1,34 @@
 import { ComputedValue } from './Computed';
-import { BaseConfigs } from './config';
 import { def, logger } from './utils';
+import { BasePage } from './index';
+import { BaseConfigs } from './config';
 
 /**
  *
- * @param {import('./Base').Base} base
+ * @param {BasePage} base
  */
 function triggerComputed(base) {
-  // Avoid trigger computed twice
-  if (base[BaseConfigs.keys.computed]) {
-    return;
-  }
+  const proxyObj = base[BaseConfigs.PROXY_KEY];
+
+  def(proxyObj, '__computed__', {});
+
+  logger('Trigger computed', proxyObj);
 
   // Trigger computed and calculate dependence
-  def(base, BaseConfigs.keys.computed, {});
-
-  Object.keys(base.computed).forEach((key) => {
-    const currentComputed = new ComputedValue(base, key, base.computed[key]);
+  Object.keys(proxyObj.computed).forEach((key) => {
+    const currentComputed = new ComputedValue(
+      proxyObj,
+      key,
+      proxyObj.computed[key].bind(base),
+    );
     ComputedValue.current = currentComputed;
     // update computed and attach to data
     currentComputed.update();
-    base[BaseConfigs.keys.computed][key] = currentComputed;
 
-    Object.defineProperty(base.computed, key, {
+    proxyObj['__computed__'][key] = currentComputed;
+
+    // proxy computed
+    Object.defineProperty(base, key, {
       get: () => {
         return currentComputed.value;
       },
@@ -83,19 +89,18 @@ function attachFunctions(
 
 /**
  *
- * @param {import('./Base').Base} base
  * @param {*} newData
  * @param {*} oldData
  */
-function updateData(base, newData, oldData) {
+function updateData(proxyObj, newData, oldData) {
   Object.keys(newData).forEach((key) => {
     // Use update task queue to update data in micro task
-    base[BaseConfigs.keys.updateQueue].addUpdateData(key, newData[key]);
+    proxyObj.updateQueue.addUpdateData(key, newData[key]);
 
     // Watch
-    if (typeof base.watch[key] === 'function') {
+    if (typeof proxyObj.watch[key] === 'function') {
       logger('Watch update', key);
-      base.watch[key].call(base, newData[key], oldData[key]);
+      proxyObj.watch[key](newData[key], oldData[key]);
     }
   });
 }
