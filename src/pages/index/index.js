@@ -9,8 +9,7 @@ export class Index extends BasePage {
   }
 
   get arrLength() {
-    console.log('getter', this);
-    return this.data.arr.length;
+    return this.$data.arr.length;
   }
 
   log(name, newVal, oldVal) {
@@ -18,11 +17,7 @@ export class Index extends BasePage {
   }
 
   bindViewTap() {
-    this.arr.push(1);
-  }
-
-  onLoad() {
-    console.log('loaded', this);
+    this.$data.arr.push(1);
   }
 }
 
