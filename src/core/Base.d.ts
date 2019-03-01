@@ -11,7 +11,7 @@ export interface ITargetProxy {
   computed: any;
   watch: any;
   updateQueue: any;
-  target: Page.PageInstance;
+  target: Page.PageInstance | Component.ComponentInstance & Component.ComponentOptions;
 }
 
 export interface Base {
@@ -49,13 +49,6 @@ export interface BaseComponent
   extends Base,
     Component.ComponentInstance,
     Component.ComponentOptions {
-  watch?: {
-    [key: string]: <T>(newVal: T, oldVal: T) => void;
-  };
-
-  computed?: {
-    [key: string]: () => any;
-  };
 }
 
 export class BasePage {}

@@ -7,20 +7,19 @@ class Index extends BaseComponent {
     b: Number,
   };
 
-  $data = {
-    c: 3,
-  };
+  c = 3;
 
-  computed = {
-    dc() {
-      return this.$data.c * 2;
-    },
-  };
+  get dc() {
+    return this.c * 2;
+  }
+
+  $$dc(val, old) {
+    console.log('computed changed', val, old);
+  }
 
   onTap() {
-    this.$data.a += '-';
-    this.$data.b += 1;
-    this.$data.c += 1;
+    console.log(this.a, this.b, this);
+    this.c++;
   }
 
   created() {

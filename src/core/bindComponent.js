@@ -1,8 +1,139 @@
 import { BaseComponent, UpdateTaskQueue } from './Base';
-import { attachFunctions, updateData, triggerComputed } from './helper';
+import { updateData, triggerComputed } from './helper';
 import { Observer } from './Observer';
 import { JSONClone, def, logger } from './utils';
 import { BaseConfigs } from './config';
+
+function injectData(registerObj, tpl) {
+  registerObj.properties = tpl.properties;
+
+  const data = Object.keys(tpl).reduce((pre, key) => {
+    if (key !== 'properties') {
+      pre[key] = tpl[key];
+    }
+    return pre;
+  }, {});
+
+  registerObj.data = data;
+}
+
+function injectWatchAndComputed(proxyObj, tpl) {
+  let proto = tpl;
+  const component = proxyObj.target;
+
+  while (!proto.isPrototypeOf(Object)) {
+    Object.getOwnPropertyNames(proto)
+      .filter((key) => {
+        const filterKeys = ['constructor', 'attached', 'created'];
+        return filterKeys.indexOf(key) === -1;
+      })
+      .forEach((key) => {
+        const desc = Object.getOwnPropertyDescriptor(proto, key);
+
+        // is computed
+        // ! Hack, do not read getter before observer data
+        if (desc && desc.get) {
+          proxyObj.computed[key] = desc.get;
+        } else if (typeof tpl[key] === 'function') {
+          // is watch
+          if (key.startsWith('$$')) {
+            proxyObj.watch[key.slice(2)] = tpl[key].bind(component);
+          }
+        }
+      });
+
+    proto = Object.getPrototypeOf(proto);
+  }
+}
+
+function observerData(proxyObj, tpl) {
+  const page = proxyObj.target;
+
+  new Observer(proxyObj.data, (newData, oldData) => {
+    // @ts-ignore
+    updateData(proxyObj, newData, oldData);
+  });
+
+  const properties = Object.keys(tpl.properties || '');
+  const isProp = (key) => properties.indexOf(key) !== -1;
+
+  // Proxy observed data
+  Object.keys(page.data).forEach((key) => {
+    Object.defineProperty(page, key, {
+      get: () => {
+        return isProp(key) ? page.data[key] : proxyObj.data[key];
+      },
+      set: (val) => {
+        proxyObj.data[key] = val;
+      },
+      configurable: true,
+      enumerable: true,
+    });
+  });
+}
+
+function injectAttached(registerObj, tpl) {
+  registerObj.lifetimes.attached = function() {
+    logger('Component attached', this);
+
+    const proxyObj = {
+      target: this,
+      data: JSONClone(this.data),
+      computed: {},
+      watch: {},
+      updateQueue: null,
+    };
+
+    def(this, BaseConfigs.PROXY_KEY, proxyObj);
+
+    injectWatchAndComputed(proxyObj, tpl);
+
+    // @ts-ignore
+    const updateQueue = new UpdateTaskQueue(this);
+    proxyObj.updateQueue = updateQueue;
+
+    observerData(proxyObj, tpl);
+
+    // Trigger computed and calculate dependence
+    // @ts-ignore
+    triggerComputed(this);
+
+    tpl.attached && tpl.attached.call(this);
+  };
+}
+
+function injectMethods(registerObj, tpl) {
+  let proto = tpl;
+  const lifetimes = ['created', 'attached', 'ready', 'moved', 'detached'];
+  const pageLifetimes = ['onShow', 'onHide', 'resize'];
+
+  while (!proto.isPrototypeOf(Object)) {
+    Object.getOwnPropertyNames(proto)
+      .filter((key) => {
+        const filterKeys = ['constructor', 'attached'];
+        return filterKeys.indexOf(key) === -1;
+      })
+      .forEach((key) => {
+        const desc = Object.getOwnPropertyDescriptor(proto, key);
+
+        // ! Hack, do not read getter before observer data
+        if (!desc.get && typeof tpl[key] === 'function') {
+          // not watch
+          if (!key.startsWith('$$')) {
+            if (pageLifetimes.indexOf(key) !== -1) {
+              registerObj.pageLifetimes[key] = tpl[key];
+            } else if (lifetimes.indexOf(key) !== -1) {
+              registerObj.lifetimes[key] = tpl[key];
+            } else {
+              registerObj.methods[key] = tpl[key];
+            }
+          }
+        }
+      });
+
+    proto = Object.getPrototypeOf(proto);
+  }
+}
 
 /**
  *
@@ -12,53 +143,15 @@ function bindComponent(Base) {
   const tpl = new Base();
 
   const registerObj = {
-    data: tpl.$data,
-    properties: tpl.properties,
-    methods: {},
+    lifetimes: {},
     pageLifetimes: {},
-    lifetimes: {
-      attached() {
-        logger('Component attached', this);
-        // @ts-ignore
-        const updateQueue = new UpdateTaskQueue(this);
-        this.computed = {};
-        this.watch = {};
-        Object.keys(tpl.computed).forEach((key) => {
-          this.computed[key] = tpl.computed[key].bind(this);
-        });
-
-        Object.keys(tpl.watch).forEach((key) => {
-          this.watch[key] = tpl.watch[key].bind(this);
-        });
-
-        def(this, BaseConfigs.keys.updateQueue, updateQueue);
-        def(this, BaseConfigs.keys.forceUpdate, () => updateQueue.updateData);
-
-        this.$data = JSONClone(this.data);
-        new Observer(this.$data, (newData, oldData) => {
-          // @ts-ignore
-          updateData(this, newData, oldData);
-        });
-
-        // Trigger computed and calculate dependence
-        // @ts-ignore
-        triggerComputed(this);
-
-        // onload
-        tpl.attached && tpl.attached.call(this);
-      },
-    },
+    methods: {},
   };
 
-  const lifetimes = ['created', 'attached', 'ready', 'moved', 'detached'];
+  injectData(registerObj, tpl);
+  injectMethods(registerObj, tpl);
 
-  attachFunctions(tpl, registerObj.lifetimes, [], lifetimes);
-
-  const pageLifetimes = ['onShow', 'onHide', 'resize'];
-  attachFunctions(tpl, registerObj.pageLifetimes, [], pageLifetimes);
-
-  const exclude = pageLifetimes.concat(['constructor', 'attached']);
-  attachFunctions(tpl, registerObj.methods, exclude);
+  injectAttached(registerObj, tpl);
 
   logger('Register component', registerObj);
   // Register Component

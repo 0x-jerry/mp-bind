@@ -1,2 +1,2 @@
 <!--components/test/test.wxml-->
-<text bind:tap="onTap">a: {{a}}, b: {{b}}, c: {{c}}</text>
+<text bind:tap="onTap">a: {{a}}, b: {{b}}, c: {{c}}, dc: {{dc}}</text>
