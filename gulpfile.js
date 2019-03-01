@@ -16,7 +16,7 @@ gulp.task('js:dev', () => {
 });
 
 gulp.task('clean', () => {
-  return gulp.src('dist').pipe(clean());
+  return gulp.src('dist/').pipe(clean());
 });
 
 gulp.task('copy', () => {
