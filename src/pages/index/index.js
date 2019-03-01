@@ -6,13 +6,25 @@ export class Index extends BasePage {
 
   count = 3;
 
+  obj = {
+    deep: {
+      c: 3,
+    },
+  };
+
+  '$$obj.deep.c'(val, old) {
+    this.log('obj.deep.c changed', val, old);
+  }
+
   // watch count
   $$count(val, old) {
+    this.obj.deep.c += 5;
     this.log('count changed', val, old);
   }
 
+  // computed
   get arrLength() {
-    return this.arr.length
+    return this.arr.length;
   }
 
   log(name, newVal, oldVal) {
@@ -20,9 +32,9 @@ export class Index extends BasePage {
   }
 
   bindViewTap() {
-    console.log('tap', this);
     this.count += 1;
     this.arr.push(1);
+    console.log('length', this.arrLength);
   }
 }
 
