@@ -44,7 +44,7 @@ export class Index extends BasePage {
 
   bindViewTap() {
     // 设置同样的值（即满足===）不会触发 setData
-    // 例如 this.count === 3，然后这只 this.count = 3，这样不会触发 setData
+    // 例如当 this.count === 3，然后设置 this.count = 3，这样不会触发 setData
     this.count += 1;
     this.arr.push(1);
     console.log('length', this.arrLength);
@@ -101,9 +101,3 @@ bindComponent(Index) // 组件
 6. use `setData` update `a.b = 2` & `a.c = 3`
 7. micro task end
 8. macro task ...
-
-## Dev
-
-核心源代码在 `core` 文件夹里面
-
-核心思想：利用 `BasePage` 类代理微信中用 `Page(Object object)` 函数注册后的对象
