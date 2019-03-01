@@ -88,8 +88,8 @@ bindComponent(Index) // 组件
 - [x] Component `d.ts` 引入
 - [x] BaseComponent 类设计
 - [ ] 添加生命周期函数(注意设计的时候要考虑易扩展)
-- [ ] Decorator 引入(待定)
-- [ ] Async/Await 引入(待定)
+- [ ] Decorator 引入(已实现，详情看 [gulp](https://github.com/cwxyz007/wechat-mp/tree/gulp) 分支)
+- [ ] Async/Await 引入(已实现，详情看 [gulp](https://github.com/cwxyz007/wechat-mp/tree/gulp) 分支)
 
 ## Data Update Flow
 
