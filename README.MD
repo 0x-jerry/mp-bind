@@ -2,6 +2,60 @@
 
 > 此项目可看做微信小程序样板项目。此外，也可以单独使用 `core` 文件夹里面的核心代码，提升现有小程序开发体验
 
+## 简单的 Demo
+
+```js
+//index.js
+import { BasePage, bindPage } from '../../core/index';
+
+export class Index extends BasePage {
+  // 直接定义数据，不需要放到 data 里面
+  arr = [1, 2, 3];
+
+  count = 3;
+
+  obj = {
+    deep: {
+      c: 3,
+    },
+  };
+
+  // watch obj.deep.c
+  // $$ 开头的函数会自动转换成 watch 函数
+  // 同样的值（即满足===）不会触发 watch
+  '$$obj.deep.c'(val, old) {
+    this.log('obj.deep.c changed', val, old);
+  }
+
+  // watch count
+  $$count(val, old) {
+    this.obj.deep.c += 5;
+    this.log('count changed', val, old);
+  }
+
+  // computed, 实现缓存，依赖数据更新，才会触发更新，放心使用
+  get arrLength() {
+    return this.arr.length;
+  }
+
+  log(name, newVal, oldVal) {
+    console.log('watch', name, 'new:', newVal, 'old:', oldVal);
+  }
+
+  bindViewTap() {
+    // 设置同样的值（即满足===）不会触发 setData
+    // 例如 this.count === 3，然后这只 this.count = 3，这样不会触发 setData
+    this.count += 1;
+    this.arr.push(1);
+    console.log('length', this.arrLength);
+  }
+}
+
+// 以下两个函数二选一，Page 用 bindPage，component 用 bindComponent
+bindPage(Index); //页面
+bindComponent(Index) // 组件
+```
+
 ## 小程序开发环境
 
 - 开发工具 - [vscode](https://code.visualstudio.com/)
@@ -21,7 +75,7 @@
 
 ## Notice
 
-- 不支持直接更新 `data` 中没有定义的数据
+- 不支持直接更新没有定义的数据
 - `Watch` 暂看不支持 `deep`
 
 ## Data 更新详情
