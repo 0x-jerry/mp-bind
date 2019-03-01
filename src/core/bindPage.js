@@ -35,7 +35,7 @@ function injectFunctions(proxyObj, tpl) {
           proxyObj.computed[key] = desc.get;
         } else if (typeof tpl[key] === 'function') {
           // is watch
-          if (/^\$\$/.test(key)) {
+          if ((key).startsWith('$$')) {
             proxyObj.watch[key.slice(2)] = tpl[key].bind(page);
             // function
           } else {
@@ -48,9 +48,6 @@ function injectFunctions(proxyObj, tpl) {
   }
 }
 
-/**
- * @param {import('./Base').ITargetProxy} proxyObj
- */
 function observerData(proxyObj) {
   const page = proxyObj.target;
 

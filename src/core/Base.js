@@ -83,6 +83,8 @@ class BasePage extends Base {
 }
 
 class BaseComponent extends Base {
+  properties = {};
+
   /**
    *
    * @param {Component.ComponentConstructor} base
@@ -90,12 +92,6 @@ class BaseComponent extends Base {
   constructor(base) {
     super(base);
   }
-
-  $data = {};
-
-  watch = {};
-
-  computed = {};
 }
 
 export { BasePage, UpdateTaskQueue, BaseComponent };

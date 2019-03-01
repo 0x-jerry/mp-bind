@@ -3,6 +3,7 @@ import { BasePage, bindPage } from '../../core/index';
 
 export class Index extends BasePage {
   arr = [];
+  prop = 1;
 
   get arrLength() {
     return this.arr.length;
@@ -10,6 +11,10 @@ export class Index extends BasePage {
 
   onLoad() {
     this.arr.push(1);
+  }
+
+  changeProperties() {
+    this.prop ++;
   }
 }
 

@@ -36,6 +36,18 @@ export class Index extends BasePage {
     this.arr.push(1);
     console.log('length', this.arrLength);
   }
+
+  onLoad() {
+    console.log('Page onload');
+  }
+
+  onShow() {
+    console.log('Page onShow');
+  }
+
+  onHide() {
+    console.log('Page onHide');
+  }
 }
 
 bindPage(Index);

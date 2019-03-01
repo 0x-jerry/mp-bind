@@ -1,7 +1,7 @@
 <!-- pages/login/login.wxml -->
 <view class="page">
-  <test a='20'></test>
+  <test a='20+' b="12"></test>
   <view> </view>
-  <test a='10'></test>
-  <view class="text">{{arr}}</view>
+  <test a='10-' b="{{prop}}"></test>
+  <view class="text" bind:tap="changeProperties">change properties</view>
 </view>
