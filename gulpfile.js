@@ -2,8 +2,9 @@ const gulp = require('gulp');
 const sourcemaps = require('gulp-sourcemaps');
 const babel = require('gulp-babel');
 const replace = require('gulp-replace');
-const clean = require('gulp-clean');
 const uglify = require('gulp-uglify');
+const del = require('del');
+const vinylPaths = require('vinyl-paths');
 
 gulp.task('js:dev', () => {
   return gulp
@@ -16,7 +17,7 @@ gulp.task('js:dev', () => {
 });
 
 gulp.task('clean', () => {
-  return gulp.src('dist/').pipe(clean());
+  return gulp.src('dist/', { allowEmpty: true }).pipe(vinylPaths(del));
 });
 
 gulp.task('copy', () => {
