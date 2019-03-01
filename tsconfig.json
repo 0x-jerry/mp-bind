@@ -7,5 +7,5 @@
     "target": "es6",
     "experimentalDecorators": true
   },
-  "exclude": ["node_moudles", "dist"]
+  "exclude": ["node_moudles", "dist", "src/lib"]
 }

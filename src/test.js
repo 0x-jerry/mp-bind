@@ -14,17 +14,17 @@ class A {
   }
 }
 
-
 function asyncTest(params) {
   return new Promise(resolve => {
     setTimeout(() => {
       console.log('async', 111)
+      resolve();
     }, 1000);
   })
 }
 
 async function name(params) {
-  await asyncTest();
+  const a = await asyncTest()
   console.log('async',112);
 }
 
