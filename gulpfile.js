@@ -28,7 +28,7 @@ gulp.task('copy', () => {
 gulp.task('dev:pre', gulp.series('clean', 'js:dev', 'copy'));
 
 gulp.task('watch', () => {
-  return gulp.watch('src/**/*.js', gulp.task('js:dev'));
+  return gulp.watch('src/**/*.js', { debounceDelay: 200 }, gulp.task('js:dev'));
 });
 
 gulp.task('dev', gulp.series('dev:pre', 'watch'));

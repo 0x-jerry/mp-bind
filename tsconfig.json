@@ -4,7 +4,8 @@
     "checkJs": true,
     "moduleResolution": "node",
     "lib": ["es6", "dom"],
-    "target": "es6"
+    "target": "es6",
+    "experimentalDecorators": true
   },
   "exclude": ["node_moudles", "dist"]
 }

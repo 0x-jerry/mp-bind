@@ -4,3 +4,5 @@ App({
   onLaunch() {},
   globalData: {},
 });
+
+import './test';
