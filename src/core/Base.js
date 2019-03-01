@@ -51,8 +51,8 @@ class Base {
    */
   inputHelper(e) {
     const names = e.currentTarget.dataset.name.split('.');
-    //@ts-ignore
-    let data = this.$$data$$;
+
+    let data = this;
     try {
       for (let i = 0; i < names.length; i++) {
         const name = names[i];
