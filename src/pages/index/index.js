@@ -32,7 +32,7 @@ export class Index extends BasePage {
   }
 
   bindViewTap() {
-    this.count += 1;
+    this.count += 10;
     this.arr.push(1);
     console.log('length', this.arrLength);
   }

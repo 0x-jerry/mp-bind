@@ -4,5 +4,17 @@
   "main": "index.js",
   "repository": "https://github.com/cwxyz007/wechat-mp.git",
   "author": "cwxyz007 <jie844067636@gmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "dev": "gulp dev",
+    "build": "gulp prod"
+  },
+  "devDependencies": {
+    "gulp": "^4.0.0",
+    "gulp-babel": "^8.0.0-beta.2",
+    "gulp-clean": "^0.4.0",
+    "gulp-replace": "^1.0.0",
+    "gulp-sourcemaps": "^2.6.5",
+    "gulp-uglify": "^3.0.1"
+  }
 }

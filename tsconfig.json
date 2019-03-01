@@ -2,8 +2,9 @@
   "compilerOptions": {
     "allowJs": true,
     "checkJs": true,
-    "typeRoots": ["@types"],
+    "moduleResolution": "node",
     "lib": ["es6", "dom"],
     "target": "es6"
-  }
+  },
+  "exclude": ["node_moudles", "dist"]
 }

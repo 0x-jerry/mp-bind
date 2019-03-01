@@ -1,5 +1,5 @@
 const config = {
-  debug: true
+  debug: process.env.DEBUG
 };
 
 export { config };
