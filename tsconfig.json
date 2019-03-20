@@ -4,6 +4,7 @@
     "checkJs": true,
     "typeRoots": ["@types"],
     "lib": ["es6", "dom"],
-    "target": "es6"
+    "target": "es6",
+    "outDir": "dist"
   }
 }
