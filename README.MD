@@ -53,7 +53,7 @@ export class Index extends BasePage {
 
 // 以下两个函数二选一，Page 用 bindPage，component 用 bindComponent
 bindPage(Index); //页面
-bindComponent(Index) // 组件
+bindComponent(Index) // 组件，注意 extends 的是 BaseComponent
 ```
 
 ## 小程序开发环境
@@ -88,8 +88,8 @@ bindComponent(Index) // 组件
 - [x] Component `d.ts` 引入
 - [x] BaseComponent 类设计
 - [ ] 添加生命周期函数(注意设计的时候要考虑易扩展)
-- [ ] Decorator 引入(已实现，详情看 [gulp](https://github.com/cwxyz007/wechat-mp/tree/gulp) 分支)
-- [ ] Async/Await 引入(已实现，详情看 [gulp](https://github.com/cwxyz007/wechat-mp/tree/gulp) 分支)
+- [ ] ~~Decorator 引入(已实现，详情看 [gulp](https://github.com/cwxyz007/wechat-mp/tree/gulp) 分支)~~
+- [ ] ~~Async/Await 引入(已实现，详情看 [gulp](https://github.com/cwxyz007/wechat-mp/tree/gulp) 分支)~~
 
 ## Data Update Flow
 
