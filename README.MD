@@ -53,7 +53,7 @@ export class Index extends BasePage {
 
 // 以下两个函数二选一，Page 用 bindPage，component 用 bindComponent
 bindPage(Index); //页面
-bindComponent(Index) // 组件
+bindComponent(Index) // 组件，注意 extends 的是 BaseComponent
 ```
 
 ## 小程序开发环境

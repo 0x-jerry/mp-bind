@@ -5,7 +5,8 @@
     "moduleResolution": "node",
     "lib": ["es6", "dom"],
     "target": "es6",
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "outDir": "dist"
   },
   "exclude": ["node_moudles", "dist", "src/lib"]
 }
