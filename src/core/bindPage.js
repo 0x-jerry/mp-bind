@@ -101,7 +101,7 @@ function injectOnload(registerObj, tpl) {
     triggerComputed(this);
 
     // onload
-    tpl.onLoad && tpl.onLoad.call(this, args);
+    tpl.onLoad && tpl.onLoad.apply(this, args);
   };
 }
 
