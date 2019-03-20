@@ -35,7 +35,7 @@ function injectFunctions(proxyObj, tpl) {
           proxyObj.computed[key] = desc.get;
         } else if (typeof tpl[key] === 'function') {
           // is watch
-          if ((key).startsWith('$$')) {
+          if (key.startsWith('$$')) {
             proxyObj.watch[key.slice(2)] = tpl[key].bind(page);
             // function
           } else {

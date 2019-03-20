@@ -3,6 +3,8 @@ import { def, logger } from './utils';
 import { BasePage } from './index';
 import { BaseConfigs } from './config';
 
+const COMPUTED_KEY = BaseConfigs.keys.computed;
+
 /**
  *
  * @param {BasePage} base
@@ -10,7 +12,7 @@ import { BaseConfigs } from './config';
 function triggerComputed(base) {
   const proxyObj = base[BaseConfigs.PROXY_KEY];
 
-  def(proxyObj, '__computed__', {});
+  def(proxyObj, COMPUTED_KEY, {});
 
   logger('Trigger computed', proxyObj);
 
@@ -25,7 +27,7 @@ function triggerComputed(base) {
     // update computed and attach to data
     currentComputed.update();
 
-    proxyObj['__computed__'][key] = currentComputed;
+    proxyObj[COMPUTED_KEY][key] = currentComputed;
 
     // proxy computed
     Object.defineProperty(base, key, {
