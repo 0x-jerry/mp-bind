@@ -1,6 +1,8 @@
 import { def, logger } from './utils';
 import { ComputedValue } from './Computed';
 
+const OB_KEY = '__ob__';
+
 class Observer {
   /**
    *
@@ -23,8 +25,8 @@ class Observer {
     this.deps = {};
     logger('Observer new', this.prefix, data);
 
-    def(data, '__ob__', this);
-    def(this.data, '__ob__', this);
+    def(data, OB_KEY, this);
+    def(this.data, OB_KEY, this);
 
     if (this.isArray) {
       this.observeArrayMethods(data);
@@ -127,7 +129,7 @@ class Observer {
     /**
      * @type {Observer}
      */
-    const _ob = data['__ob__'];
+    const _ob = data[OB_KEY];
     if (!_ob) return computedDeps;
 
     Object.keys(_ob.deps).forEach((key) => {

@@ -15,13 +15,11 @@ export interface ITargetProxy {
 }
 
 export interface Base {
-  new (): Base;
-
   [key: string]: any;
 
-  // readonly $$data$$?: {
-  //   [key: string]: any;
-  // };
+  readonly _$PROXY$_: ITargetProxy;
+
+  new (): Base;
 
   /**
    * Helper function, useing in wxml file
@@ -35,12 +33,6 @@ export interface Base {
    */
   checkboxHelper(e: any): void;
 
-  /**
-   * Force update data
-   */
-  $forceUpdate(): void;
-
-  readonly _$PROXY$_: ITargetProxy;
 }
 
 export interface BasePage extends Base, Page.PageInstance {}
