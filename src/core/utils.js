@@ -16,7 +16,7 @@ function JSONClone(data) {
  * @param {boolean} [enumerable] default false
  */
 function def(obj, prop, val, enumerable = false) {
-  if (typeof obj !== 'object' && typeof obj !== 'function') {
+  if (!isObject(obj) && typeof obj !== 'function') {
     console.warn('defineProperty should call on object', obj);
     return;
   }
@@ -40,4 +40,8 @@ function logger(...args) {
   }
 }
 
-export { JSONClone, def, logger };
+function isObject(target) {
+  return typeof target === 'object' && target !== null;
+}
+
+export { JSONClone, def, logger, isObject };
