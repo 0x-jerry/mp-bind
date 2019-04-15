@@ -46,6 +46,11 @@ class Observer {
       return;
     }
 
+    if (value === undefined) {
+      logger('Set value to undefined', this.prePath(key), value, ', auto use null instead');
+      value = null;
+    }
+
     logger('Observer set', this.prePath(key), value);
 
     // Calc needed update deps
@@ -134,7 +139,7 @@ class Observer {
 
     Object.keys(_ob.deps).forEach((key) => {
       computedDeps = computedDeps.concat(_ob.deps[key]);
-      if (typeof _ob.data[key] === 'object') {
+      if (typeof _ob.data[key] === 'object' && _ob.data[key] !== null) {
         const childDeps = this.calcDeps(_ob.data[key]);
         computedDeps = computedDeps.concat(childDeps);
       }
@@ -159,15 +164,7 @@ class Observer {
    * @param {any[]} arr
    */
   observeArrayMethods(arr) {
-    const methods = [
-      'push',
-      'pop',
-      'shift',
-      'unshift',
-      'splice',
-      'sort',
-      'reverse',
-    ];
+    const methods = ['push', 'pop', 'shift', 'unshift', 'splice', 'sort', 'reverse'];
 
     methods.forEach((method) => {
       def(arr, method, (...args) => {
