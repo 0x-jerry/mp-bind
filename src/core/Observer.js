@@ -1,4 +1,4 @@
-import { def, logger } from './utils';
+import { def, logger, isObject } from './utils';
 import { ComputedValue } from './Computed';
 
 const OB_KEY = '__ob__';
@@ -44,6 +44,11 @@ class Observer {
   setter(key, value) {
     if (this.data[key] === value) {
       return;
+    }
+
+    if (value === undefined) {
+      logger('Set value to undefined', this.prePath(key), value, ', auto use null instead');
+      value = null;
     }
 
     logger('Observer set', this.prePath(key), value);
@@ -129,12 +134,12 @@ class Observer {
     /**
      * @type {Observer}
      */
-    const _ob = data[OB_KEY];
+    const _ob = isObject(data) && data[OB_KEY];
     if (!_ob) return computedDeps;
 
     Object.keys(_ob.deps).forEach((key) => {
       computedDeps = computedDeps.concat(_ob.deps[key]);
-      if (typeof _ob.data[key] === 'object') {
+      if (isObject(_ob.data[key])) {
         const childDeps = this.calcDeps(_ob.data[key]);
         computedDeps = computedDeps.concat(childDeps);
       }
@@ -159,15 +164,7 @@ class Observer {
    * @param {any[]} arr
    */
   observeArrayMethods(arr) {
-    const methods = [
-      'push',
-      'pop',
-      'shift',
-      'unshift',
-      'splice',
-      'sort',
-      'reverse',
-    ];
+    const methods = ['push', 'pop', 'shift', 'unshift', 'splice', 'sort', 'reverse'];
 
     methods.forEach((method) => {
       def(arr, method, (...args) => {
@@ -219,7 +216,7 @@ class Observer {
       this.data[key] = value;
     }
 
-    if (typeof value === 'object') {
+    if (isObject(value)) {
       new Observer(value, this.dataChanged, key, this.prePath(key), this);
     }
   }
