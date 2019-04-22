@@ -1,5 +1,5 @@
 const BaseConfigs = {
-  debug: true,
+  debug: false,
   PROXY_KEY: '_$PROXY$_',
   keys: {
     data: 'data',
