@@ -10,4 +10,12 @@ const BaseConfigs = {
   },
 };
 
-export { BaseConfigs };
+/**
+ *
+ * @param {import('./index').IConfigOptions} config
+ */
+function setConfig(config = {}) {
+  BaseConfigs.debug = config.debug;
+}
+
+export { BaseConfigs, setConfig };
