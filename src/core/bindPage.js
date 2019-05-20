@@ -13,6 +13,29 @@ function injectData(registerObj, tpl) {
   registerObj.data = data;
 }
 
+function injectEvents (registerObj, tpl) {
+  let proto = tpl
+
+  while (!proto.isPrototypeOf(Object)) {
+    Object.getOwnPropertyNames(proto)
+      .filter((key) => {
+        return key.substr(0, 2) === 'on'
+      })
+      .forEach((key) => {
+        const desc = Object.getOwnPropertyDescriptor(proto, key)
+
+        // ! Hack, do not read getter before observer data
+        if (desc && desc.get) {
+          // skip getter
+        } else if (typeof tpl[key] === 'function') {
+          registerObj[key] = proto[key]
+        }
+      })
+
+    proto = Object.getPrototypeOf(proto)
+  }
+}
+
 /**
  * Include computed, watch and other functions
  */
@@ -115,6 +138,7 @@ function bindPage(Base) {
   const registerObj = {};
 
   injectData(registerObj, tpl);
+  injectEvents(registerObj, tpl);
   injectOnload(registerObj, tpl);
 
   logger('Register page', registerObj);
