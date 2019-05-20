@@ -3,20 +3,21 @@
     "browser": true,
     "es6": true
   },
-  "extends": "eslint:recommended",
-  "parserOptions": {
-    "ecmaVersion": 2018,
-    "sourceType": "module"
-  },
+  "extends": "standard",
   "parser": "babel-eslint",
-  "rules": {
-    "no-console": "warn"
-  },
   "globals": {
+    "Atomics": "readonly",
+    "SharedArrayBuffer": "readonly",
     "wx": true,
     "App": true,
     "Page": true,
     "Component": true,
     "getApp": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 2018
+  },
+  "rules": {
+    "no-console": "warn"
   }
 }
