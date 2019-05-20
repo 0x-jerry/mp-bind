@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "allowJs": true,
-    "checkJs": true,
     "moduleResolution": "node",
     "lib": ["es6", "dom"],
     "target": "es6",

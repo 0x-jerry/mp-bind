@@ -31,10 +31,10 @@ export class Index extends BasePage {
     console.log('watch', name, 'new:', newVal, 'old:', oldVal)
   }
 
-  bindViewTap() {
-    this.count += 10;
-    this.arr.push(1);
-    console.log('length', this.arrLength);
+  bindViewTap () {
+    this.count += 10
+    this.arr.push(1)
+    console.log('length', this.arrLength)
   }
 
   onLoad () {
