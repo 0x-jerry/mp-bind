@@ -13,6 +13,10 @@ class Observer {
    * @param {Observer} [parentOb]
    */
   constructor (data, dataChanged, name = '', prePath = '', parentOb = null) {
+    if (Object.isFrozen(data)) {
+      return
+    }
+
     this.parent = parentOb
     this.dataChanged = dataChanged
     this.name = name
