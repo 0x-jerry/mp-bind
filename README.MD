@@ -20,6 +20,11 @@ export class Index extends BasePage {
     },
   };
 
+  // 如果有大量展示数据，可用 Object.freeze 避免性能问题
+  freezeObj = Object.freeze({
+    test: 1
+  })
+
   // watch obj.deep.c
   // $$ 开头的函数会自动转换成 watch 函数
   // 同样的值（即满足===）不会触发 watch
