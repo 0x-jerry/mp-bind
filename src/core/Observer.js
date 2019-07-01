@@ -13,7 +13,7 @@ class Observer {
    * @param {Observer} [parentOb]
    */
   constructor (data, dataChanged, name = '', prePath = '', parentOb = null) {
-    if (isObject(data) && Object.isFrozen(data)) {
+    if (Object.isFrozen(data)) {
       return
     }
 
