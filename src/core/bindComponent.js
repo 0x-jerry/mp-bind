@@ -105,8 +105,8 @@ function injectAttached (registerObj, tpl) {
 
 function injectMethods (registerObj, tpl) {
   let proto = tpl
-  const lifetimes = ['created', 'attached', 'ready', 'moved', 'detached']
-  const pageLifetimes = ['onShow', 'onHide', 'resize']
+  const lifeCycles = ['created', 'attached', 'ready', 'moved', 'detached']
+  const pageLifeCycles = ['onShow', 'onHide', 'resize']
 
   while (!proto.isPrototypeOf(Object)) {
     Object.getOwnPropertyNames(proto)
@@ -121,9 +121,9 @@ function injectMethods (registerObj, tpl) {
         if (!desc.get && typeof tpl[key] === 'function') {
           // not watch
           if (!key.startsWith('$$')) {
-            if (pageLifetimes.indexOf(key) !== -1) {
+            if (pageLifeCycles.indexOf(key) !== -1) {
               registerObj.pageLifetimes[key] = tpl[key]
-            } else if (lifetimes.indexOf(key) !== -1) {
+            } else if (lifeCycles.indexOf(key) !== -1) {
               registerObj.lifetimes[key] = tpl[key]
             } else {
               registerObj.methods[key] = tpl[key]
