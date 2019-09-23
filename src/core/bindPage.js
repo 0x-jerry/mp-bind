@@ -14,7 +14,7 @@ function injectData (registerObj, tpl) {
   registerObj.data = data
 }
 
-function injectEvents (registerObj, tpl) {
+function injectOnEvents (registerObj, tpl) {
   let proto = tpl
 
   while (!proto.isPrototypeOf(Object)) {
@@ -140,7 +140,7 @@ function bindPage (Base) {
   const registerObj = {}
 
   injectData(registerObj, tpl)
-  injectEvents(registerObj, tpl)
+  injectOnEvents(registerObj, tpl)
   injectOnload(registerObj, tpl)
 
   logger('Register page', registerObj)

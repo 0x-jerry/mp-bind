@@ -1,7 +1,9 @@
 <!-- pages/login/login.wxml -->
 <view class="page">
   <test a='20+' b="12"></test>
-  <view> </view>
+  <view>testFreeze.test: {{testFreeze.test}}</view>
   <test a='10-' b="{{prop}}"></test>
   <view class="text" bind:tap="changeProperties">change properties</view>
+  <button bind:tap="changeFreezeTest">update testFreeze.test </button>
+  <button bind:tap="changeFreeze">update testFreeze</button>
 </view>

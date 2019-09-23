@@ -2,6 +2,7 @@
   "compilerOptions": {
     "allowJs": true,
     "moduleResolution": "node",
+    "typeRoots": ["@types"],
     "lib": ["es6", "dom"],
     "target": "es6",
     "experimentalDecorators": true,

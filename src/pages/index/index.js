@@ -6,6 +6,10 @@ export class Index extends BasePage {
 
   count = 3;
 
+  deep = {
+    a: 1
+  }
+
   obj = {
     deep: {
       c: 3

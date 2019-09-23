@@ -22,13 +22,13 @@ export interface Base {
   new (): Base;
 
   /**
-   * Helper function, useing in wxml file
+   * Helper function, using in wxml file
    * update data accord to data-name attribute
    */
   inputHelper(e: any): void;
 
   /**
-   * Helper function, useing in wxml file
+   * Helper function, using in wxml file
    * update data accord to data-name attribute
    */
   checkboxHelper(e: any): void;

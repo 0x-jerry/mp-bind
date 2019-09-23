@@ -45,9 +45,8 @@ class Base {
   }
 
   /**
-   * Helper function, uss in wxml file
-   * update data accord to data-name
-   * support `a.b.c`
+   * update data accord to attribute `data-name`
+   * support `a.b.c` syntax
    */
   inputHelper (e) {
     const names = e.currentTarget.dataset.name.split('.')
