@@ -60,4 +60,4 @@ function updateData (proxyObj, newData, oldData) {
   })
 }
 
-export { triggerComputed, updateData, attachFunctions }
+export { triggerComputed, updateData }
