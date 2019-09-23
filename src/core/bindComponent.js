@@ -95,7 +95,7 @@ function injectAttached (registerObj, tpl) {
 
     observerData(proxyObj, tpl)
 
-    // Trigger computed and calculate dependence
+    // Trigger computed and calculate computed dependence
     // @ts-ignore
     triggerComputed(this)
 

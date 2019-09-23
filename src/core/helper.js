@@ -25,7 +25,7 @@ function triggerComputed (base) {
       proxyObj.computed[key].bind(base)
     )
     ComputedValue.current = currentComputed
-    // update computed and attach to data
+    // update computed and attach to update query
     currentComputed.update()
 
     proxyObj[COMPUTED_KEY][key] = currentComputed
@@ -45,53 +45,6 @@ function triggerComputed (base) {
 
 /**
  *
- * @param {object} obj
- * @param {*} registerObj
- * @param {string[]} [exclude]
- * @param {string[]} [include]
- * @param {boolean} [override]
- */
-function attachFunctions (
-  obj,
-  registerObj,
-  exclude = [],
-  include = [],
-  override = false
-) {
-  // const filterKeys = BaseConfigs.ignoreKeys;
-  let proto = obj
-  // Attach function recursively
-  while (!proto.isPrototypeOf(Object)) {
-    Object.getOwnPropertyNames(proto)
-      .filter((key) => {
-        if (typeof obj[key] !== 'function') {
-          return false
-        }
-
-        if (exclude.indexOf(key) !== -1) {
-          return false
-        }
-
-        if (include.length > 0) {
-          return include.indexOf(key) !== -1
-        }
-
-        return true
-      })
-      .forEach((key) => {
-        if (!registerObj[key]) {
-          registerObj[key] = obj[key]
-        } else if (override) {
-          registerObj[key] = obj[key]
-        }
-      })
-
-    proto = Object.getPrototypeOf(proto)
-  }
-}
-
-/**
- *
  * @param {*} newData
  * @param {*} oldData
  */
@@ -100,7 +53,6 @@ function updateData (proxyObj, newData, oldData) {
     // Use update task queue to update data in micro task
     proxyObj.updateQueue.addUpdateData(key, newData[key])
 
-    // Watch
     if (typeof proxyObj.watch[key] === 'function') {
       logger('Watch update', key)
       proxyObj.watch[key](newData[key], oldData[key])

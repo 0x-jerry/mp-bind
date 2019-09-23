@@ -24,7 +24,6 @@ class Observer {
     this.data = {}
     this.isArray = Array.isArray(data)
 
-    // dependence computed value
     // key => ComputedValue[]
     this.deps = {}
     logger('Observer new', this.prefix, data)
@@ -57,7 +56,6 @@ class Observer {
 
     logger('Observer set', this.prePath(key), value)
 
-    // Calc needed update deps
     const computedDeps = this.calcDeps(this.data[key])
 
     this.updateData(key, value)
@@ -79,7 +77,7 @@ class Observer {
   }
 
   getter (key) {
-    // For calculate compted dependence
+    // Calculate compted dependence
     if (ComputedValue.current) {
       if (!this.deps[key]) {
         this.deps[key] = []
@@ -96,7 +94,7 @@ class Observer {
 
   observerKey (data, key) {
     const value = data[key]
-    // Fix computed array, the getter is undefined
+    // Fix the getter is undefined when calculate computed first time
     this.data[key] = data[key]
 
     Object.defineProperty(data, key, {
@@ -165,26 +163,26 @@ class Observer {
   }
 
   /**
-   * @param {any[]} arr
+   * @param {any[]} target
    */
-  observeArrayMethods (arr) {
+  observeArrayMethods (target) {
     const methods = ['push', 'pop', 'shift', 'unshift', 'splice', 'sort', 'reverse']
 
     methods.forEach((method) => {
-      def(arr, method, (...args) => {
+      def(target, method, (...args) => {
         logger('Observer set', this.prePath(), method, ...args)
         const originMethod = Array.prototype[method]
-        originMethod.apply(arr, args)
+        originMethod.apply(target, args)
 
         // TODO reduce traverse times
         const obKeys = Object.keys(this.data)
-        Object.keys(arr).forEach((key) => {
+        Object.keys(target).forEach((key) => {
           if (obKeys.indexOf(key) !== -1) {
             return
           }
-          // Fix update data when `arr[xxx] = xxx`
-          this.updateData(key, arr[key])
-          this.observerKey(arr, key)
+
+          this.updateData(key, target[key])
+          this.observerKey(target, key)
         })
 
         // Update computed value
