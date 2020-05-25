@@ -1,7 +1,7 @@
 {
-  "name": "wechat-mp",
+  "name": "mp-bind",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "src/core/index.js",
   "repository": "https://github.com/cwxyz007/wechat-mp.git",
   "author": "cwxyz007 <jie844067636@gmail.com>",
   "license": "MIT",

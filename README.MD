@@ -6,38 +6,36 @@
 
 ```js
 //index.js
-import { BasePage, bindPage, BaseComponent } from '../../core/index';
+import { BasePage, bindPage } from '../../core/index';
 
 export class Index extends BasePage {
   // 直接定义数据，不需要放到 data 里面
   arr = [1, 2, 3];
-
   count = 3;
-
   obj = {
     deep: {
       c: 3,
     },
   };
 
-  // 如果有大量展示数据，可用 Object.freeze 避免性能问题
+  // 如果有大量展示数据，不需要响应式，可用 Object.freeze 避免性能问题
   freezeObj = Object.freeze({
     test: 1
   })
 
-  // watch obj.deep.c
+  // 监听 obj.deep.c
   // $$ 开头的函数会自动转换成 watch 函数
   '$$obj.deep.c'(val, old) {
     this.log('obj.deep.c changed', val, old);
   }
 
-  // watch count
+  // 监听 count
   $$count(val, old) {
     this.obj.deep.c += 5;
     this.log('count changed', val, old);
   }
 
-  // computed, 实现缓存，依赖数据更新，才会触发更新，放心使用
+  // getter, 实现缓存，依赖数据更新，才会触发更新，放心使用
   get arrLength() {
     return this.arr.length;
   }
@@ -54,9 +52,8 @@ export class Index extends BasePage {
   }
 }
 
-// 以下两个函数二选一，Page 用 bindPage，component 用 bindComponent
-bindPage(Index); // 页面
-// bindComponent(Index) 使用组件的时候继承的是 BaseComponent
+// 绑定页面
+bindPage(Index);
 ```
 
 ## 小程序开发环境
