@@ -1,38 +1,42 @@
 // eslint-disable-next-line no-unused-vars
-import { UpdateTaskQueue } from './Base'
-import { logger } from './utils'
+import { logger } from "./utils";
+import { UpdateTaskQueue } from "./Base";
 
 class ComputedValue {
   // current `ComputedValue`, for calculate dependence
-  static current = null;
-  static all = [];
+  static current: any = null;
+  static all: any = [];
+  get: () => any;
+  proxyObj: any;
+  name: string;
+  value: any;
 
   /**
    * @param {string} name
    * @param {() => any} getFunc
    */
-  constructor (proxyObj, name, getFunc) {
-    this.get = getFunc
-    this.proxyObj = proxyObj
-    this.name = name
-    ComputedValue.all.push(this)
+  constructor(proxyObj: any, name: string, getFunc: () => any) {
+    this.get = getFunc;
+    this.proxyObj = proxyObj;
+    this.name = name;
+    ComputedValue.all.push(this);
   }
 
-  update (onlyTrigger = false) {
-    this.value = this.get()
-    logger('Computed update', this.name, this.value)
+  update(onlyTrigger = false) {
+    this.value = this.get();
+    logger("Computed update", this.name, this.value);
 
     if (onlyTrigger) {
-      return
+      return;
     }
 
     /**
      * @type {UpdateTaskQueue}
      */
-    const queue = this.proxyObj.updateQueue
+    const queue: UpdateTaskQueue = this.proxyObj.updateQueue;
 
-    queue.addUpdateData(this.name, this.value)
+    queue.addUpdateData(this.name, this.value);
   }
 }
 
-export { ComputedValue }
+export { ComputedValue };

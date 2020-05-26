@@ -1,46 +1,48 @@
-import { logger } from './utils'
-import { BaseConfigs } from './config'
+import { logger } from "./utils";
+import { BaseConfigs } from "./config";
 
 /**
  * Use micro task to update data
  */
 class UpdateTaskQueue {
-  /**
-   *
-   * @param {Page.PageInstance} page
-   */
-  constructor (page) {
-    this.page = page
-    this.waitForUpdate = {}
-    this.dirty = false
+  page: Page.PageInstance<any, any>;
+  waitForUpdate: any;
+  dirty: boolean;
+
+  constructor(page: Page.PageInstance) {
+    this.page = page;
+    this.waitForUpdate = {};
+    this.dirty = false;
   }
 
-  addUpdateData (key, value) {
-    this.waitForUpdate[key] = value
+  addUpdateData(key: string | number, value: any) {
+    this.waitForUpdate[key] = value;
 
     if (this.dirty) {
-      return
+      return;
     }
 
-    this.dirty = true
-    this.updateData()
+    this.dirty = true;
+    this.updateData();
   }
 
-  updateData () {
+  updateData() {
     Promise.resolve().then(() => {
-      logger('Update data', this.waitForUpdate)
-      this.page.setData(this.waitForUpdate)
-      this.waitForUpdate = {}
-      this.dirty = false
-    })
+      logger("Update data", this.waitForUpdate);
+      this.page.setData!(this.waitForUpdate);
+      this.waitForUpdate = {};
+      this.dirty = false;
+    });
   }
 }
 
 class Base {
-  constructor (base) {
+  constructor(base: any) {
     if (BaseConfigs.debug && base) {
-      global.pages = global.pages || []
-      global.pages.push(this)
+      // @ts-ignore
+      global.pages = global.pages || [];
+      // @ts-ignore
+      global.pages.push(this);
     }
   }
 
@@ -48,33 +50,33 @@ class Base {
    * update data accord to attribute `data-name`
    * support `a.b.c` syntax
    */
-  inputHelper (e) {
-    const names = e.currentTarget.dataset.name.split('.')
+  inputHelper(e: { currentTarget: { dataset: { name: string; }; }; detail: { value: any; }; }) {
+    const names = e.currentTarget.dataset.name.split(".");
 
-    let data = this
+    let data: any = this;
     try {
       for (let i = 0; i < names.length; i++) {
-        const name = names[i]
+        const name = names[i];
         if (i === names.length - 1) {
-          data[name] = e.detail.value
+          data[name] = e.detail.value;
         } else {
-          data = data[name]
+          data = data[name];
         }
       }
     } catch (e) {
-      console.warn(e)
+      console.warn(e);
     }
   }
 
-  checkboxHelper (e) {
-    this.inputHelper(e)
+  checkboxHelper(e: { currentTarget: { dataset: { name: string; }; }; detail: { value: any; }; }) {
+    this.inputHelper(e);
   }
 }
 
 class BasePage extends Base {}
 
 class BaseComponent extends Base {
-  properties = {}
+  properties = {};
 }
 
-export { BasePage, UpdateTaskQueue, BaseComponent }
+export { BasePage, UpdateTaskQueue, BaseComponent };

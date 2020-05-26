@@ -19,8 +19,9 @@
     "pretty": true,
     "strictPropertyInitialization": true,
     "typeRoots": [
-      "./typings"
-    ]
+      "./typings",
+    ],
+    "lib": ["ES6", "DOM"]
   },
   "include": [
     "./miniprogram/**/*.ts"

@@ -1,15 +1,16 @@
 // eslint-disable-next-line no-unused-vars
-import { BaseComponent, UpdateTaskQueue } from './Base'
+import { UpdateTaskQueue } from './Base'
 import { updateData, triggerComputed } from './helper'
 import { Observer } from './Observer'
 import { JSONClone, def, logger } from './utils'
 import { BaseConfigs } from './config'
 
-function injectData (registerObj, tpl) {
+function injectData (registerObj: { lifetimes?: {}; pageLifetimes?: {}; methods?: {}; properties?: any; data?: any }, tpl: { [x: string]: any; properties?: any }) {
   registerObj.properties = tpl.properties
 
   const data = Object.keys(tpl).reduce((pre, key) => {
     if (key !== 'properties') {
+      // @ts-ignore
       pre[key] = tpl[key]
     }
     return pre
@@ -18,7 +19,7 @@ function injectData (registerObj, tpl) {
   registerObj.data = data
 }
 
-function injectWatchAndComputed (proxyObj, tpl) {
+function injectWatchAndComputed (proxyObj: { target: any; data?: any; computed: any; watch: any; updateQueue?: null }, tpl: { [x: string]: { bind: (arg0: any) => any } }) {
   let proto = tpl
   const component = proxyObj.target
 
@@ -47,16 +48,16 @@ function injectWatchAndComputed (proxyObj, tpl) {
   }
 }
 
-function observerData (proxyObj, tpl) {
+function observerData (proxyObj: { target: any; data: any; computed?: {}; watch?: {}; updateQueue?: null }, tpl: { properties: any }) {
   const page = proxyObj.target
 
   // eslint-disable-next-line no-new
-  new Observer(proxyObj.data, (newData, oldData) => {
-    updateData(proxyObj, newData, oldData)
+  new Observer(proxyObj.data, (newData: any, oldData: any) => {
+    updateData(proxyObj as any, newData, oldData)
   })
 
   const properties = Object.keys(tpl.properties || '')
-  const isProp = (key) => properties.indexOf(key) !== -1
+  const isProp = (key: string) => properties.indexOf(key) !== -1
 
   // Proxy observed data
   Object.keys(page.data).forEach((key) => {
@@ -73,7 +74,7 @@ function observerData (proxyObj, tpl) {
   })
 }
 
-function injectAttached (registerObj, tpl) {
+function injectAttached (registerObj: { lifetimes: any; pageLifetimes?: {}; methods?: {} }, tpl: { attached: { call: (arg0: any) => any } }) {
   registerObj.lifetimes.attached = function () {
     logger('Component attached', this)
 
@@ -82,18 +83,18 @@ function injectAttached (registerObj, tpl) {
       data: JSONClone(this.data),
       computed: {},
       watch: {},
-      updateQueue: null
+      updateQueue: null as any
     }
 
     def(this, BaseConfigs.PROXY_KEY, proxyObj)
 
-    injectWatchAndComputed(proxyObj, tpl)
+    injectWatchAndComputed(proxyObj, tpl as any)
 
     // @ts-ignore
     const updateQueue = new UpdateTaskQueue(this)
     proxyObj.updateQueue = updateQueue
 
-    observerData(proxyObj, tpl)
+    observerData(proxyObj, tpl as any)
 
     // Trigger computed and calculate computed dependence
     // @ts-ignore
@@ -103,7 +104,7 @@ function injectAttached (registerObj, tpl) {
   }
 }
 
-function injectMethods (registerObj, tpl) {
+function injectMethods (registerObj: { lifetimes: any; pageLifetimes: any; methods: any }, tpl: { [x: string]: any }) {
   let proto = tpl
   const lifeCycles = ['created', 'attached', 'ready', 'moved', 'detached']
   const pageLifeCycles = ['onShow', 'onHide', 'resize']
@@ -118,7 +119,7 @@ function injectMethods (registerObj, tpl) {
         const desc = Object.getOwnPropertyDescriptor(proto, key)
 
         // ! Hack, do not read getter before observer data
-        if (!desc.get && typeof tpl[key] === 'function') {
+        if (!desc!.get && typeof tpl[key] === 'function') {
           // not watch
           if (!key.startsWith('$$')) {
             if (pageLifeCycles.indexOf(key) !== -1) {
@@ -140,7 +141,7 @@ function injectMethods (registerObj, tpl) {
  *
  * @param {InstanceType<BaseComponent>} Base
  */
-function bindComponent (Base) {
+function bindComponent (Base: new () => any) {
   const tpl = new Base()
 
   const registerObj = {
@@ -155,7 +156,7 @@ function bindComponent (Base) {
   injectAttached(registerObj, tpl)
 
   logger('Register component', registerObj)
-  // Register Component
+  // @ts-ignore
   Component(registerObj)
 }
 

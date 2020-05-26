@@ -10,11 +10,7 @@ const BaseConfigs = {
   }
 }
 
-/**
- *
- * @param {import('./index').IConfigOptions} config
- */
-function setConfig (config = {}) {
+function setConfig (config:any = {}) {
   BaseConfigs.debug = config.debug
 }
 
