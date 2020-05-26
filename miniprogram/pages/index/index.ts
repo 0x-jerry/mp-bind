@@ -1,8 +1,8 @@
 //@ts-nocheck
 
-import { BasePage, bindPage } from "../../core/index";
+import { bind } from "../../core/index";
 
-export class Index extends BasePage {
+export class Index {
   todoList = [];
 
   todoMsg = "";
@@ -36,4 +36,4 @@ export class Index extends BasePage {
   }
 }
 
-bindPage(new Index());
+bind(new Index());

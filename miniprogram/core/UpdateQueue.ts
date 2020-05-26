@@ -1,14 +1,15 @@
-import { logger, nextTick } from "./utils";
+import { logger, nextTick, isObject } from "./utils";
 
 export interface JSONLike {
   [key: string]: JSONLike | string | number | symbol | boolean | JSONLike[];
 }
 
 export interface UpdateValue {
-  path: string,
-  type: 'plain' | 'object' | 'array'
-  method: keyof Array<any>
-  value: JSONLike | JSONLike[]
+  path: string;
+  mode: "data" | "computed";
+  type?: "plain" | "object" | "array";
+  method?: keyof Array<any>;
+  value: JSONLike | JSONLike[];
 }
 
 export class UpdateTaskQueue {
@@ -41,4 +42,8 @@ export class UpdateTaskQueue {
       this.waitForUpdate = false;
     });
   }
+}
+
+export function getUpdateType(obj: any) {
+  return Array.isArray(obj) ? "array" : isObject(obj) ? "object" : "plain";
 }

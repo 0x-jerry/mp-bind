@@ -1,41 +1,40 @@
-// eslint-disable-next-line no-unused-vars
 import { logger } from "./utils";
-import { UpdateTaskQueue } from "./Base";
+import { InternalInstance } from "./bind";
 
-class ComputedValue {
-  // current `ComputedValue`, for calculate dependence
-  static current: any = null;
-  static all: any = [];
-  get: () => any;
-  proxyObj: any;
+class ComputedValue<V = any> {
+  static current?: any = null;
+  static all: ComputedValue[] = [];
+
+  getter: () => V;
+
+  instance: InternalInstance;
   name: string;
-  value: any;
+  value: V | null;
 
-  /**
-   * @param {string} name
-   * @param {() => any} getFunc
-   */
-  constructor(proxyObj: any, name: string, getFunc: () => any) {
-    this.get = getFunc;
-    this.proxyObj = proxyObj;
+  constructor(instance: InternalInstance, name: string, getter: () => V) {
+    this.getter = getter;
+    this.instance = instance;
     this.name = name;
+    this.value = null;
+
     ComputedValue.all.push(this);
   }
 
-  update(onlyTrigger = false) {
-    this.value = this.get();
+  update(onlyTrigger: boolean = false) {
+    this.value = this.getter();
     logger("Computed update", this.name, this.value);
 
     if (onlyTrigger) {
       return;
     }
 
-    /**
-     * @type {UpdateTaskQueue}
-     */
-    const queue: UpdateTaskQueue = this.proxyObj.updateQueue;
+    const queue = this.instance.updateTask;
 
-    queue.addUpdateData(this.name, this.value);
+    queue.push({
+      mode: "computed",
+      path: this.name,
+      value: this.value as any,
+    });
   }
 }
 

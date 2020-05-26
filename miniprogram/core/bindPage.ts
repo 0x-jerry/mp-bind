@@ -2,7 +2,7 @@ import { Observer } from "./Observer";
 import { logger, def, JSONClone } from "./utils";
 // eslint-disable-next-line no-unused-vars
 import { UpdateTaskQueue } from "./Base";
-import { BaseConfigs } from "./config";
+import { BaseConfigs, ProxyKeys } from "./config";
 import { triggerComputed, updateData } from "./helper";
 
 function injectData(registerObj: { data?: any }, tpl: { [x: string]: any }) {
@@ -134,7 +134,7 @@ function injectOnload(
       updateQueue: null,
     };
 
-    def(this, BaseConfigs.PROXY_KEY, proxyObj);
+    def(this, ProxyKeys.PROXY, proxyObj);
 
     injectFunctions(proxyObj, tpl as any);
 
