@@ -3,7 +3,9 @@ export const BaseConfigs = {
 };
 
 export enum ProxyKeys {
-  PROXY = '__$PROXY$__'
+  PROXY = '__$PROXY$__',
+  DATA = '__$data$__',
+  OB = '__$ob$__'
 }
 
 export interface IBaseConfig {

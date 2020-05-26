@@ -34,10 +34,18 @@ export class UpdateTaskQueue {
     this.flush();
   }
 
+  compose() {
+    return this.updateValues.reduce((pre, cur) => {
+      pre[cur.path] = cur.value;
+      return pre;
+    }, {} as JSONLike);
+  }
+
   flush() {
     nextTick(() => {
-      logger("Update data", this.updateValues);
-      this.page.setData!(this.updateValues);
+      const data = this.compose();
+      logger("Update data", data, this.updateValues);
+      this.page.setData!(data);
       this.updateValues = [];
       this.waitForUpdate = false;
     });

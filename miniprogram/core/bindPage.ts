@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Observer } from "./Observer";
 import { logger, def, JSONClone } from "./utils";
 // eslint-disable-next-line no-unused-vars

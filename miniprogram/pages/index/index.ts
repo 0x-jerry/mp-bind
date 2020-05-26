@@ -1,9 +1,15 @@
 //@ts-nocheck
 
-import { bind } from "../../core/index";
+import { bind, BasePage } from "../../core/index";
 
-export class Index {
-  todoList = [];
+export class Index extends BasePage {
+  todoList = [
+    {
+      id: 1,
+      msg: "hello",
+      done: false,
+    },
+  ];
 
   todoMsg = "";
 
@@ -44,11 +50,12 @@ export class Index {
   }
 
   hello() {
-    console.log("hello", this);
+    console.log("hello", this.todoList);
   }
 
   onLoad() {
     this.hello();
+    this.todoMsg = '200'
     console.log("xx load", this);
   }
 }

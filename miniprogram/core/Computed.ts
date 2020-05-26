@@ -1,5 +1,6 @@
 import { logger } from "./utils";
 import { InternalInstance } from "./resolveInternal";
+import { ProxyKeys } from "./config";
 
 class ComputedValue<V = any> {
   static current?: any = null;
@@ -28,7 +29,7 @@ class ComputedValue<V = any> {
       return;
     }
 
-    const queue = this.instance.updateTask;
+    const queue = this.instance[ProxyKeys.PROXY].updateTask
 
     queue.push({
       mode: "computed",

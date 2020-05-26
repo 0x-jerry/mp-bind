@@ -1,6 +1,6 @@
 import { BaseConfigs } from "./config";
 
-export function JSONClone(data: any) {
+export function JSONClone<T>(data: T): T {
   return data === undefined ? undefined : JSON.parse(JSON.stringify(data));
 }
 

@@ -5,7 +5,7 @@
     <button class="btn" bindtap="add">添加</button>
   </view>
 
-  <view class="flex" wx:for="{{todoList}}" wx:key="{{item.id}}">
+  <view class="flex" wx:for="{{todoList}}" wx:key="id">
     {{item.msg}}
     <button class="btn" bindtap="remove" data-id="{{item.id}}">删除</button>
   </view>
