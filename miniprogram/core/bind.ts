@@ -1,20 +1,6 @@
-import { UpdateTaskQueue, JSONLike } from "./UpdateQueue";
-import { isFunction, def } from "./utils";
-import { ProxyKeys } from "./config";
-import { ComputedValue } from "./Computed";
-
-export interface ProxyInstance<T = any, K = any> {
-  target: Page.PageInstance<T, K>;
-  data: JSONLike;
-  computed: Record<string, ComputedValue>;
-  watch: Record<string, any>;
-  updateTask: UpdateTaskQueue;
-}
-
-export interface InternalInstance extends Page.PageInstance {
-  [ProxyKeys.PROXY]: ProxyInstance;
-  [key: string]: any;
-}
+import { JSONLike } from "./UpdateQueue";
+import { isFunction, logger } from "./utils";
+import { resolveOnload } from "./resolveInternal";
 
 export interface Prototype {
   [key: string]: any;
@@ -26,30 +12,57 @@ export interface BindPrototype extends Page.PageInstance {
 
 interface IPropTypeMap {
   data: string[];
-  function: string[];
+  lifecycle: string[];
+  method: string[];
   getter: string[];
+  watch: string[];
 }
 
 export interface PrototypeConfig {
+  type: "page" | "component";
   tpl: Prototype;
   propTypeMap: IPropTypeMap;
 }
 
-const getPropType = (obj: Object, name: string): keyof IPropTypeMap => {
-  const desc = Object.getOwnPropertyDescriptor(obj, name);
-  if (desc && desc.get) {
+/**
+ * 这里需要递归判断，因为 getter 可能在原型链上面，而不在当前实例
+ */
+function isGetter(obj: Object, prop: string) {
+  let proto = obj;
+  let cDesc = null;
+
+  while (!proto.isPrototypeOf(Object)) {
+    cDesc = Object.getOwnPropertyDescriptor(proto, prop);
+    if (cDesc && cDesc.get) {
+      return true;
+    }
+    proto = Object.getPrototypeOf(proto);
+  }
+  return false;
+}
+
+function getPropType(obj: Object, prop: string): keyof IPropTypeMap {
+  if (isGetter(obj, prop)) {
     return "getter";
   }
 
   // @ts-ignore
-  const value = obj[name];
+  const value = obj[prop];
 
   if (isFunction(value)) {
-    return "function";
+    if (prop.startsWith("on")) {
+      return "lifecycle";
+    }
+
+    if (prop.startsWith("$$")) {
+      return "watch";
+    }
+
+    return "method";
   }
 
   return "data";
-};
+}
 
 /**
  * 分析 tpl 中的 key 对应的类型, 并分类
@@ -62,8 +75,10 @@ function getPropTypeMap(tpl: Prototype) {
 
   const protoTypeMap: IPropTypeMap = {
     data: [],
-    function: [],
+    method: [],
     getter: [],
+    lifecycle: [],
+    watch: [],
   };
 
   let proto = tpl;
@@ -97,48 +112,35 @@ function bindData(
   target.data = data;
 }
 
-function bindFunction(
+function bindLifeCycle(
   target: BindPrototype,
   { tpl, propTypeMap }: PrototypeConfig
 ) {
-  for (const key of propTypeMap.function) {
-    // @ts-ignore
-    target[key] = (tpl[key] as Function).bind(target);
+  for (const key of propTypeMap.lifecycle) {
+    target[key] = tpl[key];
   }
-}
-
-function resolveOnload(target: BindPrototype, { tpl }: PrototypeConfig) {
-  target.onLoad = function (this: InternalInstance, ...args) {
-    // 注意 this !== target
-    const internal: ProxyInstance = {
-      target: this,
-      data: this.data,
-      computed: {},
-      watch: {},
-      updateTask: new UpdateTaskQueue(this),
-    };
-
-    def(target, ProxyKeys.PROXY, internal);
-
-    tpl.onLoad?.apply(this, args);
-  };
 }
 
 const config = {
   excludeBindKeys: ["constructor"],
+  // todo, use this prop to init lifecycle
+  lifeCycles: [],
 };
 
-export function bind(tpl: Prototype, type: "page" | "component" = "page") {
+export function bind(tpl: Prototype, type: PrototypeConfig["type"] = "page") {
   const target: BindPrototype = {};
   const propTypeMap: IPropTypeMap = getPropTypeMap(tpl);
 
   const opt: PrototypeConfig = {
+    type,
     tpl,
     propTypeMap,
   };
 
+  logger("init bind option", opt);
+
   bindData(target, opt);
-  bindFunction(target, opt);
+  bindLifeCycle(target, opt);
   resolveOnload(target, opt);
 
   if (type === "page") {

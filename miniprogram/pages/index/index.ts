@@ -7,6 +7,14 @@ export class Index {
 
   todoMsg = "";
 
+  get completeList() {
+    return this.todoList.filter((todo) => todo.done);
+  }
+
+  $$todoMsg(val, oldVal) {
+    console.log("todo msg changed", val, oldVal);
+  }
+
   add() {
     const todo = {
       id: Math.random().toString(16).substr(2),
@@ -33,6 +41,15 @@ export class Index {
     if (todo) {
       todo.done = !todo.done;
     }
+  }
+
+  hello() {
+    console.log("hello", this);
+  }
+
+  onLoad() {
+    this.hello();
+    console.log("xx load", this);
   }
 }
 

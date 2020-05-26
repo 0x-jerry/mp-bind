@@ -1,5 +1,5 @@
 export const BaseConfigs = {
-  debug: false,
+  debug: true,
 };
 
 export enum ProxyKeys {

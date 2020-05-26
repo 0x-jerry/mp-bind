@@ -1,5 +1,5 @@
 import { logger } from "./utils";
-import { InternalInstance } from "./bind";
+import { InternalInstance } from "./resolveInternal";
 
 class ComputedValue<V = any> {
   static current?: any = null;
