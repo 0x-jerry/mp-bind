@@ -6,6 +6,7 @@
   "author": "cwxyz007 <jie844067636@gmail.com>",
   "license": "MIT",
   "scripts": {
+    "start": "node ./node_modules/typescript/lib/tsc.js --watch",
     "compile": "./node_modules/typescript/bin/tsc",
     "tsc": "node ./node_modules/typescript/lib/tsc.js"
   },

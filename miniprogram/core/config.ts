@@ -1,17 +1,19 @@
-const BaseConfigs = {
+export const BaseConfigs = {
   debug: false,
-  PROXY_KEY: '_$PROXY$_',
+  PROXY_KEY: "_$PROXY$_",
   keys: {
-    data: 'data',
-    initData: '__initData__',
-    computed: '__computed__',
-    updateQueue: '__update_queue__',
-    forceUpdate: '$forceUpdate'
-  }
+    data: "data",
+    initData: "__initData__",
+    computed: "__computed__",
+    updateQueue: "__update_queue__",
+    forceUpdate: "$forceUpdate",
+  },
+};
+
+export interface IBaseConfig {
+  debug: boolean;
 }
 
-function setConfig (config:any = {}) {
-  BaseConfigs.debug = config.debug
+export function setConfig(config: Partial<IBaseConfig> = {}) {
+  BaseConfigs.debug = !!config.debug;
 }
-
-export { BaseConfigs, setConfig }

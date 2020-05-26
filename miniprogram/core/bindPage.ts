@@ -158,8 +158,8 @@ function injectOnload(
  *
  * @param {BasePage} Base
  */
-function bindPage(Base: new () => any) {
-  const tpl = new Base();
+function bindPage(Base: any) {
+  const tpl = Base;
 
   const registerObj = {};
 
