@@ -1,5 +1,5 @@
 /*! *****************************************************************************
-Copyright (c) 2018 Tencent, Inc. All rights reserved.
+Copyright (c) 2018 Tencent, Inc. All rights reserved. 
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -7,8 +7,6 @@ The above copyright notice and this permission notice shall be included in all c
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ***************************************************************************** */
-
-/// <reference path="./utils.d.ts" />
 
 declare namespace Page {
 
@@ -58,11 +56,11 @@ declare namespace Page {
 
   interface PageInstanceBaseProps<D extends IAnyObject = any> {
     /** 页面的初始数据
-     *
+     * 
      * `data` 是页面第一次渲染使用的**初始数据**。
-     *
+     * 
      * 页面加载时，`data` 将会以`JSON`字符串的形式由逻辑层传至渲染层，因此`data`中的数据必须是可以转成`JSON`的类型：字符串，数字，布尔值，对象，数组。
-     *
+     * 
      * 渲染层可以通过 `WXML` 对数据进行绑定。
     */
     data?: D
@@ -108,9 +106,10 @@ declare namespace Page {
      */
     onShow?(): void
     /** 生命周期回调—监听页面初次渲染完成
-     *
+     * 
      * 页面初次渲染完成时触发。一个页面只会调用一次，代表页面已经准备妥当，可以和视图层进行交互。
-     *
+     * 
+   
      * 注意：对界面内容进行设置的 API 如`wx.setNavigationBarTitle`，请在`onReady`之后进行。
     */
     onReady?(): void

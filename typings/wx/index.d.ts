@@ -8,10 +8,21 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ***************************************************************************** */
 
-/// <reference path="./wx/index.d.ts" />
+/// <reference path="./lib.wx.app.d.ts" />
+/// <reference path="./lib.wx.page.d.ts" />
+/// <reference path="./lib.wx.api.d.ts" />
+/// <reference path="./lib.wx.cloud.d.ts" />
 
-declare interface global {
-  [key: string]: any;
+declare type IAnyObject = Record<string, any>
+
+declare type KVInfer<T> = {
+  [K in keyof T]: T[K]
 }
 
-declare const global: global;
+declare type Void<T> = T | undefined | null
+
+type PartialOptional<T, K extends keyof T> = Partial<Pick<T, K>> & Pick<T, Exclude<keyof T, K>>
+
+type Optional<T> = {
+  [K in keyof T]+?: T[K]
+}

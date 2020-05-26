@@ -1,48 +1,20 @@
 {
-	"description": "Project configuration file",
+	"description": "项目配置文件",
 	"packOptions": {
-		"ignore": [
-			"@types",
-			".vscode",
-			"node_modules"
-		]
+		"ignore": []
 	},
-	"setting": {
-		"urlCheck": false,
-		"es6": true,
-		"postcss": true,
-		"minified": true,
-		"newFeature": true,
-		"nodeModules": true,
-		"autoAudits": false
-	},
+	"miniprogramRoot": "miniprogram/",
 	"compileType": "miniprogram",
-	"libVersion": "2.6.1",
-	"appid": "wxd9cc9ad539edef86",
-	"projectname": "wechat-mp",
-	"miniprogramRoot": "src/",
-	"debugOptions": {
-		"hidedInDevtools": []
+	"libVersion": "2.4.0",
+	"projectname": "mp-bind",
+	"scripts": {
+		"beforeCompile": "npm run tsc",
+		"beforePreview": "npm run tsc",
+		"beforeUpload": "npm run tsc"
 	},
-	"isGameTourist": false,
+	"setting": {},
+	"appid": "wxd9cc9ad539edef86",
 	"simulatorType": "wechat",
 	"simulatorPluginLibVersion": {},
-	"condition": {
-		"search": {
-			"current": -1,
-			"list": []
-		},
-		"conversation": {
-			"current": -1,
-			"list": []
-		},
-		"game": {
-			"currentL": -1,
-			"list": []
-		},
-		"miniprogram": {
-			"current": -1,
-			"list": []
-		}
-	}
+	"condition": {}
 }
