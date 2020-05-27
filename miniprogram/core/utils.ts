@@ -1,5 +1,3 @@
-import { BaseConfigs } from "./config";
-
 export function JSONClone<T>(data: T): T {
   return data === undefined ? undefined : JSON.parse(JSON.stringify(data));
 }
@@ -21,13 +19,6 @@ export function def(
     writable: true,
     configurable: true,
   });
-}
-
-export function logger(...args: any) {
-  if (BaseConfigs.debug) {
-    const prefix = `${new Date().toISOString()}: `;
-    console.log(prefix, ...args);
-  }
 }
 
 export function isObject(target: any) {

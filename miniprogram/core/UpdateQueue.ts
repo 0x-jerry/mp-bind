@@ -1,4 +1,5 @@
-import { logger, nextTick, isObject } from "./utils";
+import { nextTick, isObject } from "./utils";
+import { logger } from "./Logger";
 
 export interface JSONLike {
   [key: string]: JSONLike | string | number | symbol | boolean | JSONLike[];

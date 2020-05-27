@@ -1,9 +1,10 @@
 import { BindPrototype, PrototypeConfig } from "./bind";
 import { BaseConfigs, ProxyKeys } from "./config";
-import { logger, def, JSONClone } from "./utils";
+import { def, JSONClone } from "./utils";
 import { UpdateTaskQueue, JSONLike } from "./UpdateQueue";
 import { ComputedValue } from "./Computed";
 import { Observer } from "./Observer";
+import { logger } from "./Logger";
 
 export interface InternalInstance extends Page.PageInstance {
   [ProxyKeys.PROXY]: ProxyInstance;

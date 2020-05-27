@@ -82,6 +82,10 @@ export class Observer {
   }
 
   createSubObserver(target: any, name: string) {
+    if (target[ProxyKeys.OB]) {
+      return;
+    }
+
     new Observer(target, {
       parent: this,
       name: name,
@@ -111,6 +115,10 @@ export class Observer {
 
   setter(key: string, value: any) {
     const oldVal = this.raw[key];
+    if (oldVal === value) {
+      return;
+    }
+
     this.raw[key] = value;
     this.update(this.prePath(key), value, oldVal);
 

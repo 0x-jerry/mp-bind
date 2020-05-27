@@ -1,6 +1,7 @@
 import { JSONLike } from "./UpdateQueue";
-import { isFunction, logger } from "./utils";
+import { isFunction } from "./utils";
 import { resolveOnload } from "./resolveInternal";
+import { logger } from "./Logger";
 
 export interface Prototype {
   [key: string]: any;

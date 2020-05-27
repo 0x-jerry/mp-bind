@@ -1,11 +1,12 @@
 <!-- index.wxml -->
 <view class="">
   <view class="flex">
-    <input class="input" bindinput="inputHelper" data-name="todoMsg" />
+    <input class="input" bindinput="inputHelper" data-name="todoMsg" value="{{todoMsg}}" />
     <button class="btn" bindtap="add">添加</button>
   </view>
 
   <view class="flex" wx:for="{{todoList}}" wx:key="id">
+    <checkbox bindtap="switch" data-id="{{item.id}}" value="{{item.done}}" ></checkbox>
     {{item.msg}}
     <button class="btn" bindtap="remove" data-id="{{item.id}}">删除</button>
   </view>
