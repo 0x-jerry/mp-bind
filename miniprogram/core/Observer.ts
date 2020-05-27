@@ -1,5 +1,5 @@
 import { ComputedValue } from "./Computed";
-import { def, isObject, logger } from "./utils";
+import { def, isObject } from "./utils";
 import { ProxyKeys } from "./config";
 
 export interface IObserverOptions {
