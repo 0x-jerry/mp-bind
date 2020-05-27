@@ -15,7 +15,7 @@ interface IPropTypeMap {
   data: string[];
   lifecycle: string[];
   method: string[];
-  getter: string[];
+  getter: Record<string, () => any>;
   watch: string[];
 }
 
@@ -35,11 +35,15 @@ function isGetter(obj: Object, prop: string) {
   while (!proto.isPrototypeOf(Object)) {
     cDesc = Object.getOwnPropertyDescriptor(proto, prop);
     if (cDesc && cDesc.get) {
-      return true;
+      return cDesc.get;
     }
     proto = Object.getPrototypeOf(proto);
   }
   return false;
+}
+
+function getGetter(obj: Object, prop: string) {
+  return isGetter(obj, prop) as () => any;
 }
 
 function getPropType(obj: Object, prop: string): keyof IPropTypeMap {
@@ -77,7 +81,7 @@ function getPropTypeMap(tpl: Prototype) {
   const protoTypeMap: IPropTypeMap = {
     data: [],
     method: [],
-    getter: [],
+    getter: {},
     lifecycle: [],
     watch: [],
   };
@@ -92,7 +96,11 @@ function getPropTypeMap(tpl: Prototype) {
       }
 
       const type = getPropType(tpl, key);
-      protoTypeMap[type].push(key);
+      if (type === "getter") {
+        protoTypeMap[type][key] = getGetter(tpl, key);
+      } else {
+        protoTypeMap[type].push(key);
+      }
     }
 
     proto = Object.getPrototypeOf(proto);

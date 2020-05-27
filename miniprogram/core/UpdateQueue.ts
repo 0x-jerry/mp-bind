@@ -1,6 +1,7 @@
-import { nextTick, isObject } from "./utils";
+import { nextTick, isObject, shallowEqual } from "./utils";
 import { logger } from "./Logger";
 import { InternalInstance } from "./resolveInternal";
+import { ProxyKeys } from "./config";
 
 export interface JSONLike {
   [key: string]: JSONLike | string | number | symbol | boolean | JSONLike[];
@@ -15,12 +16,12 @@ export interface UpdateValue {
 }
 
 export class UpdateTaskQueue {
-  page: InternalInstance;
+  internal: InternalInstance;
   updateValues: UpdateValue[];
   waitForUpdate: boolean;
 
   constructor(page: InternalInstance) {
-    this.page = page;
+    this.internal = page;
     this.updateValues = [];
     this.waitForUpdate = false;
   }
@@ -43,11 +44,33 @@ export class UpdateTaskQueue {
     }, {} as JSONLike);
   }
 
+  flushGetters() {
+    const getters = this.internal[ProxyKeys.PROXY].getter;
+
+    for (const key in getters) {
+      const getter = getters[key];
+      const newVal = getter();
+      const oldVal = this.internal.data[key];
+
+      if (shallowEqual(newVal, oldVal)) {
+        continue;
+      }
+
+      this.updateValues.push({
+        mode: "computed",
+        path: key,
+        value: newVal,
+      });
+    }
+  }
+
   flush() {
     nextTick(() => {
+      this.flushGetters();
+
       const data = this.compose();
       logger("Update data", data, this.updateValues);
-      this.page.setData!(data);
+      this.internal.setData!(data);
       this.updateValues = [];
       this.waitForUpdate = false;
     });

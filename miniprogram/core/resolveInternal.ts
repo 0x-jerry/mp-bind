@@ -2,7 +2,6 @@ import { BindPrototype, PrototypeConfig } from "./bind";
 import { BaseConfigs, ProxyKeys } from "./config";
 import { def, JSONClone } from "./utils";
 import { UpdateTaskQueue, JSONLike } from "./UpdateQueue";
-import { ComputedValue } from "./Computed";
 import { Observer } from "./Observer";
 import { logger } from "./Logger";
 
@@ -15,7 +14,7 @@ export interface InternalInstance extends Page.PageInstance {
 export interface ProxyInstance<T = any, K = any> {
   target: Page.PageInstance<T, K>;
   data: JSONLike;
-  getter: Record<string, ComputedValue>;
+  getter: Record<string, () => any>;
   watch: Record<string, <T>(newVal: T, oldVal: T) => void>;
   updateTask: UpdateTaskQueue;
 }
@@ -40,10 +39,12 @@ function bindWatch(
 
 function bindGetter(
   internal: InternalInstance,
-  { tpl, propTypeMap }: PrototypeConfig
+  { propTypeMap }: PrototypeConfig
 ) {
-  for (const key of propTypeMap.getter) {
-    internal[ProxyKeys.PROXY].getter[key] = tpl[key];
+  for (const key of Object.keys(propTypeMap.getter)) {
+    internal[ProxyKeys.PROXY].getter[key] = propTypeMap.getter[key].bind(
+      internal
+    );
   }
 }
 
@@ -86,7 +87,9 @@ function observe(target: InternalInstance, { propTypeMap }: PrototypeConfig) {
 }
 
 export function resolveOnload(target: BindPrototype, opt: PrototypeConfig) {
-  target.onLoad = function (this: InternalInstance, ...args) {
+  const initKey = opt.type === "page" ? "onLoad" : "onInit";
+
+  target[initKey] = function (this: InternalInstance, ...args: any) {
     logger("Page loaded", this);
     if (BaseConfigs.debug) {
       // @ts-ignore
@@ -112,6 +115,6 @@ export function resolveOnload(target: BindPrototype, opt: PrototypeConfig) {
 
     const { tpl } = opt;
 
-    tpl.onLoad?.apply(this, args);
+    tpl[initKey]?.apply(this, args);
   };
 }

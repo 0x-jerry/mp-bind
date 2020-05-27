@@ -1,3 +1,5 @@
+import { JSONLike } from "./UpdateQueue";
+
 export function JSONClone<T>(data: T): T {
   return data === undefined ? undefined : JSON.parse(JSON.stringify(data));
 }
@@ -31,4 +33,12 @@ export function isFunction(target: any) {
 
 export function nextTick(func: Function) {
   Promise.resolve().then(() => func());
+}
+
+export function shallowEqual(objA: JSONLike, objB: JSONLike) {
+  if (isObject(objA) && isObject(objB)) {
+    return JSON.stringify(objA) === JSON.stringify(objB);
+  }
+
+  return objA === objB;
 }

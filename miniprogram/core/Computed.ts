@@ -12,13 +12,17 @@ class ComputedValue<V = any> {
   name: string;
   value: V | null;
 
-  constructor(instance: InternalInstance, name: string, getter: () => V) {
-    this.getter = getter;
+  constructor(instance: InternalInstance, name: string) {
     this.instance = instance;
     this.name = name;
+    this.getter = this.getGetter();
     this.value = null;
 
     ComputedValue.all.push(this);
+  }
+
+  getGetter() {
+    return this.instance[ProxyKeys.PROXY].getter[this.name]
   }
 
   update(onlyTrigger: boolean = false) {

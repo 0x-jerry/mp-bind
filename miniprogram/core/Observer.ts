@@ -1,6 +1,7 @@
 import { ComputedValue } from "./Computed";
 import { def, isObject } from "./utils";
 import { ProxyKeys } from "./config";
+import { logger } from "./Logger";
 
 export interface IObserverOptions {
   update: <T = any>(path: string, newVal: T, oldVal: T) => void;
@@ -82,7 +83,11 @@ export class Observer {
   }
 
   createSubObserver(target: any, name: string) {
-    if (target[ProxyKeys.OB]) {
+    const ob: Observer | null = target[ProxyKeys.OB];
+
+    if (ob) {
+      ob.name = name;
+      ob.prefix = this.prePath(name)
       return;
     }
 
@@ -114,6 +119,7 @@ export class Observer {
   }
 
   setter(key: string, value: any) {
+    logger("setter", key, value);
     const oldVal = this.raw[key];
     if (oldVal === value) {
       return;
