@@ -15,8 +15,8 @@ export interface InternalInstance extends Page.PageInstance {
 export interface ProxyInstance<T = any, K = any> {
   target: Page.PageInstance<T, K>;
   data: JSONLike;
-  computed: Record<string, ComputedValue>;
-  watch: Record<string, any>;
+  getter: Record<string, ComputedValue>;
+  watch: Record<string, <T>(newVal: T, oldVal: T) => void>;
   updateTask: UpdateTaskQueue;
 }
 
@@ -26,6 +26,36 @@ function bindFunction(
 ) {
   for (const key of propTypeMap.method) {
     internal[key] = tpl[key];
+  }
+}
+
+function bindWatch(
+  internal: InternalInstance,
+  { tpl, propTypeMap }: PrototypeConfig
+) {
+  for (const key of propTypeMap.watch) {
+    internal[ProxyKeys.PROXY].watch[key.slice(2)] = tpl[key];
+  }
+}
+
+function bindGetter(
+  internal: InternalInstance,
+  { tpl, propTypeMap }: PrototypeConfig
+) {
+  for (const key of propTypeMap.getter) {
+    internal[ProxyKeys.PROXY].getter[key] = tpl[key];
+  }
+}
+
+function emitWatch<T = any>(
+  instance: InternalInstance,
+  path: string,
+  newVal: T,
+  oldVal: T
+) {
+  const func = instance[ProxyKeys.PROXY].watch[path];
+  if (func) {
+    func(newVal, oldVal);
   }
 }
 
@@ -44,6 +74,8 @@ function observe(target: InternalInstance, { propTypeMap }: PrototypeConfig) {
   new Observer(target[ProxyKeys.DATA], {
     update: (path, newVal, oldVal) => {
       logger("observer update", path, newVal, oldVal);
+      emitWatch(target, path, newVal, oldVal);
+
       target[ProxyKeys.PROXY].updateTask.push({
         mode: "data",
         value: newVal as any,
@@ -65,7 +97,7 @@ export function resolveOnload(target: BindPrototype, opt: PrototypeConfig) {
     const internal: ProxyInstance = {
       target: this,
       data: this.data,
-      computed: {},
+      getter: {},
       watch: {},
       updateTask: new UpdateTaskQueue(this),
     };
@@ -74,6 +106,8 @@ export function resolveOnload(target: BindPrototype, opt: PrototypeConfig) {
     def(this, ProxyKeys.DATA, JSONClone(this.data));
 
     bindFunction(this, opt);
+    bindWatch(this, opt);
+    bindGetter(this, opt);
     observe(this, opt);
 
     const { tpl } = opt;

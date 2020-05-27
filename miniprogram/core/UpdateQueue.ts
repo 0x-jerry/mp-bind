@@ -1,5 +1,6 @@
 import { nextTick, isObject } from "./utils";
 import { logger } from "./Logger";
+import { InternalInstance } from "./resolveInternal";
 
 export interface JSONLike {
   [key: string]: JSONLike | string | number | symbol | boolean | JSONLike[];
@@ -14,11 +15,11 @@ export interface UpdateValue {
 }
 
 export class UpdateTaskQueue {
-  page: Page.PageInstance;
+  page: InternalInstance;
   updateValues: UpdateValue[];
   waitForUpdate: boolean;
 
-  constructor(page: Page.PageInstance) {
+  constructor(page: InternalInstance) {
     this.page = page;
     this.updateValues = [];
     this.waitForUpdate = false;
