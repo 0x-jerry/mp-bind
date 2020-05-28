@@ -1,6 +1,6 @@
 {
   "name": "mp-bind",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "main": "dist/build.cjs.js",
   "repository": "https://github.com/cwxyz007/mp-bind.git",
   "author": "cwxyz007 <jie844067636@gmail.com>",
@@ -10,7 +10,8 @@
     "start": "node ./node_modules/typescript/lib/tsc.js --watch",
     "compile": "./node_modules/typescript/bin/tsc",
     "tsc": "node ./node_modules/typescript/lib/tsc.js",
-    "build": "rollup -c"
+    "build": "rollup -c",
+    "prepublishOnly": "npm run build"
   },
   "devDependencies": {
     "rollup": "^2.11.2",
