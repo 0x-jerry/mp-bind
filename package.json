@@ -1,6 +1,6 @@
 {
   "name": "mp-bind",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "main": "dist/build.cjs.js",
   "repository": "https://github.com/cwxyz007/mp-bind.git",
   "author": "cwxyz007 <jie844067636@gmail.com>",
