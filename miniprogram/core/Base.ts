@@ -1,6 +1,6 @@
 import { BaseConfigs } from "./config";
 
-class Base {
+export class Base {
   /**
    * update data accord to attribute `data-name`
    * support `a.b.c` syntax
@@ -27,10 +27,10 @@ class Base {
   }
 }
 
-class BasePage extends Base {
-  constructor(base: any) {
+export class BasePage extends Base {
+  constructor() {
     super();
-    if (BaseConfigs.debug && base) {
+    if (BaseConfigs.debug) {
       // @ts-ignore
       global.pages = global.pages || [];
       // @ts-ignore
@@ -39,8 +39,6 @@ class BasePage extends Base {
   }
 }
 
-class BaseComponent extends Base {
+export class BaseComponent extends Base {
   properties = {};
 }
-
-export { BasePage, BaseComponent };

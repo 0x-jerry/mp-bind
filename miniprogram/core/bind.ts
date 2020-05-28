@@ -1,8 +1,9 @@
 import { JSONLike } from "./UpdateQueue";
 import { isFunction } from "./utils";
 import { resolveOnload } from "./resolveInternal";
+import { Base } from "./Base";
 
-export interface Prototype {
+export interface Prototype extends Base {
   [key: string]: any;
 }
 

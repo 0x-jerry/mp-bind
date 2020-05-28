@@ -1,33 +1,29 @@
-//@ts-nocheck
-
 import { bind, BasePage } from "../../core/index";
 
+interface ITodo {
+  id: string | number
+  msg: string
+  done: boolean
+}
+
 export class Index extends BasePage {
-  todoList = [
+  todoList: ITodo[] = [
     {
       id: 1,
-      msg: "hello",
+      msg: "todo",
       done: false,
     },
     {
       id: 2,
-      msg: "world",
+      msg: "complete todo",
       done: true,
     },
   ];
 
   todoMsg = "";
 
-  frozen = Object.freeze({
-    hello: 3
-  })
-
-  get completeList() {
-    return this.todoList.filter((todo) => todo.done);
-  }
-
-  $$todoMsg(val, oldVal) {
-    console.log("todo msg changed", val, oldVal);
+  get total() {
+    return this.todoList.length;
   }
 
   add() {
@@ -40,7 +36,7 @@ export class Index extends BasePage {
     this.todoList.push(todo);
   }
 
-  remove(e) {
+  remove(e: any) {
     const id = e.target.dataset.id;
     const idx = this.todoList.findIndex((todo) => todo.id === id);
 
@@ -49,7 +45,7 @@ export class Index extends BasePage {
     }
   }
 
-  switch(e) {
+  switch(e: any) {
     const id = e.target.dataset.id;
     const todo = this.todoList.find((todo) => todo.id === id);
 
@@ -58,14 +54,8 @@ export class Index extends BasePage {
     }
   }
 
-  hello() {
-    console.log("hello");
-  }
-
   onLoad() {
-    this.hello();
-    this.todoMsg = '200'
-    console.log('loaded')
+    console.log('Todo app loaded')
   }
 }
 
