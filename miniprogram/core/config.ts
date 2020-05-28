@@ -1,11 +1,11 @@
 export const BaseConfigs = {
-  debug: true,
+  debug: false,
 };
 
 export enum ProxyKeys {
   PROXY = '__$PROXY$__',
-  DATA = '__$data$__',
-  OB = '__$ob$__'
+  DATA = '__$DATA$__',
+  OB = '__$OB$__'
 }
 
 export interface IBaseConfig {
