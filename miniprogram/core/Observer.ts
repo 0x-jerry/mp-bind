@@ -20,10 +20,10 @@ export class Observer {
   name: string;
   prefix: string;
   raw: ObserverData;
-  deps: Record<string, Dep>;
+  deps: Map<string, Dep>;
 
   constructor(data: ObserverData, opt: IObserverOptions) {
-    this.deps = {};
+    this.deps = new Map();
 
     this.parent = opt.parent;
     this.update = opt.update;
@@ -44,7 +44,14 @@ export class Observer {
   }
 
   getDep(key: string) {
-    return this.deps[key] || (this.deps[key] = new Dep());
+    let dep = this.deps.get(key);
+
+    if (!dep) {
+      dep = new Dep();
+      this.deps.set(key, dep);
+    }
+
+    return dep;
   }
 
   prePath(key?: string) {
@@ -134,7 +141,7 @@ export class Observer {
       this.createSubObserver(value, key);
     }
 
-    this.getDep(key).notify()
+    this.getDep(key).notify();
   }
 
   getter(key: string) {
