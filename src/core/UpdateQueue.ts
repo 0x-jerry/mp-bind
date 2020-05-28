@@ -45,9 +45,13 @@ export class UpdateTaskQueue {
 
   compose() {
     return this.updateValues.reduce((pre, cur) => {
-      // 复制以防止修改 getter 影响 data
-      pre[cur.path] = cur.value === undefined ? null : JSONClone(cur.value);
-      logger(`Detect set undefined: ${cur.path}`)
+      if (cur.value === undefined) {
+        pre[cur.path] = null;
+        logger(`Detect set undefined: ${cur.path}`);
+      } else {
+        // 复制以防止修改 getter 影响 data
+        pre[cur.path] = JSONClone(cur.value);
+      }
 
       return pre;
     }, {} as JSONLike);
