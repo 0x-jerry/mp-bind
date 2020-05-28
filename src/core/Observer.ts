@@ -1,8 +1,15 @@
 import { def, isObject, isFrozen } from "./utils";
 import { ProxyKeys } from "./config";
+import { IUpdateValueOption } from "./UpdateQueue";
+
+interface IObserverUpdateOption {
+  path: string;
+  value: any;
+  oldValue: any;
+}
 
 export interface IObserverOptions {
-  update: <T = any>(path: string, newVal: T, oldVal: T) => void;
+  update: (opt: IUpdateValueOption & IObserverUpdateOption) => void;
   name?: string;
   prefix?: string;
   parent?: Observer;
@@ -112,19 +119,28 @@ export class Observer {
     for (const method of methods) {
       def(target, method, (...args: any) => {
         this.raw[method](...args);
-        this.parent?.setter(this.name, this.raw);
+        this.parent?.setter(this.name, this.raw, {
+          type: "array",
+          method: method as any,
+          params: args,
+        });
       });
     }
   }
 
-  setter(key: string, value: any) {
+  setter(key: string, value: any, opt: IUpdateValueOption = { type: "plain" }) {
     const oldVal = this.raw[key];
     if (oldVal === value) {
       return;
     }
 
     this.raw[key] = value;
-    this.update(this.prePath(key), value, oldVal);
+    this.update({
+      ...opt,
+      path: this.prePath(key),
+      value,
+      oldValue: oldVal,
+    });
 
     if (isObject(value)) {
       this.createSubObserver(value, key);

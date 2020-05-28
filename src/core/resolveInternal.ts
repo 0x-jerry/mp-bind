@@ -1,5 +1,5 @@
 import { BindPrototype, PrototypeConfig } from "./bind";
-import { BaseConfigs, ProxyKeys } from "./config";
+import { configs, ProxyKeys } from "./config";
 import { def } from "./utils";
 import { UpdateTaskQueue, JSONLike } from "./UpdateQueue";
 import { Observer } from "./Observer";
@@ -11,12 +11,12 @@ export interface InternalInstance extends Page.PageInstance {
   [key: string]: any;
 }
 
-export interface ProxyInstance<T = any, K = any> extends PrototypeConfig {
-  target: Page.PageInstance<T, K>;
+export interface ProxyInstance extends PrototypeConfig {
+  target: Page.PageInstance;
   data: JSONLike;
-  // getter: Record<string, Watcher>;
   watch: Record<string, <T>(newVal: T, oldVal: T) => void>;
   updateTask: UpdateTaskQueue;
+  triggerWatch: <T>(path: string, newVal: T, oldVal: T) => void;
 }
 
 function bindFunction(
@@ -37,6 +37,13 @@ function bindWatch(
   }
 }
 
+function bindUnobserveData(
+  internal: InternalInstance,
+  { tpl }: PrototypeConfig
+) {
+  configs.unobserveKeys.forEach((key) => (internal[key] = tpl[key]));
+}
+
 function bindGetter(
   internal: InternalInstance,
   { propTypeMap }: PrototypeConfig
@@ -51,39 +58,24 @@ function bindGetter(
   internal[ProxyKeys.PROXY].updateTask.flush();
 }
 
-function emitWatch<T = any>(
-  instance: InternalInstance,
-  path: string,
-  newVal: T,
-  oldVal: T
-) {
-  const func = instance[ProxyKeys.PROXY].watch[path];
-  if (func) {
-    func(newVal, oldVal);
-  }
-}
-
-function observe(target: InternalInstance, { propTypeMap }: PrototypeConfig) {
+function observe(internal: InternalInstance, { propTypeMap }: PrototypeConfig) {
   for (const key of propTypeMap.data) {
-    Object.defineProperty(target, key, {
+    Object.defineProperty(internal, key, {
       get() {
-        return target[ProxyKeys.DATA][key];
+        return internal[ProxyKeys.DATA][key];
       },
       set(value) {
-        target[ProxyKeys.DATA][key] = value;
+        internal[ProxyKeys.DATA][key] = value;
       },
     });
   }
 
-  new Observer(target[ProxyKeys.DATA], {
-    update: (path, newVal, oldVal) => {
-      emitWatch(target, path, newVal, oldVal);
+  new Observer(internal[ProxyKeys.DATA], {
+    update: (opt) => {
+      const { path, value, oldValue } = opt;
+      internal[ProxyKeys.PROXY].triggerWatch(path, value, oldValue);
 
-      target[ProxyKeys.PROXY].updateTask.push({
-        mode: "data",
-        value: newVal as any,
-        path: path,
-      });
+      internal[ProxyKeys.PROXY].updateTask.push(opt);
     },
   });
 }
@@ -104,9 +96,9 @@ export function resolveOnload(target: BindPrototype, opt: PrototypeConfig) {
   const initKey = opt.type === "page" ? "onLoad" : "onInit";
 
   target[initKey] = function (this: InternalInstance, ...args: any) {
-    if (BaseConfigs.debug) {
+    if (configs.debug) {
       // @ts-ignore
-      Page.page = this;
+      configs.platformConf.page.page = this;
     }
 
     // 注意 this !== target
@@ -116,6 +108,12 @@ export function resolveOnload(target: BindPrototype, opt: PrototypeConfig) {
       data: this.data,
       watch: {},
       updateTask: new UpdateTaskQueue(this),
+      triggerWatch(path, newVal, oldVal) {
+        const func = internal.watch[path];
+        if (func) {
+          func(newVal, oldVal);
+        }
+      },
     };
 
     def(this, ProxyKeys.PROXY, internal);
@@ -123,6 +121,7 @@ export function resolveOnload(target: BindPrototype, opt: PrototypeConfig) {
 
     bindFunction(this, opt);
     bindWatch(this, opt);
+    bindUnobserveData(this, opt);
     observe(this, opt);
     bindGetter(this, opt);
 

@@ -2,6 +2,7 @@ import { JSONLike } from "./UpdateQueue";
 import { isFunction } from "./utils";
 import { resolveOnload } from "./resolveInternal";
 import { Base } from "./Base";
+import { configs } from "./config";
 
 export interface Prototype extends Base {
   [key: string]: any;
@@ -76,7 +77,7 @@ function getPropType(obj: Object, prop: string): keyof IPropTypeMap {
  *
  */
 function getPropTypeMap(tpl: Prototype) {
-  const excludeKeys = config.excludeBindKeys;
+  const excludeKeys = ["constructor", ...configs.unobserveKeys];
 
   const protoTypeMap: IPropTypeMap = {
     data: [],
@@ -130,12 +131,6 @@ function bindLifeCycle(
   }
 }
 
-const config = {
-  excludeBindKeys: ["constructor"],
-  // todo, use this prop to init lifecycle
-  lifeCycles: [],
-};
-
 export function bind(tpl: Prototype, type: PrototypeConfig["type"] = "page") {
   const target: BindPrototype = {};
   const propTypeMap: IPropTypeMap = getPropTypeMap(tpl);
@@ -151,9 +146,8 @@ export function bind(tpl: Prototype, type: PrototypeConfig["type"] = "page") {
   resolveOnload(target, opt);
 
   if (type === "page") {
-    Page(target);
+    configs.platformConf.page.ctor(target);
   } else {
-    // @ts-ignore
-    Component(target);
+    configs.platformConf.component.ctor(target);
   }
 }

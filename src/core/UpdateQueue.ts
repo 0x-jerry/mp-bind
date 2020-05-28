@@ -14,13 +14,24 @@ export interface JSONLike {
     | JSONLike[];
 }
 
-export interface UpdateValue {
+export interface IUpdateArrayOption {
+  type: "array";
+  method: keyof Array<any>;
+  params: any[];
+}
+
+export interface IUpdatePlainOption {
+  type: "plain";
+}
+
+export type IUpdateValueOption = IUpdatePlainOption | IUpdateArrayOption;
+
+export interface IUpdateValue {
   path: string;
-  mode: "data" | "watcher";
-  type?: "plain" | "object" | "array";
-  method?: keyof Array<any>;
   value: JSONLike | JSONLike[];
 }
+
+export type UpdateValue = IUpdateValue & IUpdateValueOption;
 
 export class UpdateTaskQueue {
   internal: InternalInstance;

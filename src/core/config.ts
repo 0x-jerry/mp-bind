@@ -1,7 +1,18 @@
-export const BaseConfigs: IBaseConfig = {
-  debug: false,
-  platform: "wx",
-};
+export interface IBaseConfig {
+  debug: boolean;
+  platform: "ali" | "wx";
+  unobserveKeys: string[];
+  readonly platformConf: PlatformConfig;
+}
+
+interface PlatformConfig {
+  page: {
+    ctor: any;
+  };
+  component: {
+    ctor: any;
+  };
+}
 
 export enum ProxyKeys {
   PROXY = "__$PROXY$__",
@@ -9,11 +20,39 @@ export enum ProxyKeys {
   OB = "__$OB$__",
 }
 
-export interface IBaseConfig {
-  debug: boolean;
-  platform: "ali" | "wx";
-}
+const wxPlatformConfig: PlatformConfig = {
+  page: {
+    ctor: Page,
+  },
+  component: {
+    // @ts-ignore
+    ctor: Component,
+  },
+};
+
+const aliPlatformConfig: PlatformConfig = {
+  page: {
+    ctor: Page,
+  },
+  component: {
+    // @ts-ignore
+    ctor: Component,
+  },
+};
+
+export const configs: IBaseConfig = {
+  debug: false,
+  platform: "wx",
+  unobserveKeys: ["frozen"],
+  get platformConf() {
+    const map = {
+      wx: wxPlatformConfig,
+      ali: aliPlatformConfig,
+    };
+    return map[configs.platform];
+  },
+};
 
 export function setConfig(config: Partial<IBaseConfig> = {}) {
-  BaseConfigs.debug = !!config.debug;
+  configs.debug = !!config.debug;
 }

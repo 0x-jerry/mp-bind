@@ -1,5 +1,3 @@
-import { BaseConfigs } from "./config";
-
 export class Base {
   /**
    * update data accord to attribute `data-name`
@@ -27,15 +25,7 @@ export class Base {
   }
 }
 
-export class BasePage extends Base {
-  constructor() {
-    super();
-    if (BaseConfigs.debug) {
-      // @ts-ignore
-      (Page.pages = Page.pages || []).push(this);
-    }
-  }
-}
+export class BasePage extends Base {}
 
 export class BaseComponent extends Base {
   properties = {};
