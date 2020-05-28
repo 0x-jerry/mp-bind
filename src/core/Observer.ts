@@ -1,6 +1,7 @@
 import { def, isObject, isFrozen } from "./utils";
 import { ProxyKeys } from "./config";
 import { IUpdateValueOption } from "./UpdateQueue";
+import { ArrayMethod } from "./ali";
 
 interface IObserverUpdateOption {
   path: string;
@@ -106,7 +107,7 @@ export class Observer {
   }
 
   observeArrayMethod(target: any[]) {
-    const methods = [
+    const methods: ArrayMethod[] = [
       "push",
       "pop",
       "shift",
@@ -118,11 +119,14 @@ export class Observer {
 
     for (const method of methods) {
       def(target, method, (...args: any) => {
+        const rawLen = this.raw.length;
+
         this.raw[method](...args);
         this.parent?.setter(this.name, this.raw, {
           type: "array",
-          method: method as any,
+          method: method,
           params: args,
+          len: rawLen,
         });
       });
     }

@@ -1,7 +1,8 @@
 import { nextTick, isObject, JSONClone, shallowEqual } from "./utils";
 import { logger } from "./Logger";
 import { InternalInstance } from "./resolveInternal";
-import { ProxyKeys } from "./config";
+import { ProxyKeys, configs } from "./config";
+import { ArrayMethod, calcSpliceParam, isSupportArrayMethod } from "./ali";
 
 export interface JSONLike {
   [key: string]:
@@ -16,8 +17,9 @@ export interface JSONLike {
 
 export interface IUpdateArrayOption {
   type: "array";
-  method: keyof Array<any>;
+  method: ArrayMethod;
   params: any[];
+  len: number;
 }
 
 export interface IUpdatePlainOption {
@@ -33,19 +35,33 @@ export interface IUpdateValue {
 
 export type UpdateValue = IUpdateValue & IUpdateValueOption;
 
+function getSafeValue(path: string, val: any) {
+  if (val === undefined) {
+    logger(`Detect undefined: ${path}`);
+    // logger()
+  }
+  return val === undefined ? null : val;
+}
+
 export class UpdateTaskQueue {
   internal: InternalInstance;
-  updateValues: UpdateValue[];
+  updateValues: Map<string, IUpdateValue & IUpdatePlainOption>;
   waitForUpdate: boolean;
+  updateArrayValues: Map<string, IUpdateValue & IUpdateArrayOption>;
 
   constructor(page: InternalInstance) {
     this.internal = page;
-    this.updateValues = [];
+    this.updateValues = new Map();
+    this.updateArrayValues = new Map();
     this.waitForUpdate = false;
   }
 
   push(value: UpdateValue) {
-    this.updateValues.push(value);
+    if (value.type === "array") {
+      this.updateArrayValues.set(value.path, value);
+    } else {
+      this.updateValues.set(value.path, value);
+    }
 
     if (this.waitForUpdate) {
       return;
@@ -55,18 +71,18 @@ export class UpdateTaskQueue {
     this.flush();
   }
 
-  compose() {
-    const data = this.updateValues.reduce((pre, cur) => {
-      if (cur.value === undefined) {
-        pre[cur.path] = null;
-        logger(`Detect set undefined: ${cur.path}`);
-      } else {
-        // 复制以防止修改 getter 影响 data
-        pre[cur.path] = cur.value;
-      }
+  composeData() {
+    const data: Record<string, any> = {};
 
-      return pre;
-    }, {} as JSONLike);
+    this.updateValues.forEach(
+      (val) => (data[val.path] = getSafeValue(val.path, val.value))
+    );
+
+    return data;
+  }
+
+  computeGetter() {
+    const data: JSONLike = {};
 
     Object.keys(this.internal[ProxyKeys.PROXY].propTypeMap.getter).forEach(
       (key) => {
@@ -78,17 +94,56 @@ export class UpdateTaskQueue {
       }
     );
 
+    return data;
+  }
+
+  composeArray() {
+    const data: Record<string, any> = {};
+
+    this.updateArrayValues.forEach((val) => {
+      if (configs.platform === "ali" && isSupportArrayMethod(val.method)) {
+        data[val.path] = calcSpliceParam(val.method, val.params, val.len);
+      } else {
+        this.push({
+          ...val,
+          type: "plain",
+        });
+      }
+    });
+
     return JSONClone(data);
+  }
+
+  compose() {
+    // 必须先计算 array，因为，如果 array 不支持优化，就会后退到 data
+    const array = this.composeArray();
+    const getter = this.computeGetter();
+    const data = this.composeData();
+
+    return {
+      array,
+      data: Object.assign({}, data, getter),
+    };
   }
 
   flush() {
     nextTick(() => {
-      const data = this.compose();
-      logger("Update data", data, this.updateValues);
-      this.internal.setData!(data);
-      this.updateValues = [];
+      this.setData();
+      this.updateValues.clear();
       this.waitForUpdate = false;
     });
+  }
+
+  setData() {
+    const data = JSONClone(this.compose());
+
+    this.internal.setData!(data.data);
+
+    if (configs.platform === "ali") {
+      this.internal.$spliceData(data.array);
+    }
+
+    logger("Update data", data);
   }
 }
 
