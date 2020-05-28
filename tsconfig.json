@@ -24,7 +24,7 @@
     "lib": ["ES6", "DOM"]
   },
   "include": [
-    "./miniprogram/**/*.ts"
+    "src/**/*.ts"
   ],
   "exclude": [
     "node_modules",

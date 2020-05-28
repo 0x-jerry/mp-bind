@@ -3,7 +3,7 @@
 	"packOptions": {
 		"ignore": []
 	},
-	"miniprogramRoot": "miniprogram/",
+	"miniprogramRoot": "src/",
 	"compileType": "miniprogram",
 	"libVersion": "2.4.0",
 	"projectname": "mp-bind",

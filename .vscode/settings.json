@@ -23,6 +23,6 @@
     "**/.hg": true,
     "**/CVS": true,
     "**/.DS_Store": true,
-    "miniprogram/**/*.js": true
+    "src/**/*.js": true
   }
 }
