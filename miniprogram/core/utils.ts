@@ -42,3 +42,7 @@ export function shallowEqual(objA: JSONLike, objB: JSONLike) {
 
   return objA === objB;
 }
+
+export const noop = () => {}
+
+export const empty = Object.freeze({})

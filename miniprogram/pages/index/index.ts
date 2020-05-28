@@ -50,13 +50,13 @@ export class Index extends BasePage {
   }
 
   hello() {
-    console.log("hello", this.todoList);
+    console.log("hello");
   }
 
   onLoad() {
     this.hello();
     this.todoMsg = '200'
-    console.log("xx load", this);
+    console.log('loaded')
   }
 }
 

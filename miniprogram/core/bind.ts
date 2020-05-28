@@ -1,7 +1,6 @@
 import { JSONLike } from "./UpdateQueue";
 import { isFunction } from "./utils";
 import { resolveOnload } from "./resolveInternal";
-import { logger } from "./Logger";
 
 export interface Prototype {
   [key: string]: any;
@@ -145,8 +144,6 @@ export function bind(tpl: Prototype, type: PrototypeConfig["type"] = "page") {
     tpl,
     propTypeMap,
   };
-
-  logger("init bind option", opt);
 
   bindData(target, opt);
   bindLifeCycle(target, opt);

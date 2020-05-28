@@ -1,7 +1,6 @@
-import { ComputedValue } from "./Computed";
+import { Dep } from "./Dep";
 import { def, isObject } from "./utils";
 import { ProxyKeys } from "./config";
-import { logger } from "./Logger";
 
 export interface IObserverOptions {
   update: <T = any>(path: string, newVal: T, oldVal: T) => void;
@@ -21,7 +20,7 @@ export class Observer {
   name: string;
   prefix: string;
   raw: ObserverData;
-  deps: Record<string, Set<ComputedValue>>;
+  deps: Record<string, Dep>;
 
   constructor(data: ObserverData, opt: IObserverOptions) {
     this.deps = {};
@@ -42,6 +41,10 @@ export class Observer {
         this.observe(data, key);
       });
     }
+  }
+
+  getDep(key: string) {
+    return this.deps[key] || (this.deps[key] = new Dep());
   }
 
   prePath(key?: string) {
@@ -87,7 +90,7 @@ export class Observer {
 
     if (ob) {
       ob.name = name;
-      ob.prefix = this.prePath(name)
+      ob.prefix = this.prePath(name);
       return;
     }
 
@@ -119,7 +122,6 @@ export class Observer {
   }
 
   setter(key: string, value: any) {
-    logger("setter", key, value);
     const oldVal = this.raw[key];
     if (oldVal === value) {
       return;
@@ -131,9 +133,15 @@ export class Observer {
     if (isObject(value)) {
       this.createSubObserver(value, key);
     }
+
+    this.getDep(key).notify()
   }
 
   getter(key: string) {
+    if (Dep.current) {
+      this.getDep(key).sub(Dep.current);
+    }
+
     return this.raw[key];
   }
 }

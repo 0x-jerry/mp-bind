@@ -3,7 +3,7 @@ import { BaseConfigs, ProxyKeys } from "./config";
 import { def, JSONClone } from "./utils";
 import { UpdateTaskQueue, JSONLike } from "./UpdateQueue";
 import { Observer } from "./Observer";
-import { logger } from "./Logger";
+import { Watcher } from "./Watcher";
 
 export interface InternalInstance extends Page.PageInstance {
   [ProxyKeys.PROXY]: ProxyInstance;
@@ -14,7 +14,7 @@ export interface InternalInstance extends Page.PageInstance {
 export interface ProxyInstance<T = any, K = any> {
   target: Page.PageInstance<T, K>;
   data: JSONLike;
-  getter: Record<string, () => any>;
+  getter: Record<string, Watcher>;
   watch: Record<string, <T>(newVal: T, oldVal: T) => void>;
   updateTask: UpdateTaskQueue;
 }
@@ -42,9 +42,17 @@ function bindGetter(
   { propTypeMap }: PrototypeConfig
 ) {
   for (const key of Object.keys(propTypeMap.getter)) {
-    internal[ProxyKeys.PROXY].getter[key] = propTypeMap.getter[key].bind(
-      internal
+    internal[ProxyKeys.PROXY].getter[key] = new Watcher(
+      internal,
+      key,
+      propTypeMap.getter[key]
     );
+
+    Object.defineProperty(internal, key, {
+      get() {
+        return internal[ProxyKeys.PROXY].getter[key].value;
+      },
+    });
   }
 }
 
@@ -74,7 +82,6 @@ function observe(target: InternalInstance, { propTypeMap }: PrototypeConfig) {
 
   new Observer(target[ProxyKeys.DATA], {
     update: (path, newVal, oldVal) => {
-      logger("observer update", path, newVal, oldVal);
       emitWatch(target, path, newVal, oldVal);
 
       target[ProxyKeys.PROXY].updateTask.push({
@@ -90,7 +97,6 @@ export function resolveOnload(target: BindPrototype, opt: PrototypeConfig) {
   const initKey = opt.type === "page" ? "onLoad" : "onInit";
 
   target[initKey] = function (this: InternalInstance, ...args: any) {
-    logger("Page loaded", this);
     if (BaseConfigs.debug) {
       // @ts-ignore
       global.page = this;
@@ -110,8 +116,8 @@ export function resolveOnload(target: BindPrototype, opt: PrototypeConfig) {
 
     bindFunction(this, opt);
     bindWatch(this, opt);
-    bindGetter(this, opt);
     observe(this, opt);
+    bindGetter(this, opt);
 
     const { tpl } = opt;
 
