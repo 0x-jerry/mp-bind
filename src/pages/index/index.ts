@@ -1,9 +1,9 @@
 import { bind, BasePage } from "../../core/index";
 
 interface ITodo {
-  id: string | number
-  msg: string
-  done: boolean
+  id: string | number;
+  msg: string;
+  done: boolean;
 }
 
 export class Index extends BasePage {
@@ -22,8 +22,14 @@ export class Index extends BasePage {
 
   todoMsg = "";
 
+  // getter， 处理方式类似 vue 的 computed
   get total() {
     return this.todoList.length;
+  }
+
+  // watch, 监听 todoMsg，每当 todoMsg 更改，会触发此函数
+  $$todoMsg(newVal: string, oldVal: string) {
+    console.log("todo msg update:", newVal, oldVal);
   }
 
   add() {
@@ -55,7 +61,7 @@ export class Index extends BasePage {
   }
 
   onLoad() {
-    console.log('Todo app loaded')
+    console.log("Todo app loaded");
   }
 }
 
