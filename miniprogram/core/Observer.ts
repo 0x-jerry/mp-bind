@@ -1,5 +1,5 @@
 import { Dep } from "./Dep";
-import { def, isObject } from "./utils";
+import { def, isObject, isFrozen } from "./utils";
 import { ProxyKeys } from "./config";
 
 export interface IObserverOptions {
@@ -93,6 +93,10 @@ export class Observer {
   }
 
   createSubObserver(target: any, name: string) {
+    if (isFrozen(target)) {
+      return
+    }
+
     const ob: Observer | null = target[ProxyKeys.OB];
 
     if (ob) {

@@ -31,6 +31,10 @@ export function isFunction(target: any) {
   return typeof target === "function";
 }
 
+export function isFrozen(target: any) {
+  return Object.isFrozen(target)
+}
+
 export function nextTick(func: Function) {
   Promise.resolve().then(() => func());
 }

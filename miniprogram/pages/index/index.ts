@@ -18,6 +18,10 @@ export class Index extends BasePage {
 
   todoMsg = "";
 
+  frozen = Object.freeze({
+    hello: 3
+  })
+
   get completeList() {
     return this.todoList.filter((todo) => todo.done);
   }
