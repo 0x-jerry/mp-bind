@@ -22,9 +22,17 @@ export class Index extends BasePage {
 
   todoMsg = "";
 
+  hideComplete = false;
+
   // getter， 处理方式类似 vue 的 computed
   get total() {
     return this.todoList.length;
+  }
+
+  get showTodo() {
+    return this.todoList.filter((todo) =>
+      this.hideComplete ? !todo.done : true
+    );
   }
 
   // watch, 监听 todoMsg，每当 todoMsg 更改，会触发此函数
@@ -58,6 +66,10 @@ export class Index extends BasePage {
     if (todo) {
       todo.done = !todo.done;
     }
+  }
+
+  switchHide() {
+    this.hideComplete = !this.hideComplete;
   }
 
   onLoad() {

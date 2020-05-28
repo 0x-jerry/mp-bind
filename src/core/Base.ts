@@ -32,9 +32,7 @@ export class BasePage extends Base {
     super();
     if (BaseConfigs.debug) {
       // @ts-ignore
-      global.pages = global.pages || [];
-      // @ts-ignore
-      global.pages.push(this);
+      (Page.pages = Page.pages || []).push(this);
     }
   }
 }

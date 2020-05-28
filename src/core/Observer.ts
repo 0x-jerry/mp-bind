@@ -94,7 +94,7 @@ export class Observer {
 
   createSubObserver(target: any, name: string) {
     if (isFrozen(target)) {
-      return
+      return;
     }
 
     const ob: Observer | null = target[ProxyKeys.OB];
@@ -149,10 +149,26 @@ export class Observer {
   }
 
   getter(key: string) {
-    if (Dep.current) {
-      this.getDep(key).sub(Dep.current);
-    }
+    this.subWatch(key);
 
     return this.raw[key];
+  }
+
+  /**
+   * 添加依赖，如果是 Object，递归处理子属性
+   */
+  subWatch(key: string) {
+    if (!Dep.current) {
+      return;
+    }
+
+    this.getDep(key).sub(Dep.current);
+
+    const data = this.raw[key];
+    const ob: Observer = data[ProxyKeys.OB];
+
+    if (ob) {
+      Object.keys(data).forEach((objKey) => ob.getter(objKey));
+    }
   }
 }

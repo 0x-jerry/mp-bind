@@ -4,9 +4,10 @@
     <input class="input" bindinput="inputHelper" data-name="todoMsg" value="{{todoMsg}}" />
     <button class="btn" bindtap="add">添加({{total}})</button>
   </view>
+  <checkbox bindtap="switchHide" value="{{hideComplete}}"></checkbox>
 
-  <view class="flex" wx:for="{{todoList}}" wx:key="id">
-    <checkbox bindtap="switch" data-id="{{item.id}}" checked="{{item.done}}" ></checkbox>
+  <view class="flex" wx:for="{{showTodo}}" wx:key="id">
+    <checkbox bindtap="switch" data-id="{{item.id}}" checked="{{item.done}}"></checkbox>
     {{item.msg}}
     <button class="btn" bindtap="remove" data-id="{{item.id}}">删除</button>
   </view>

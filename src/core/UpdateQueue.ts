@@ -1,9 +1,16 @@
-import { nextTick, isObject } from "./utils";
+import { nextTick, isObject, JSONClone } from "./utils";
 import { logger } from "./Logger";
 import { InternalInstance } from "./resolveInternal";
 
 export interface JSONLike {
-  [key: string]: JSONLike | string | number | symbol | boolean | JSONLike[];
+  [key: string]:
+    | JSONLike
+    | null
+    | string
+    | number
+    | symbol
+    | boolean
+    | JSONLike[];
 }
 
 export interface UpdateValue {
@@ -38,7 +45,10 @@ export class UpdateTaskQueue {
 
   compose() {
     return this.updateValues.reduce((pre, cur) => {
-      pre[cur.path] = cur.value;
+      // 复制以防止修改 getter 影响 data
+      pre[cur.path] = cur.value === undefined ? null : JSONClone(cur.value);
+      logger(`Detect set undefined: ${cur.path}`)
+
       return pre;
     }, {} as JSONLike);
   }

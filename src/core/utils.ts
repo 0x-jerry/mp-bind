@@ -1,7 +1,7 @@
 import { JSONLike } from "./UpdateQueue";
 
 export function JSONClone<T>(data: T): T {
-  return data === undefined ? undefined : JSON.parse(JSON.stringify(data));
+  return isObject(data) ? JSON.parse(JSON.stringify(data)) : data;
 }
 
 export function def(
@@ -32,7 +32,7 @@ export function isFunction(target: any) {
 }
 
 export function isFrozen(target: any) {
-  return Object.isFrozen(target)
+  return Object.isFrozen(target);
 }
 
 export function nextTick(func: Function) {
@@ -47,6 +47,6 @@ export function shallowEqual(objA: JSONLike, objB: JSONLike) {
   return objA === objB;
 }
 
-export const noop = () => {}
+export const noop = () => {};
 
-export const empty = Object.freeze({})
+export const empty = Object.freeze({});
