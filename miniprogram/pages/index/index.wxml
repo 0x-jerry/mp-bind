@@ -2,7 +2,7 @@
 <view class="">
   <view class="flex">
     <input class="input" bindinput="inputHelper" data-name="todoMsg" value="{{todoMsg}}" />
-    <button class="btn" bindtap="add">添加</button>
+    <button class="btn" bindtap="add">添加({{total}})</button>
   </view>
 
   <view class="flex" wx:for="{{todoList}}" wx:key="id">
