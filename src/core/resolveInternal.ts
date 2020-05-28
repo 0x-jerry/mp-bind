@@ -3,7 +3,7 @@ import { BaseConfigs, ProxyKeys } from "./config";
 import { def } from "./utils";
 import { UpdateTaskQueue, JSONLike } from "./UpdateQueue";
 import { Observer } from "./Observer";
-import { Watcher } from "./Watcher";
+// import { Watcher } from "./Watcher";
 
 export interface InternalInstance extends Page.PageInstance {
   [ProxyKeys.PROXY]: ProxyInstance;
@@ -11,10 +11,10 @@ export interface InternalInstance extends Page.PageInstance {
   [key: string]: any;
 }
 
-export interface ProxyInstance<T = any, K = any> {
+export interface ProxyInstance<T = any, K = any> extends PrototypeConfig {
   target: Page.PageInstance<T, K>;
   data: JSONLike;
-  getter: Record<string, Watcher>;
+  // getter: Record<string, Watcher>;
   watch: Record<string, <T>(newVal: T, oldVal: T) => void>;
   updateTask: UpdateTaskQueue;
 }
@@ -42,18 +42,13 @@ function bindGetter(
   { propTypeMap }: PrototypeConfig
 ) {
   for (const key of Object.keys(propTypeMap.getter)) {
-    internal[ProxyKeys.PROXY].getter[key] = new Watcher(
-      internal,
-      key,
-      propTypeMap.getter[key]
-    );
-
     Object.defineProperty(internal, key, {
       get() {
-        return internal[ProxyKeys.PROXY].getter[key].value;
+        return propTypeMap.getter[key].call(internal);
       },
     });
   }
+  internal[ProxyKeys.PROXY].updateTask.flush();
 }
 
 function emitWatch<T = any>(
@@ -116,9 +111,9 @@ export function resolveOnload(target: BindPrototype, opt: PrototypeConfig) {
 
     // 注意 this !== target
     const internal: ProxyInstance = {
+      ...opt,
       target: this,
       data: this.data,
-      getter: {},
       watch: {},
       updateTask: new UpdateTaskQueue(this),
     };

@@ -1,4 +1,3 @@
-import { Dep } from "./Dep";
 import { def, isObject, isFrozen } from "./utils";
 import { ProxyKeys } from "./config";
 
@@ -20,11 +19,8 @@ export class Observer {
   name: string;
   prefix: string;
   raw: ObserverData;
-  deps: Map<string, Dep>;
 
   constructor(data: ObserverData, opt: IObserverOptions) {
-    this.deps = new Map();
-
     this.parent = opt.parent;
     this.update = opt.update;
     this.prefix = opt.prefix || "";
@@ -41,17 +37,6 @@ export class Observer {
         this.observe(data, key);
       });
     }
-  }
-
-  getDep(key: string) {
-    let dep = this.deps.get(key);
-
-    if (!dep) {
-      dep = new Dep();
-      this.deps.set(key, dep);
-    }
-
-    return dep;
   }
 
   prePath(key?: string) {
@@ -144,31 +129,9 @@ export class Observer {
     if (isObject(value)) {
       this.createSubObserver(value, key);
     }
-
-    this.getDep(key).notify();
   }
 
   getter(key: string) {
-    this.subWatch(key);
-
     return this.raw[key];
-  }
-
-  /**
-   * 添加依赖，如果是 Object，递归处理子属性
-   */
-  subWatch(key: string) {
-    if (!Dep.current) {
-      return;
-    }
-
-    this.getDep(key).sub(Dep.current);
-
-    const data = this.raw[key];
-    const ob: Observer = data[ProxyKeys.OB];
-
-    if (ob) {
-      Object.keys(data).forEach((objKey) => ob.getter(objKey));
-    }
   }
 }

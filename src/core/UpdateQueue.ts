@@ -1,6 +1,7 @@
-import { nextTick, isObject, JSONClone } from "./utils";
+import { nextTick, isObject, JSONClone, shallowEqual } from "./utils";
 import { logger } from "./Logger";
 import { InternalInstance } from "./resolveInternal";
+import { ProxyKeys } from "./config";
 
 export interface JSONLike {
   [key: string]:
@@ -44,17 +45,29 @@ export class UpdateTaskQueue {
   }
 
   compose() {
-    return this.updateValues.reduce((pre, cur) => {
+    const data = this.updateValues.reduce((pre, cur) => {
       if (cur.value === undefined) {
         pre[cur.path] = null;
         logger(`Detect set undefined: ${cur.path}`);
       } else {
         // 复制以防止修改 getter 影响 data
-        pre[cur.path] = JSONClone(cur.value);
+        pre[cur.path] = cur.value;
       }
 
       return pre;
     }, {} as JSONLike);
+
+    Object.keys(this.internal[ProxyKeys.PROXY].propTypeMap.getter).forEach(
+      (key) => {
+        const oldVal = this.internal.data[key];
+        const newVal = this.internal[key];
+        if (!shallowEqual(oldVal, newVal)) {
+          data[key] = newVal;
+        }
+      }
+    );
+
+    return JSONClone(data);
   }
 
   flush() {
