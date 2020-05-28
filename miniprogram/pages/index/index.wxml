@@ -6,7 +6,7 @@
   </view>
 
   <view class="flex" wx:for="{{todoList}}" wx:key="id">
-    <checkbox bindtap="switch" data-id="{{item.id}}" value="{{item.done}}" ></checkbox>
+    <checkbox bindtap="switch" data-id="{{item.id}}" checked="{{item.done}}" ></checkbox>
     {{item.msg}}
     <button class="btn" bindtap="remove" data-id="{{item.id}}">删除</button>
   </view>

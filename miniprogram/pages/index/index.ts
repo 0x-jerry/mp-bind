@@ -9,6 +9,11 @@ export class Index extends BasePage {
       msg: "hello",
       done: false,
     },
+    {
+      id: 2,
+      msg: "world",
+      done: true,
+    },
   ];
 
   todoMsg = "";
