@@ -1,5 +1,5 @@
 import { JSONLike } from "./UpdateQueue";
-import { isFunction } from "./utils";
+import { isFunction, isFrozen, isObject } from "./utils";
 import { resolveOnload } from "./resolveInternal";
 import { Base } from "./Base";
 import { configs } from "./config";
@@ -19,6 +19,7 @@ interface IPropTypeMap {
   method: string[];
   getter: Record<string, () => any>;
   watch: string[];
+  freeze: string[];
 }
 
 export interface PrototypeConfig {
@@ -44,11 +45,11 @@ function isGetter(obj: Object, prop: string) {
   return false;
 }
 
-function getGetter(obj: Object, prop: string) {
+function getGetter(obj: any, prop: string) {
   return isGetter(obj, prop) as () => any;
 }
 
-function getPropType(obj: Object, prop: string): keyof IPropTypeMap {
+function getPropType(obj: any, prop: string): keyof IPropTypeMap {
   if (isGetter(obj, prop)) {
     return "getter";
   }
@@ -68,6 +69,10 @@ function getPropType(obj: Object, prop: string): keyof IPropTypeMap {
     return "method";
   }
 
+  if (isObject(obj[prop]) && isFrozen(obj[prop])) {
+    return "freeze";
+  }
+
   return "data";
 }
 
@@ -84,6 +89,7 @@ function getPropTypeMap(tpl: Prototype, tplType: PrototypeConfig["type"]) {
     getter: {},
     lifecycle: [],
     watch: [],
+    freeze: [],
   };
 
   let proto = tpl;

@@ -1,8 +1,9 @@
 import { BindPrototype, PrototypeConfig } from "./bind";
 import { configs, ProxyKeys } from "./config";
-import { def } from "./utils";
+import { def, JSONClone, isFrozen } from "./utils";
 import { UpdateTaskQueue, JSONLike } from "./UpdateQueue";
 import { Observer } from "./Observer";
+import { logger } from "./Logger";
 // import { Watcher } from "./Watcher";
 
 export interface InternalInstance extends Page.PageInstance {
@@ -41,7 +42,11 @@ function bindUnobserveData(
   internal: InternalInstance,
   { tpl }: PrototypeConfig
 ) {
-  configs.unobserveKeys.forEach((key) => (internal[key] = tpl[key]));
+  const keys = configs.unobserveKeys.concat(
+    internal[ProxyKeys.PROXY].propTypeMap.freeze
+  );
+
+  keys.forEach((key) => (internal[key] = tpl[key]));
 }
 
 function bindGetter(
@@ -86,7 +91,8 @@ function observe(internal: InternalInstance, { propTypeMap }: PrototypeConfig) {
 function getRawData({ tpl, propTypeMap }: PrototypeConfig) {
   const data: any = {};
   for (const key of propTypeMap.data) {
-    data[key] = tpl[key];
+    // 复制一遍，防止新页面更
+    data[key] = JSONClone(tpl[key]);
   }
 
   return data;
@@ -101,22 +107,23 @@ export function resolveOnload(target: BindPrototype, opt: PrototypeConfig) {
       configs.platformConf.page.ctor.page = this;
     }
 
+    logger.log("Page loaded", this);
     // 注意 this !== target
-    const internal: ProxyInstance = {
+    const proxy: ProxyInstance = {
       ...opt,
       target: this,
       data: this.data,
       watch: {},
       updateTask: new UpdateTaskQueue(this),
       triggerWatch(path, newVal, oldVal) {
-        const func = internal.watch[path];
+        const func = proxy.watch[path];
         if (func) {
           func(newVal, oldVal);
         }
       },
     };
 
-    def(this, ProxyKeys.PROXY, internal);
+    def(this, ProxyKeys.PROXY, proxy);
     def(this, ProxyKeys.DATA, getRawData(opt));
 
     bindFunction(this, opt);

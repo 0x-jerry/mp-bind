@@ -139,12 +139,12 @@ export class UpdateTaskQueue {
     const data = JSONClone(this.compose());
 
     this.internal.setData!(data.data);
+    logger.log(`Set data`, data.data);
 
     if (configs.platform === "ali") {
       this.internal.$spliceData(data.array);
+      logger.log(`Set array`, data.array);
     }
-
-    logger.log("Update data", data);
   }
 }
 
