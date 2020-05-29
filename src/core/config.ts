@@ -7,8 +7,8 @@ import {
 export interface IBaseOption {
   debug: boolean;
   platform: "ali" | "wx";
-  unobserveKeys: string[];
-  watchPrefix: string;
+  unobserveKeys: (string | RegExp)[];
+  watcherKeyRule: RegExp;
 }
 
 export interface IBaseConfig extends IBaseOption {
@@ -25,7 +25,7 @@ export const configs: IBaseConfig = {
   debug: false,
   platform: "wx",
   unobserveKeys: ["frozen"],
-  watchPrefix: "$$",
+  watcherKeyRule: /\$\$/,
   get platformConf() {
     const map = {
       wx: wxPlatformConfig,

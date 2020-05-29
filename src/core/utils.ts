@@ -50,3 +50,19 @@ export function shallowEqual(objA: JSONLike, objB: JSONLike) {
 export const noop = () => {};
 
 export const empty = Object.freeze({});
+
+export function cached<T extends (arg: any) => any>(func: T): T {
+  const db = new Map<any, any>();
+
+  return function (arg: any) {
+    let val = db.get(arg);
+
+    if (val !== undefined) {
+      return val;
+    }
+
+    val = func(arg);
+    db.set(arg, val);
+    return val;
+  } as T;
+}

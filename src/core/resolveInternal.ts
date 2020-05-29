@@ -1,4 +1,4 @@
-import { BindPrototype, PrototypeConfig } from "./bind";
+import { Prototype, PrototypeType, IPropTypeMap } from "./bind";
 import { configs, ProxyKeys } from "./config";
 import { def, JSONClone } from "./utils";
 import { UpdateTaskQueue, JSONLike } from "./UpdateQueue";
@@ -11,47 +11,27 @@ export interface InternalInstance extends Page.PageInstance {
   [key: string]: any;
 }
 
-export interface ProxyInstance extends PrototypeConfig {
-  target: Page.PageInstance;
+export interface ProxyInstance {
+  type: PrototypeType;
   data: JSONLike;
   watch: Record<string, <T>(newVal: T, oldVal: T) => void>;
   updateTask: UpdateTaskQueue;
   triggerWatch: <T>(path: string, newVal: T, oldVal: T) => void;
 }
 
-function bindFunction(
-  internal: InternalInstance,
-  { tpl, propTypeMap }: PrototypeConfig
-) {
-  for (const key of propTypeMap.method) {
-    internal[key] = tpl[key];
+interface BindOption {
+  target: Prototype;
+  type: PrototypeType;
+  propTypeMap: IPropTypeMap;
+}
+
+function bindWatch(internal: InternalInstance, { propTypeMap }: BindOption) {
+  for (const key of propTypeMap.watcher) {
+    internal[ProxyKeys.PROXY].watch[key.slice(2)] = internal[key];
   }
 }
 
-function bindWatch(
-  internal: InternalInstance,
-  { tpl, propTypeMap }: PrototypeConfig
-) {
-  for (const key of propTypeMap.watch) {
-    internal[ProxyKeys.PROXY].watch[key.slice(2)] = tpl[key];
-  }
-}
-
-function bindUnobserveData(
-  internal: InternalInstance,
-  { tpl }: PrototypeConfig
-) {
-  const keys = configs.unobserveKeys.concat(
-    internal[ProxyKeys.PROXY].propTypeMap.freeze
-  );
-
-  keys.forEach((key) => (internal[key] = tpl[key]));
-}
-
-function bindGetter(
-  internal: InternalInstance,
-  { propTypeMap }: PrototypeConfig
-) {
+function bindGetter(internal: InternalInstance, { propTypeMap }: BindOption) {
   for (const key of Object.keys(propTypeMap.getter)) {
     Object.defineProperty(internal, key, {
       get() {
@@ -59,10 +39,9 @@ function bindGetter(
       },
     });
   }
-  internal[ProxyKeys.PROXY].updateTask.flush();
 }
 
-function observe(internal: InternalInstance, { propTypeMap }: PrototypeConfig) {
+function observe(internal: InternalInstance, { propTypeMap }: BindOption) {
   for (const key of propTypeMap.data) {
     Object.defineProperty(internal, key, {
       get() {
@@ -87,33 +66,69 @@ function observe(internal: InternalInstance, { propTypeMap }: PrototypeConfig) {
 /**
  * 从 tpl 获取原始数据，以保证 frozen 逻辑正常
  */
-function getRawData({ tpl, propTypeMap }: PrototypeConfig) {
-  const data: any = {};
-  for (const key of propTypeMap.data) {
-    // 复制一遍，防止新页面更
-    data[key] = JSONClone(tpl[key]);
-  }
-
-  return data;
+function getRawData({ target }: BindOption) {
+  return JSONClone(target.data);
 }
 
-export function resolveOnload(target: BindPrototype, opt: PrototypeConfig) {
-  const initKey = opt.type === "page" ? "onLoad" : "onInit";
+function setEntryMethod(
+  entry: (internal: InternalInstance) => void,
+  { type, target }: BindOption
+) {
+  // Page
+  if (type === PrototypeType.page) {
+    const rawOnLoad: Function | undefined = target.onLoad;
 
-  target[initKey] = function (this: InternalInstance, ...args: any) {
+    target.onLoad = function (this: InternalInstance, ...args: any) {
+      entry(this);
+      rawOnLoad?.apply(this, args);
+      // 强制更新一次，确保 getter 更新
+      this[ProxyKeys.PROXY].updateTask.flush();
+    };
+  }
+
+  // Component
+  if (configs.platform === "wx") {
+    const rawCreated: Function | undefined = target.lifetimes.created;
+    target.lifetimes.created = function (this: InternalInstance, ...args: any) {
+      entry(this);
+      rawCreated?.apply(this, args);
+    };
+
+    const rawAttached: Function | undefined = target.lifetimes.attached;
+    target.lifetimes.attached = function (
+      this: InternalInstance,
+      ...args: any
+    ) {
+      // 强制更新一次，确保 getter 更新
+      this[ProxyKeys.PROXY].updateTask.flush();
+      rawAttached?.apply(this, args);
+    };
+  } else if (configs.platform === "ali") {
+    const rawOnInit: Function | undefined = target.onInit;
+
+    target.onInit = function (this: InternalInstance, ...args: any) {
+      entry(this);
+      rawOnInit?.apply(this, args);
+      // 强制更新一次，确保 getter 更新
+      this[ProxyKeys.PROXY].updateTask.flush();
+    };
+  }
+}
+
+export function resolveEntry(opt: BindOption) {
+  const entryFunc = function (internal: InternalInstance) {
     if (configs.debug) {
       // @ts-ignore
-      configs.platformConf.page.ctor.page = this;
+      configs.platformConf.page.ctor.page = internal;
     }
 
-    logger.log("Page loaded", this);
+    logger.log("Page loaded", internal);
     // 注意 this !== target
     const proxy: ProxyInstance = {
-      ...opt,
-      target: this,
-      data: this.data,
+      type: opt.type,
+      data: internal.data,
       watch: {},
-      updateTask: new UpdateTaskQueue(this),
+      updateTask: new UpdateTaskQueue(internal),
       triggerWatch(path, newVal, oldVal) {
         const func = proxy.watch[path];
         if (func) {
@@ -122,17 +137,14 @@ export function resolveOnload(target: BindPrototype, opt: PrototypeConfig) {
       },
     };
 
-    def(this, ProxyKeys.PROXY, proxy);
-    def(this, ProxyKeys.DATA, getRawData(opt));
+    def(internal, ProxyKeys.PROXY, proxy);
+    def(internal, ProxyKeys.DATA, getRawData(opt));
 
-    bindFunction(this, opt);
-    bindWatch(this, opt);
-    bindUnobserveData(this, opt);
-    observe(this, opt);
-    bindGetter(this, opt);
+    bindWatch(internal, opt);
+    observe(internal, opt);
 
-    const { tpl } = opt;
-
-    tpl[initKey]?.apply(this, args);
+    bindGetter(internal, opt);
   };
+
+  setEntryMethod(entryFunc, opt);
 }
