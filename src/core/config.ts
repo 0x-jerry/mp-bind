@@ -1,6 +1,9 @@
-export interface IBaseConfig {
+export interface IBaseOption {
   debug: boolean;
   platform: "ali" | "wx";
+}
+
+export interface IBaseConfig extends IBaseOption {
   unobserveKeys: string[];
   readonly platformConf: PlatformConfig;
 }
@@ -53,6 +56,6 @@ export const configs: IBaseConfig = {
   },
 };
 
-export function setConfig(config: Partial<IBaseConfig> = {}) {
-  configs.debug = !!config.debug;
+export function setConfig(opt: Partial<IBaseOption> = {}) {
+  Object.assign(configs, opt);
 }

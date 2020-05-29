@@ -130,6 +130,7 @@ export class UpdateTaskQueue {
     nextTick(() => {
       this.setData();
       this.updateValues.clear();
+      this.updateArrayValues.clear();
       this.waitForUpdate = false;
     });
   }
