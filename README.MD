@@ -10,6 +10,33 @@
 
 ## 功能介绍
 
+在使用之前，请先设置平台，`ali` 或者 `wx`，一般直接放在 app.js 里面就可以了
+
+```js
+// app.js
+import { setConfig } from "mp-bind";
+
+App({
+  onLaunch(options) {
+    console.info("App onLaunch");
+  },
+});
+
+setConfig({ platform: "ali", debug: false });
+```
+
+注意入口改为 bind
+
+```js
+import { bind } from "mp-bind";
+
+class A {
+  ...
+}
+
+bind(new A());
+```
+
 1. 直接更新数据，不需要 setData
 
 ```js
