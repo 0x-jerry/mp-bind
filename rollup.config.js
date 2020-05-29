@@ -1,5 +1,6 @@
-import typescript from "rollup-plugin-typescript";
+import typescript from "rollup-plugin-typescript2";
 import sourceMaps from "rollup-plugin-sourcemaps";
+import { terser } from "rollup-plugin-terser";
 
 export default {
   input: "src/core/index.ts",
@@ -8,11 +9,21 @@ export default {
     {
       format: "cjs",
       file: "dist/bind.cjs.js",
-      sourcemap: true,
     },
     {
       format: "es",
       file: "dist/bind.esm.js",
+    },
+    {
+      format: "cjs",
+      file: "dist/bind.cjs.min.js",
+      plugins: [terser()],
+      sourcemap: true,
+    },
+    {
+      format: "es",
+      file: "dist/bind.esm.min.js",
+      plugins: [terser()],
       sourcemap: true,
     },
   ],
