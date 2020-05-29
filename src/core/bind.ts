@@ -3,6 +3,7 @@ import { isFunction } from "./utils";
 import { resolveOnload } from "./resolveInternal";
 import { Base } from "./Base";
 import { configs } from "./config";
+import { logger } from "./Logger";
 
 export interface Prototype extends Base {
   [key: string]: any;
@@ -73,10 +74,8 @@ function getPropType(obj: Object, prop: string): keyof IPropTypeMap {
 /**
  * 分析 tpl 中的 key 对应的类型, 并分类
  *
- * exclude keys: constructor
- *
  */
-function getPropTypeMap(tpl: Prototype) {
+function getPropTypeMap(tpl: Prototype, tplType: PrototypeConfig["type"]) {
   const excludeKeys = ["constructor", ...configs.unobserveKeys];
 
   const protoTypeMap: IPropTypeMap = {
@@ -91,7 +90,13 @@ function getPropTypeMap(tpl: Prototype) {
 
   while (!proto.isPrototypeOf(Object)) {
     const names = Object.getOwnPropertyNames(proto);
+
     for (const key of names) {
+      if (configs.platformConf[tplType].reserveKeys.indexOf(key) >= 0) {
+        logger.warn("Please do not set reserve key:", key);
+        continue;
+      }
+
       if (excludeKeys.indexOf(key) >= 0) {
         continue;
       }
@@ -133,7 +138,7 @@ function bindLifeCycle(
 
 export function bind(tpl: Prototype, type: PrototypeConfig["type"] = "page") {
   const target: BindPrototype = {};
-  const propTypeMap: IPropTypeMap = getPropTypeMap(tpl);
+  const propTypeMap: IPropTypeMap = getPropTypeMap(tpl, type);
 
   const opt: PrototypeConfig = {
     type,

@@ -98,7 +98,7 @@ export function resolveOnload(target: BindPrototype, opt: PrototypeConfig) {
   target[initKey] = function (this: InternalInstance, ...args: any) {
     if (configs.debug) {
       // @ts-ignore
-      configs.platformConf.page.page = this;
+      configs.platformConf.page.ctor.page = this;
     }
 
     // 注意 this !== target

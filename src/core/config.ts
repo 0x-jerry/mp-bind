@@ -1,3 +1,5 @@
+import { wxPlatformConfig, aliPlatformConfig, PlatformConfig } from "./platform";
+
 export interface IBaseOption {
   debug: boolean;
   platform: "ali" | "wx";
@@ -8,40 +10,11 @@ export interface IBaseConfig extends IBaseOption {
   readonly platformConf: PlatformConfig;
 }
 
-interface PlatformConfig {
-  page: {
-    ctor: any;
-  };
-  component: {
-    ctor: any;
-  };
-}
-
 export enum ProxyKeys {
   PROXY = "__$PROXY$__",
   DATA = "__$DATA$__",
   OB = "__$OB$__",
 }
-
-const wxPlatformConfig: PlatformConfig = {
-  page: {
-    ctor: Page,
-  },
-  component: {
-    // @ts-ignore
-    ctor: Component,
-  },
-};
-
-const aliPlatformConfig: PlatformConfig = {
-  page: {
-    ctor: Page,
-  },
-  component: {
-    // @ts-ignore
-    ctor: Component,
-  },
-};
 
 export const configs: IBaseConfig = {
   debug: false,

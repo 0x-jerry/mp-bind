@@ -37,7 +37,7 @@ export type UpdateValue = IUpdateValue & IUpdateValueOption;
 
 function getSafeValue(path: string, val: any) {
   if (val === undefined) {
-    logger(`Detect undefined: ${path}`);
+    logger.warn(`Detect undefined: ${path}`);
     // logger()
   }
   return val === undefined ? null : val;
@@ -144,7 +144,7 @@ export class UpdateTaskQueue {
       this.internal.$spliceData(data.array);
     }
 
-    logger("Update data", data);
+    logger.log("Update data", data);
   }
 }
 
