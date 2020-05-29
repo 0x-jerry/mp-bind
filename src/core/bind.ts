@@ -49,7 +49,11 @@ function getGetter(obj: any, prop: string) {
   return isGetter(obj, prop) as () => any;
 }
 
-function getPropType(obj: any, prop: string): keyof IPropTypeMap {
+function getPropType(
+  obj: any,
+  prop: string,
+  tplType: PrototypeConfig["type"]
+): keyof IPropTypeMap {
   if (isGetter(obj, prop)) {
     return "getter";
   }
@@ -58,11 +62,13 @@ function getPropType(obj: any, prop: string): keyof IPropTypeMap {
   const value = obj[prop];
 
   if (isFunction(value)) {
-    if (prop.startsWith("on")) {
+    const lifecycleKeys = configs.platformConf[tplType].lifecycleKeys;
+
+    if (lifecycleKeys.indexOf(prop) >= 0) {
       return "lifecycle";
     }
 
-    if (prop.startsWith("$$")) {
+    if (prop.startsWith(configs.watchPrefix)) {
       return "watch";
     }
 
@@ -107,7 +113,7 @@ function getPropTypeMap(tpl: Prototype, tplType: PrototypeConfig["type"]) {
         continue;
       }
 
-      const type = getPropType(tpl, key);
+      const type = getPropType(tpl, key, tplType);
       if (type === "getter") {
         protoTypeMap[type][key] = getGetter(tpl, key);
       } else {

@@ -1,5 +1,6 @@
 export interface PlatformComponentConfig {
   reserveKeys: string[];
+  lifecycleKeys: string[];
   ctor: any;
 }
 
@@ -11,6 +12,7 @@ export interface PlatformConfig {
 export const aliPlatformConfig: PlatformConfig = {
   page: {
     reserveKeys: [
+      "mixins",
       "applyDataUpdates",
       "createIntersectionObserver",
       "createSelectorQuery",
@@ -31,10 +33,22 @@ export const aliPlatformConfig: PlatformConfig = {
       "route",
       "options",
     ],
+    lifecycleKeys: [
+      "onLoad",
+      "onShow",
+      "onReady",
+      "onHide",
+      "onUnload",
+      "onTitleClick",
+      "onPullDownRefresh",
+      "onReachBottom",
+      "onShareAppMessage",
+    ],
     ctor: Page,
   },
   component: {
     reserveKeys: [
+      "mixins",
       "applyDataUpdates",
       "createIntersectionObserver",
       "createSelectorQuery",
@@ -54,6 +68,13 @@ export const aliPlatformConfig: PlatformConfig = {
       "triggerEvent",
       "route",
       "options",
+    ],
+    lifecycleKeys: [
+      "onInit",
+      "deriveDataFromProps",
+      "didMount",
+      "didUpdate",
+      "didUnmount",
     ],
     // @ts-ignore
     ctor: Component,
@@ -83,30 +104,41 @@ export const wxPlatformConfig: PlatformConfig = {
       "route",
       "options",
     ],
+    lifecycleKeys: [
+      "onLoad",
+      "onShow",
+      "onReady",
+      "onHide",
+      "onUnload",
+      "onPullDownRefresh",
+      "onReachBottom",
+      "onShareAppMessage",
+      "onPageScroll",
+      "onResize",
+      "onTabItemTap",
+    ],
     ctor: Page,
   },
   component: {
     reserveKeys: [
-      "applyDataUpdates",
-      "createIntersectionObserver",
-      "createSelectorQuery",
-      "data",
-      "dataset",
-      "getRelationNodes",
-      "groupSetData",
-      "hasBehavior",
-      "id",
-      "is",
-      "mergeDataOnPath",
       "properties",
-      "replaceDataOnPath",
-      "selectAllComponents",
-      "selectComponent",
-      "setData",
-      "triggerEvent",
-      "route",
+      "data",
+      "observers",
+      "methods",
+      "behaviors",
+      "created",
+      "attached",
+      "ready",
+      "moved",
+      "detached",
+      "relations",
+      "externalClasses",
       "options",
+      "lifetimes",
+      "pageLifetimes",
+      "definitionFilter",
     ],
+    lifecycleKeys: [],
     // @ts-ignore
     ctor: Component,
   },

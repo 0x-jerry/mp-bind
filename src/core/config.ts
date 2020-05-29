@@ -1,12 +1,17 @@
-import { wxPlatformConfig, aliPlatformConfig, PlatformConfig } from "./platform";
+import {
+  wxPlatformConfig,
+  aliPlatformConfig,
+  PlatformConfig,
+} from "./platform";
 
 export interface IBaseOption {
   debug: boolean;
   platform: "ali" | "wx";
+  unobserveKeys: string[];
+  watchPrefix: string;
 }
 
 export interface IBaseConfig extends IBaseOption {
-  unobserveKeys: string[];
   readonly platformConf: PlatformConfig;
 }
 
@@ -20,6 +25,7 @@ export const configs: IBaseConfig = {
   debug: false,
   platform: "wx",
   unobserveKeys: ["frozen"],
+  watchPrefix: "$$",
   get platformConf() {
     const map = {
       wx: wxPlatformConfig,

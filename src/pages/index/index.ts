@@ -19,14 +19,16 @@ export class Index extends BasePage {
       done: true,
     },
   ];
-
   todoMsg = "";
+  hideComplete = false;
 
+  // 保留字段，没有响应式效果
   frozen = {
     reactive: false,
   };
 
-  hideComplete = false;
+  // freeze 对象也没有响应式效果
+  freeze = Object.freeze([1]);
 
   // getter， 处理方式类似 vue 的 computed
   get total() {
@@ -78,10 +80,6 @@ export class Index extends BasePage {
 
   onLoad() {
     console.log("Todo app loaded");
-    console.log(
-      "inactive property `this.frozen.reactive`",
-      this.frozen.reactive
-    );
   }
 }
 
