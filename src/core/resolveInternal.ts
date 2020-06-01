@@ -110,7 +110,7 @@ function setEntryMethod(
     // https://opendocs.alipay.com/mini/framework/custom-component-overview#%E4%BD%BF%E7%94%A8%E9%A1%BB%E7%9F%A5
     const rawOnInit: Function | undefined = target.onInit;
 
-    target.didMount = function (this: InternalInstance, ...args: any) {
+    target.onInit = function (this: InternalInstance, ...args: any) {
       entry(this);
       rawOnInit?.apply(this, args);
       // 强制更新一次，确保 getter 更新
