@@ -1,3 +1,5 @@
+import { logger } from "./Logger";
+
 export class Base {
   /**
    * update data accord to attribute `data-name`
@@ -8,13 +10,16 @@ export class Base {
     detail: { value: any };
   }) {
     const names = e.currentTarget.dataset.name.split(".");
+    const value = e.detail.value
+
+    logger.log('input helper', names, value);
 
     let data: any = this;
     try {
       for (let i = 0; i < names.length; i++) {
         const name = names[i];
         if (i === names.length - 1) {
-          data[name] = e.detail.value;
+          data[name] = value;
         } else {
           data = data[name];
         }

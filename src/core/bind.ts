@@ -1,39 +1,15 @@
 import { JSONLike } from "./UpdateQueue";
 import { isFunction, isFrozen, isObject, cached } from "./utils";
 import { resolveEntry } from "./resolveInternal";
-import { Base } from "./Base";
 import { configs } from "./config";
 import { logger } from "./Logger";
-
-export interface RawPrototype extends Base {
-  [key: string]: any;
-}
-
-export interface Prototype extends Page.PageInstance {
-  [key: string]: any;
-}
-
-export enum PrototypeType {
-  page = "page",
-  component = "component",
-}
-
-export interface IPropTypeMap {
-  data: string[];
-  /**
-   * 包括 life cycle 和普通函数
-   */
-  method: string[];
-  getter: Record<string, () => any>;
-  watcher: string[];
-  unobserve: string[];
-}
-
-interface PrototypeConfig {
-  type: PrototypeType;
-  tpl: RawPrototype;
-  propTypeMap: IPropTypeMap;
-}
+import {
+  PrototypeType,
+  IPropTypeMap,
+  RawPrototype,
+  Prototype,
+  PrototypeConfig,
+} from "./define";
 
 /**
  * 这里需要递归判断，因为 getter 可能在原型链上面，而不在当前实例
@@ -52,12 +28,20 @@ function isGetter(obj: Object, prop: string) {
   return false;
 }
 
+function isUnobserveKeys(prop: string, type: PrototypeType) {
+  return configs.platformConf[type].unobserveKeys.indexOf(prop) >= 0;
+}
+
 const isWatcherKey = cached((key: string) => {
   const rule = configs.watcherKeyRule;
   return rule.test(key);
 });
 
-function getPropType(obj: any, prop: string): keyof IPropTypeMap {
+function getPropType(
+  obj: any,
+  prop: string,
+  type: PrototypeType
+): keyof IPropTypeMap {
   // @ts-ignore
   const value = obj[prop];
 
@@ -69,7 +53,7 @@ function getPropType(obj: any, prop: string): keyof IPropTypeMap {
     return "method";
   }
 
-  if (isObject(value) && isFrozen(value)) {
+  if (isUnobserveKeys(prop, type) || (isObject(value) && isFrozen(value))) {
     return "unobserve";
   }
 
@@ -113,7 +97,7 @@ function getPropTypeMap(tpl: RawPrototype, tplType: PrototypeType) {
       if (getter) {
         protoTypeMap["getter"][key] = getter;
       } else {
-        const type = getPropType(tpl, key);
+        const type = getPropType(tpl, key, tplType);
         protoTypeMap[type].push(key);
       }
     }
@@ -133,9 +117,36 @@ function bindData(target: Prototype, { tpl, propTypeMap }: PrototypeConfig) {
   target.data = data;
 }
 
-function bindMethod(target: Prototype, { tpl, propTypeMap }: PrototypeConfig) {
+function bindMethod(
+  target: Prototype,
+  { tpl, propTypeMap, type }: PrototypeConfig
+) {
+  const isComponent = type === PrototypeType.component;
+  const isWx = configs.platform === "wx";
+
+  const isLifeCycle = (prop: string) =>
+    configs.platformConf[type].lifecycleKeys.indexOf(prop) >= 0;
+
+  if (isComponent) {
+    target.methods = {};
+
+    if (isWx) {
+      target.lifetimes = {};
+    }
+  }
+
   for (const key of propTypeMap.method) {
     target[key] = tpl[key];
+
+    if (isComponent) {
+      if (isLifeCycle(key)) {
+        if (isWx) {
+          target.lifetimes[key] = tpl[key];
+        }
+      } else {
+        target.methods[key] = tpl[key];
+      }
+    }
   }
 }
 
@@ -168,6 +179,7 @@ export function bind(
 
   resolveEntry({ target, type, propTypeMap });
 
+  logger.log(type, "prototype is", target);
   if (type === "page") {
     configs.platformConf.page.ctor(target);
   } else {

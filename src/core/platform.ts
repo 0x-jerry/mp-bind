@@ -1,6 +1,7 @@
 export interface PlatformComponentConfig {
   reserveKeys: string[];
   lifecycleKeys: string[];
+  unobserveKeys: string[];
   ctor: any;
 }
 
@@ -44,11 +45,12 @@ export const aliPlatformConfig: PlatformConfig = {
       "onReachBottom",
       "onShareAppMessage",
     ],
+    unobserveKeys: [],
     ctor: Page,
   },
   component: {
     reserveKeys: [
-      "mixins",
+      "methods",
       "applyDataUpdates",
       "createIntersectionObserver",
       "createSelectorQuery",
@@ -69,6 +71,7 @@ export const aliPlatformConfig: PlatformConfig = {
       "route",
       "options",
     ],
+    unobserveKeys: ["props", "mixins"],
     lifecycleKeys: [
       "onInit",
       "deriveDataFromProps",
@@ -104,6 +107,7 @@ export const wxPlatformConfig: PlatformConfig = {
       "route",
       "options",
     ],
+    unobserveKeys: [],
     lifecycleKeys: [
       "onLoad",
       "onShow",
@@ -138,6 +142,7 @@ export const wxPlatformConfig: PlatformConfig = {
       "pageLifetimes",
       "definitionFilter",
     ],
+    unobserveKeys: [],
     lifecycleKeys: [],
     // @ts-ignore
     ctor: Component,

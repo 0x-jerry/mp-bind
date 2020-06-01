@@ -1,9 +1,9 @@
-import { Prototype, PrototypeType, IPropTypeMap } from "./bind";
 import { configs, ProxyKeys } from "./config";
 import { def, JSONClone } from "./utils";
 import { UpdateTaskQueue, JSONLike } from "./UpdateQueue";
 import { Observer } from "./Observer";
 import { logger } from "./Logger";
+import { PrototypeType, Prototype, IPropTypeMap } from "./define";
 
 export interface InternalInstance extends Page.PageInstance {
   [ProxyKeys.PROXY]: ProxyInstance;
@@ -17,6 +17,7 @@ export interface ProxyInstance {
   watch: Record<string, <T>(newVal: T, oldVal: T) => void>;
   updateTask: UpdateTaskQueue;
   triggerWatch: <T>(path: string, newVal: T, oldVal: T) => void;
+  getter: Record<string, () => any>;
 }
 
 interface BindOption {
@@ -84,6 +85,7 @@ function setEntryMethod(
       // 强制更新一次，确保 getter 更新
       this[ProxyKeys.PROXY].updateTask.flush();
     };
+    return;
   }
 
   // Component
@@ -104,9 +106,9 @@ function setEntryMethod(
       rawAttached?.apply(this, args);
     };
   } else if (configs.platform === "ali") {
-    const rawOnInit: Function | undefined = target.onInit;
+    const rawOnInit: Function | undefined = target.didMount;
 
-    target.onInit = function (this: InternalInstance, ...args: any) {
+    target.didMount = function (this: InternalInstance, ...args: any) {
       entry(this);
       rawOnInit?.apply(this, args);
       // 强制更新一次，确保 getter 更新
@@ -122,11 +124,12 @@ export function resolveEntry(opt: BindOption) {
       configs.platformConf.page.ctor.page = internal;
     }
 
-    logger.log("Page loaded", internal);
+    logger.log(opt.type, "loaded", internal);
     // 注意 this !== target
     const proxy: ProxyInstance = {
       type: opt.type,
       data: internal.data,
+      getter: opt.propTypeMap.getter,
       watch: {},
       updateTask: new UpdateTaskQueue(internal),
       triggerWatch(path, newVal, oldVal) {

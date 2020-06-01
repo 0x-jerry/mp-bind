@@ -84,7 +84,7 @@ export class UpdateTaskQueue {
   computeGetter() {
     const data: JSONLike = {};
 
-    Object.keys(this.internal[ProxyKeys.PROXY].propTypeMap.getter).forEach(
+    Object.keys(this.internal[ProxyKeys.PROXY].getter).forEach(
       (key) => {
         const oldVal = this.internal.data[key];
         const newVal = this.internal[key];
