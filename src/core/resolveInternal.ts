@@ -106,7 +106,9 @@ function setEntryMethod(
       rawAttached?.apply(this, args);
     };
   } else if (configs.platform === "ali") {
-    const rawOnInit: Function | undefined = target.didMount;
+    // onInit 需要开启 component2: true
+    // https://opendocs.alipay.com/mini/framework/custom-component-overview#%E4%BD%BF%E7%94%A8%E9%A1%BB%E7%9F%A5
+    const rawOnInit: Function | undefined = target.onInit;
 
     target.didMount = function (this: InternalInstance, ...args: any) {
       entry(this);

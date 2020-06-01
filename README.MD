@@ -2,7 +2,7 @@
 
 提升小程序开发体验的工具库
 
-注意：暂不支持自定义组件
+阿里小程序需要开启 component2: true，参考：https://opendocs.alipay.com/mini/framework/custom-component-overview#%E4%BD%BF%E7%94%A8%E9%A1%BB%E7%9F%A5
 
 ## Demo
 

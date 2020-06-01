@@ -9,10 +9,12 @@ export default {
     {
       format: "cjs",
       file: "dist/bind.cjs.js",
+      sourcemap: true,
     },
     {
       format: "es",
       file: "dist/bind.esm.js",
+      sourcemap: true,
     },
     {
       format: "cjs",
