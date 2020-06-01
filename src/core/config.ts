@@ -3,7 +3,6 @@ import {
   aliPlatformConfig,
   PlatformConfig,
 } from "./platform";
-import { logger } from "./Logger";
 
 export interface IBaseOption {
   debug: boolean;
@@ -38,5 +37,4 @@ export const configs: IBaseConfig = {
 
 export function setConfig(opt: Partial<IBaseOption> = {}) {
   Object.assign(configs, opt);
-  logger.log("set config", opt);
 }
