@@ -105,11 +105,11 @@ function setEntryMethod(
       this[ProxyKeys.PROXY].updateTask.flush();
     });
 
-    // 每当 props 更新，自动更新 getter
-    overWriteFunction(target, "deriveDataFromProps", function (this: InternalInstance) {
-      // 强制更新一次，确保 getter 更新
-      this[ProxyKeys.PROXY].updateTask.flush();
-    });
+    // 每当 props 更新，自动更新 getter。暂时去除，边界条件太多，处理复杂，需要考虑 function 等
+    // overWriteFunction(target, "deriveDataFromProps", function (this: InternalInstance) {
+    //   // 强制更新一次，确保 getter 更新
+    //   this[ProxyKeys.PROXY].updateTask.flush();
+    // });
   }
 }
 
