@@ -1,5 +1,5 @@
 import { configs, ProxyKeys } from "./config";
-import { def, JSONClone } from "./utils";
+import { def, JSONClone, overWriteFunction } from "./utils";
 import { UpdateTaskQueue, JSONLike } from "./UpdateQueue";
 import { Observer } from "./Observer";
 import { logger } from "./Logger";
@@ -77,45 +77,39 @@ function setEntryMethod(
 ) {
   // Page
   if (type === PrototypeType.page) {
-    const rawOnLoad: Function | undefined = target.onLoad;
-
-    target.onLoad = function (this: InternalInstance, ...args: any) {
+    overWriteFunction(target, "onLoad", function (this: InternalInstance) {
       entry(this);
-      rawOnLoad?.apply(this, args);
       // 强制更新一次，确保 getter 更新
       this[ProxyKeys.PROXY].updateTask.flush();
-    };
+    });
+
     return;
   }
 
   // Component
   if (configs.platform === "wx") {
-    const rawCreated: Function | undefined = target.lifetimes.created;
-    target.lifetimes.created = function (this: InternalInstance, ...args: any) {
+    overWriteFunction(target.lifetimes, "created", function (this: InternalInstance) {
       entry(this);
-      rawCreated?.apply(this, args);
-    };
+    });
 
-    const rawAttached: Function | undefined = target.lifetimes.attached;
-    target.lifetimes.attached = function (
-      this: InternalInstance,
-      ...args: any
-    ) {
+    overWriteFunction(target.lifetimes, "attached", function (this: InternalInstance) {
       // 强制更新一次，确保 getter 更新
       this[ProxyKeys.PROXY].updateTask.flush();
-      rawAttached?.apply(this, args);
-    };
+    });
   } else if (configs.platform === "ali") {
     // onInit 需要开启 component2: true
     // https://opendocs.alipay.com/mini/framework/custom-component-overview#%E4%BD%BF%E7%94%A8%E9%A1%BB%E7%9F%A5
-    const rawOnInit: Function | undefined = target.onInit;
-
-    target.onInit = function (this: InternalInstance, ...args: any) {
+    overWriteFunction(target, "onInit", function (this: InternalInstance) {
       entry(this);
-      rawOnInit?.apply(this, args);
       // 强制更新一次，确保 getter 更新
       this[ProxyKeys.PROXY].updateTask.flush();
-    };
+    });
+
+    // 每当 props 更新，自动更新 getter
+    overWriteFunction(target, "deriveDataFromProps", function (this: InternalInstance) {
+      // 强制更新一次，确保 getter 更新
+      this[ProxyKeys.PROXY].updateTask.flush();
+    });
   }
 }
 

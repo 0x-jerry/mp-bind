@@ -66,3 +66,26 @@ export function cached<T extends (arg: any) => any>(func: T): T {
     return val;
   } as T;
 }
+
+export function overWriteFunction(
+  target: any,
+  key: string,
+  func: (...args: any) => void,
+  execPos: "before" | "after" = "before"
+) {
+  const raw: Function = target[key];
+  const isExecBefore = execPos === "before";
+  const isExecAfter = execPos === "after";
+
+  target[key] = function (...args: any) {
+    if (isExecBefore) {
+      func.apply(this, args);
+    }
+
+    raw.apply(this, args);
+
+    if (!isExecAfter) {
+      func.apply(this, args);
+    }
+  };
+}
