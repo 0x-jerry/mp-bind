@@ -3,7 +3,7 @@
 	"packOptions": {
 		"ignore": []
 	},
-	"miniprogramRoot": "src/",
+	"miniprogramRoot": "miniprogram/",
 	"compileType": "miniprogram",
 	"libVersion": "2.4.0",
 	"projectname": "mp-bind",
@@ -32,7 +32,7 @@
 			"disablePlugins": [],
 			"outputPath": ""
 		},
-		"useCompilerModule": false,
+		"useCompilerModule": true,
 		"userConfirmedUseCompilerModuleSwitch": false
 	},
 	"appid": "wxd9cc9ad539edef86",

@@ -1,13 +1,7 @@
-import { bind, BasePage } from "../../core/index";
+import { bind, Base } from "../../mp-bind/bind.cjs";
 
-interface ITodo {
-  id: string | number;
-  msg: string;
-  done: boolean;
-}
-
-export class Index extends BasePage {
-  todoList: ITodo[] = [
+export class Index extends Base {
+  todoList = [
     {
       id: 1,
       msg: "todo",
@@ -42,7 +36,7 @@ export class Index extends BasePage {
   }
 
   // watch, 监听 todoMsg，每当 todoMsg 更改，会触发此函数
-  $$todoMsg(newVal: string, oldVal: string) {
+  $$todoMsg(newVal, oldVal) {
     console.log("todo msg update:", newVal, oldVal);
   }
 
@@ -56,7 +50,7 @@ export class Index extends BasePage {
     this.todoList.push(todo);
   }
 
-  remove(e: any) {
+  remove(e) {
     const id = e.target.dataset.id;
     const idx = this.todoList.findIndex((todo) => todo.id === id);
 
@@ -65,7 +59,7 @@ export class Index extends BasePage {
     }
   }
 
-  switch(e: any) {
+  switch(e) {
     const id = e.target.dataset.id;
     const todo = this.todoList.find((todo) => todo.id === id);
 

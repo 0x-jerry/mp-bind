@@ -30,7 +30,7 @@ export class Base {
   }
 }
 
-export class BasePage extends Base {
+export interface BasePage extends Base {
   onLoad?: (query: { [key: string]: string }) => void;
   onShow?: () => void;
   onReady?: () => void;
@@ -48,14 +48,10 @@ export interface IComponentProps {
   [prop: string]: any;
 }
 
-export class BaseComponent<
-  T extends IComponentProps = IComponentProps
-> extends Base {
+export interface BaseComponent<T extends IComponentProps = IComponentProps> extends Base {
   props?: T;
-
   onInit?: () => void;
   deriveDataFromProps?: (nextProps: T) => void;
-
   didMount?: () => void;
   didUpdate?: (props: T, data: any) => void;
   didUnmount?: () => void;

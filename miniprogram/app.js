@@ -1,19 +1,11 @@
-import { setConfig } from "./core/index";
-
-//app.ts
-export interface IMyApp {
-  userInfoReadyCallback?(res: wx.UserInfo): void;
-  globalData: {
-    userInfo?: wx.UserInfo;
-  };
-}
+import { setConfig } from "./mp-bind/bind.esm";
 
 setConfig({ debug: true });
 
-App<IMyApp>({
+App({
   onLaunch() {
     // 展示本地存储能力
-    var logs: number[] = wx.getStorageSync("logs") || [];
+    var logs = wx.getStorageSync("logs") || [];
     logs.unshift(Date.now());
     wx.setStorageSync("logs", logs);
 

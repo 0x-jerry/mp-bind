@@ -1,3 +1,4 @@
+import isEqual from "lodash/isEqual";
 import clone from "lodash/cloneDeep";
 import { JSONLike } from "./UpdateQueue";
 
@@ -42,7 +43,7 @@ export function nextTick(func: Function) {
 
 export function shallowEqual(objA: JSONLike, objB: JSONLike) {
   if (isObject(objA) && isObject(objB)) {
-    return JSON.stringify(objA) === JSON.stringify(objB);
+    return isEqual(objA, objB);
   }
 
   return objA === objB;

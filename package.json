@@ -7,10 +7,8 @@
   "license": "MIT",
   "types": "index.d.ts",
   "scripts": {
-    "start": "node ./node_modules/typescript/lib/tsc.js --watch",
-    "compile": "./node_modules/typescript/bin/tsc",
-    "tsc": "node ./node_modules/typescript/lib/tsc.js",
-    "build": "rollup -c",
+    "start": "rollup -c --watch --environment NODE_ENV:development",
+    "build": "rollup -c --environment NODE_ENV:production",
     "prepublishOnly": "yarn build"
   },
   "devDependencies": {
