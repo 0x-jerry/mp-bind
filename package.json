@@ -1,6 +1,6 @@
 {
   "name": "mp-bind",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "main": "dist/bind.esm.min.js",
   "repository": "https://github.com/cwxyz007/mp-bind.git",
   "author": "cwxyz007 <jie844067636@gmail.com>",
