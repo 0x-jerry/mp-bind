@@ -33,7 +33,7 @@
 			"outputPath": ""
 		},
 		"useCompilerModule": true,
-		"userConfirmedUseCompilerModuleSwitch": false
+		"userConfirmedUseCompilerModuleSwitch": true
 	},
 	"appid": "wxd9cc9ad539edef86",
 	"simulatorType": "wechat",

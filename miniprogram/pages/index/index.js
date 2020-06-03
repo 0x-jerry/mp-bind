@@ -1,4 +1,4 @@
-import { bind, Base } from "../../mp-bind/bind.cjs";
+import { Base, bindWxPage } from "../../mp-bind/bind.esm";
 
 export class Index extends Base {
   todoList = [
@@ -77,4 +77,4 @@ export class Index extends Base {
   }
 }
 
-bind(new Index());
+bindWxPage(new Index());

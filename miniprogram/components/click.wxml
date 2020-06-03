@@ -1,0 +1,5 @@
+<!-- components/click.wxml -->
+<view>
+  name: {{name}}
+  <button class="btn" type="primary" bindtap="click">{{times}}</button>
+</view>
