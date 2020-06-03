@@ -1,9 +1,10 @@
 import { configs, ProxyKeys } from "./config";
-import { def, JSONClone, overWriteFunction } from "./utils";
+import { def, overWriteFunction } from "./utils";
 import { UpdateTaskQueue, JSONLike } from "./UpdateQueue";
 import { Observer } from "./Observer";
 import { logger } from "./Logger";
 import { PrototypeType, Prototype, IPropTypeMap } from "./define";
+import cloneDeep from "lodash/cloneDeep";
 
 export interface InternalInstance extends Page.PageInstance {
   [ProxyKeys.PROXY]: ProxyInstance;
@@ -68,7 +69,7 @@ function observe(internal: InternalInstance, { propTypeMap }: BindOption) {
  * 从 tpl 获取原始数据，以保证 frozen 逻辑正常
  */
 function getRawData({ target }: BindOption) {
-  return JSONClone(target.data);
+  return cloneDeep(target.data);
 }
 
 function setEntryMethod(
@@ -88,11 +89,15 @@ function setEntryMethod(
 
   // Component
   if (configs.platform === "wx") {
-    overWriteFunction(target.lifetimes, "created", function (this: InternalInstance) {
+    overWriteFunction(target.lifetimes, "created", function (
+      this: InternalInstance
+    ) {
       entry(this);
     });
 
-    overWriteFunction(target.lifetimes, "attached", function (this: InternalInstance) {
+    overWriteFunction(target.lifetimes, "attached", function (
+      this: InternalInstance
+    ) {
       // 强制更新一次，确保 getter 更新
       this[ProxyKeys.PROXY].updateTask.flush();
     });

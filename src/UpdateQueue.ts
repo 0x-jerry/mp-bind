@@ -1,8 +1,10 @@
-import { nextTick, isObject, JSONClone, shallowEqual } from "./utils";
+import { nextTick, isObject } from "./utils";
 import { logger } from "./Logger";
 import { InternalInstance } from "./resolveInternal";
 import { ProxyKeys, configs } from "./config";
 import { ArrayMethod, calcSpliceParam, isSupportArrayMethod } from "./ali";
+import isEqual from "lodash/isEqual";
+import cloneDeep from "lodash/cloneDeep";
 
 export interface JSONLike {
   [key: string]:
@@ -84,15 +86,13 @@ export class UpdateTaskQueue {
   computeGetter() {
     const data: JSONLike = {};
 
-    Object.keys(this.internal[ProxyKeys.PROXY].getter).forEach(
-      (key) => {
-        const oldVal = this.internal.data[key];
-        const newVal = this.internal[key];
-        if (!shallowEqual(oldVal, newVal)) {
-          data[key] = newVal;
-        }
+    Object.keys(this.internal[ProxyKeys.PROXY].getter).forEach((key) => {
+      const oldVal = this.internal.data[key];
+      const newVal = this.internal[key];
+      if (!isEqual(oldVal, newVal)) {
+        data[key] = newVal;
       }
-    );
+    });
 
     return data;
   }
@@ -111,7 +111,7 @@ export class UpdateTaskQueue {
       }
     });
 
-    return JSONClone(data);
+    return cloneDeep(data);
   }
 
   compose() {
@@ -136,7 +136,7 @@ export class UpdateTaskQueue {
   }
 
   setData() {
-    const data = JSONClone(this.compose());
+    const data = cloneDeep(this.compose());
 
     this.internal.setData!(data.data);
     logger.log(`Set data`, data.data);

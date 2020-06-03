@@ -1,11 +1,3 @@
-import isEqual from "lodash/isEqual";
-import clone from "lodash/cloneDeep";
-import { JSONLike } from "./UpdateQueue";
-
-export function JSONClone<T>(data: T): T {
-  return isObject(data) ? clone(data) : data;
-}
-
 export function def(
   obj: Object,
   prop: string,
@@ -39,14 +31,6 @@ export function isFrozen(target: any) {
 
 export function nextTick(func: Function) {
   Promise.resolve().then(() => func());
-}
-
-export function shallowEqual(objA: JSONLike, objB: JSONLike) {
-  if (isObject(objA) && isObject(objB)) {
-    return isEqual(objA, objB);
-  }
-
-  return objA === objB;
 }
 
 export const noop = () => {};
