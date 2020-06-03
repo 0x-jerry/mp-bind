@@ -27,9 +27,13 @@ interface BindOption {
   propTypeMap: IPropTypeMap;
 }
 
-function bindWatch(internal: InternalInstance, { propTypeMap }: BindOption) {
+function bindWatch(
+  internal: InternalInstance,
+  { propTypeMap, target }: BindOption
+) {
   for (const key of propTypeMap.watcher) {
-    internal[ProxyKeys.PROXY].watch[key.slice(2)] = internal[key];
+    const rawKey = key.replace(configs.watcherKeyRule, "");
+    internal[ProxyKeys.PROXY].watch[rawKey] = target[key];
   }
 }
 

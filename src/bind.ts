@@ -9,6 +9,8 @@ import {
   RawPrototype,
   Prototype,
   PrototypeConfig,
+  IWxPageCtor,
+  IWxComponentCtor,
 } from "./define";
 
 /**
@@ -32,21 +34,17 @@ function isUnobserveKeys(prop: string, type: PrototypeType) {
   return configs.platformConf[type].unobserveKeys.indexOf(prop) >= 0;
 }
 
-const isWatcherKey = cached((key: string) => {
-  const rule = configs.watcherKeyRule;
-  return rule.test(key);
-});
+const isWatcherKey = cached((key: string) => configs.watcherKeyRule.test(key));
 
 function getPropType(
   obj: any,
   prop: string,
   type: PrototypeType
 ): keyof IPropTypeMap {
-  // @ts-ignore
   const value = obj[prop];
 
   if (isFunction(value)) {
-    if (isWatcherKey(value)) {
+    if (isWatcherKey(prop)) {
       return "watcher";
     }
 
@@ -135,7 +133,7 @@ function bindMethod(
     }
   }
 
-  for (const key of propTypeMap.method) {
+  for (const key of propTypeMap.method.concat(propTypeMap.watcher)) {
     target[key] = tpl[key];
 
     if (isComponent) {
@@ -159,10 +157,7 @@ function bindUnobserve(
   }
 }
 
-export function bind(
-  tpl: RawPrototype,
-  type: PrototypeType = PrototypeType.page
-) {
+export function bind(tpl: RawPrototype, type: PrototypeType) {
   const target: Prototype = {};
 
   const propTypeMap: IPropTypeMap = getPropTypeMap(tpl, type);
@@ -185,4 +180,12 @@ export function bind(
   } else {
     configs.platformConf.component.ctor(target);
   }
+}
+
+export function bindWxPage<T extends IWxPageCtor>(tpl: T) {
+  bind(tpl, PrototypeType.page);
+}
+
+export function bindWxComponent<T extends IWxComponentCtor>(tpl: T) {
+  bind(tpl, PrototypeType.component);
 }

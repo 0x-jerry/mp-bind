@@ -24,8 +24,8 @@ export enum ProxyKeys {
 export const configs: IBaseConfig = {
   debug: false,
   platform: "wx",
-  unobserveKeys: ["frozen"],
-  watcherKeyRule: /\$\$/,
+  unobserveKeys: [/^_/],
+  watcherKeyRule: /^\$\$/,
   get platformConf() {
     const map = {
       wx: wxPlatformConfig,

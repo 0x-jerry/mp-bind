@@ -29,30 +29,3 @@ export class Base {
     }
   }
 }
-
-export interface BasePage extends Base {
-  onLoad?: (query: { [key: string]: string }) => void;
-  onShow?: () => void;
-  onReady?: () => void;
-  onHide?: () => void;
-  onUnload?: () => void;
-  onTitleClick?: () => void;
-  onOptionMenuClick?: () => void;
-  onPullDownRefresh?: (opt: { from: any }) => void;
-  onPageScroll?: (opt: { scrollTop: number }) => void;
-  onReachBottom?: () => void;
-  onShareAppMessage?: (opt: any) => void;
-}
-
-export interface IComponentProps {
-  [prop: string]: any;
-}
-
-export interface BaseComponent<T extends IComponentProps = IComponentProps> extends Base {
-  props?: T;
-  onInit?: () => void;
-  deriveDataFromProps?: (nextProps: T) => void;
-  didMount?: () => void;
-  didUpdate?: (props: T, data: any) => void;
-  didUnmount?: () => void;
-}

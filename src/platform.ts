@@ -13,7 +13,6 @@ export interface PlatformConfig {
 export const aliPlatformConfig: PlatformConfig = {
   page: {
     reserveKeys: [
-      "mixins",
       "applyDataUpdates",
       "createIntersectionObserver",
       "createSelectorQuery",
@@ -68,8 +67,6 @@ export const aliPlatformConfig: PlatformConfig = {
       "selectComponent",
       "setData",
       "triggerEvent",
-      "route",
-      "options",
     ],
     unobserveKeys: ["props", "mixins"],
     lifecycleKeys: [
@@ -104,8 +101,6 @@ export const wxPlatformConfig: PlatformConfig = {
       "selectComponent",
       "setData",
       "triggerEvent",
-      "route",
-      "options",
     ],
     unobserveKeys: [],
     lifecycleKeys: [
@@ -125,7 +120,6 @@ export const wxPlatformConfig: PlatformConfig = {
   },
   component: {
     reserveKeys: [
-      "properties",
       "data",
       "observers",
       "methods",
@@ -136,13 +130,11 @@ export const wxPlatformConfig: PlatformConfig = {
       "moved",
       "detached",
       "relations",
-      "externalClasses",
-      "options",
       "lifetimes",
       "pageLifetimes",
       "definitionFilter",
     ],
-    unobserveKeys: [],
+    unobserveKeys: ["properties", "options", "externalClasses"],
     lifecycleKeys: [],
     // @ts-ignore
     ctor: Component,
