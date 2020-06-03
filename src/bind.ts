@@ -11,6 +11,8 @@ import {
   PrototypeConfig,
   IWxPageCtor,
   IWxComponentCtor,
+  IAliPageCtor,
+  IAliComponentCtor,
 } from "./define";
 
 /**
@@ -187,5 +189,13 @@ export function bindWxPage<T extends IWxPageCtor>(tpl: T) {
 }
 
 export function bindWxComponent<T extends IWxComponentCtor>(tpl: T) {
+  bind(tpl, PrototypeType.component);
+}
+
+export function bindAliPage<T extends IAliPageCtor>(tpl: T) {
+  bind(tpl, PrototypeType.page);
+}
+
+export function bindAliComponent<T extends IAliComponentCtor>(tpl: T) {
   bind(tpl, PrototypeType.component);
 }

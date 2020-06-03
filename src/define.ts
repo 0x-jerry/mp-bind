@@ -125,3 +125,66 @@ export interface IWxPageCtor {
     pagePath: string;
   }) => void;
 }
+
+// ali
+export interface IAliComponentCtor<
+  T extends IComponentProps = IComponentProps
+> {
+  is?: string;
+  $id?: number;
+  $page?: IAliPageCtor;
+  props?: T;
+
+  mixins: any[];
+
+  // component lifecycle
+  onInit?: () => void;
+  deriveDataFromProps?: () => void;
+  didMount?: () => void;
+  didUpdate?: () => void;
+  didUnmount?: () => void;
+}
+
+export interface IAliPageCtor {
+  route?: string;
+
+  onLoad?: (query: { [key: string]: string }) => void;
+  onShow?: () => void;
+  onReady?: () => void;
+  onHide?: () => void;
+  onUnload?: () => void;
+  onPullDownRefresh?: (opt: { from: "manual" | "code" }) => void;
+  onReachBottom?: () => void;
+  onShareAppMessage?: (opt: {
+    from: "button" | "menu" | "code";
+    target: any;
+    webViewUrl: string;
+  }) => {
+    title: string;
+    desc: string;
+    /**
+     * 自定义分享页面的路径，path中的自定义参数可在小程序生命周期的 onLoad方法中获取（参数传递遵循 http get 的传参规则）。path 路径里不能带根目录 /
+     */
+    path: string;
+    content: string;
+    imageUrl: string;
+    bgImgUrl: string;
+    searchTip: string;
+    success: Function;
+    fail: Function;
+  };
+  onTitleClick?: () => void;
+  onOptionMenuClick?: () => void;
+  onPopMenuClick?: () => void;
+  onPullIntercept?: () => void;
+  onTabItemTap?: (opt: {
+    from: string;
+    pagePath: string;
+    text: string;
+    index: number;
+  }) => void;
+  onPageScroll?: (opt: { scrollTop: number }) => void;
+  onResize?: (opt: {
+    size: { windowWidth: number; windowHeight: number };
+  }) => void;
+}
