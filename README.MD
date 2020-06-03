@@ -6,7 +6,7 @@
 
 ## Demo
 
-请参考 `src/pages/index`
+请参考 `miniprogram/pages/index` 和 `miniprogram/components/click`
 
 ## 功能介绍
 
@@ -25,7 +25,7 @@ App({
 setConfig({ platform: "ali", debug: false });
 ```
 
-注意入口改为 bind
+注意入口改为 `bind`, 可选 `bindWxPage/bindWxComponent` 或者 `bindAliPage/bindAliComponent`
 
 ```js
 import { bind } from "mp-bind";
@@ -34,7 +34,9 @@ class A {
   ...
 }
 
-bind(new A());
+bind(new A(), 'page');
+// or bindWxPage({...})
+// or bindAliPage({...})
 ```
 
 1. 直接更新数据，不需要 setData
@@ -87,7 +89,7 @@ class A {
 frozen 为默认保留字段，可通过 setConfig 配置为其它字段
 
 ```js
-setConfig({ unobserveKeys: ["unobserve"] });
+setConfig({ unobserveKeys: ["unobserve", /^_/] });
 
 class A {
   unobserve = {
@@ -164,15 +166,15 @@ class A {
 默认前缀为 `$$` 的为监听函数，可通过 setConfig 修改
 
 ```js
-setConfig({ watchPrefix: "$$" });
+setConfig({ watcherKeyRule: /^\$\$/ });
 ```
 
 4. 内置辅助方法
 
-BasePage 内置 `inputHelper` 方法，`inputHelper` 可根据 data-name 直接设置值
+`Base` 类 内置 `inputHelper` 方法，`inputHelper` 可根据 data-name 直接设置值
 
 ```js
-class A extends BasePage {
+class A extends Base {
   msg = 3;
 }
 ```
