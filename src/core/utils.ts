@@ -1,7 +1,8 @@
+import clone from "lodash/cloneDeep";
 import { JSONLike } from "./UpdateQueue";
 
 export function JSONClone<T>(data: T): T {
-  return isObject(data) ? JSON.parse(JSON.stringify(data)) : data;
+  return isObject(data) ? clone(data) : data;
 }
 
 export function def(
@@ -77,14 +78,14 @@ export function overWriteFunction(
   const isExecBefore = execPos === "before";
   const isExecAfter = execPos === "after";
 
-  target[key] = function (...args: any) {
+  target[key] = function (this: any, ...args: any) {
     if (isExecBefore) {
       func.apply(this, args);
     }
 
-    raw.apply(this, args);
+    raw && raw.apply(this, args);
 
-    if (!isExecAfter) {
+    if (isExecAfter) {
       func.apply(this, args);
     }
   };

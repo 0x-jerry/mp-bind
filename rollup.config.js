@@ -1,10 +1,12 @@
 import typescript from "rollup-plugin-typescript2";
 import sourceMaps from "rollup-plugin-sourcemaps";
+import resolve from '@rollup/plugin-node-resolve'
+import commonjs from '@rollup/plugin-commonjs'
 import { terser } from "rollup-plugin-terser";
 
 export default {
   input: "src/core/index.ts",
-  plugins: [typescript(), sourceMaps()],
+  plugins: [typescript(), resolve(), commonjs(), sourceMaps()],
   output: [
     {
       format: "cjs",

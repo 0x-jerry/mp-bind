@@ -18,7 +18,8 @@
     "pretty": true,
     "strictPropertyInitialization": true,
     "typeRoots": ["./typings"],
-    "lib": ["ES6", "DOM"]
+    "lib": ["ES6", "DOM"],
+    "allowSyntheticDefaultImports": true
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "miniprogram_dist", "**/*.spec.ts"]
