@@ -10,9 +10,9 @@ export class Base {
     detail: { value: any };
   }) {
     const names = e.currentTarget.dataset.name.split(".");
-    const value = e.detail.value
+    const value = e.detail.value;
 
-    logger.log('input helper', names, value);
+    logger.log("input helper", names, value);
 
     let data: any = this;
     try {
@@ -30,8 +30,33 @@ export class Base {
   }
 }
 
-export class BasePage extends Base {}
+export class BasePage extends Base {
+  onLoad?: (query: { [key: string]: string }) => void;
+  onShow?: () => void;
+  onReady?: () => void;
+  onHide?: () => void;
+  onUnload?: () => void;
+  onTitleClick?: () => void;
+  onOptionMenuClick?: () => void;
+  onPullDownRefresh?: (opt: { from: any }) => void;
+  onPageScroll?: (opt: { scrollTop: number }) => void;
+  onReachBottom?: () => void;
+  onShareAppMessage?: (opt: any) => void;
+}
 
-export class BaseComponent extends Base {
-  properties = {};
+export interface IComponentProps {
+  [prop: string]: any;
+}
+
+export class BaseComponent<
+  T extends IComponentProps = IComponentProps
+> extends Base {
+  props?: T;
+
+  onInit?: () => void;
+  deriveDataFromProps?: (nextProps: T) => void;
+
+  didMount?: () => void;
+  didUpdate?: (props: T, data: any) => void;
+  didUnmount?: () => void;
 }
