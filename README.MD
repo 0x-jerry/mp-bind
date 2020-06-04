@@ -86,7 +86,7 @@ class A {
 }
 ```
 
-frozen 为默认保留字段，可通过 setConfig 配置为其它字段
+默认 `_` 开头的字段不识别成响应式，可通过 setConfig 配置为其它规则
 
 ```js
 setConfig({ unobserveKeys: ["unobserve", /^_/] });
