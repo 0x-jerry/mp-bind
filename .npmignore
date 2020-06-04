@@ -1,2 +1,7 @@
-typings
+.vscode
 !dist
+docs
+miniprogram
+typings
+tsconfig.json
+project.config.json
