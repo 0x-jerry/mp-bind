@@ -32,8 +32,21 @@ function isGetter(obj: Object, prop: string) {
   return false;
 }
 
-function isUnobserveKeys(prop: string, type: PrototypeType) {
-  return configs.platformConf[type].unobserveKeys.indexOf(prop) >= 0;
+function isUnobserveKey(prop: string, type: PrototypeType): boolean {
+  let isUnobserve = configs.platformConf[type].unobserveKeys.indexOf(prop) >= 0;
+
+  if (isUnobserve) {
+    return true;
+  }
+
+  for (const rule of configs.unobserveRules) {
+    isUnobserve = typeof rule === "string" ? rule === prop : rule.test(prop);
+    if (isUnobserve) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 const isWatcherKey = cached((key: string) => configs.watcherKeyRule.test(key));
@@ -53,7 +66,7 @@ function getPropType(
     return "method";
   }
 
-  if (isUnobserveKeys(prop, type) || (isObject(value) && isFrozen(value))) {
+  if (isUnobserveKey(prop, type) || (isObject(value) && isFrozen(value))) {
     return "unobserve";
   }
 

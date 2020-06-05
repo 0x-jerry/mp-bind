@@ -7,7 +7,7 @@ import {
 export interface IBaseOption {
   debug: boolean;
   platform: "ali" | "wx";
-  unobserveKeys: (string | RegExp)[];
+  unobserveRules: (string | RegExp)[];
   watcherKeyRule: RegExp;
 }
 
@@ -24,7 +24,7 @@ export enum ProxyKeys {
 export const configs: IBaseConfig = {
   debug: false,
   platform: "wx",
-  unobserveKeys: [/^_/],
+  unobserveRules: [/^_/],
   watcherKeyRule: /^\$\$/,
   get platformConf() {
     const map = {
