@@ -139,9 +139,9 @@ export interface IAliComponentCtor<
 
   // component lifecycle
   onInit?: () => void;
-  deriveDataFromProps?: () => void;
+  deriveDataFromProps?: (nextProps: T) => void;
   didMount?: () => void;
-  didUpdate?: () => void;
+  didUpdate?: (prevProps: T, prevData: this) => void;
   didUnmount?: () => void;
 }
 

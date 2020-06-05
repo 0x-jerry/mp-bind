@@ -1,4 +1,10 @@
 import { logger } from "./Logger";
+import {
+  IAliComponentCtor,
+  IAliPageCtor,
+  IWxComponentCtor,
+  IWxPageCtor,
+} from "./define";
 
 export class Base {
   /**
@@ -28,4 +34,22 @@ export class Base {
       console.warn(e);
     }
   }
+}
+
+// ali
+export class AliComponent<T> extends Base implements IAliComponentCtor<T> {
+  props!: T;
+}
+
+export class AliPage extends Base implements IAliPageCtor {
+  route!: string;
+}
+
+// wx
+export class WxComponent<T> extends Base implements IWxComponentCtor<T> {
+  properties!: T;
+}
+
+export class WxPage extends Base implements IWxPageCtor {
+  route!: string;
 }
