@@ -34,6 +34,7 @@ export interface IComponentProps {
 
 // wx
 export interface IWxComponentCtor<T extends IComponentProps = IComponentProps> {
+  [key: string]: any;
   properties?: T;
   observers?: {
     [key: string]: Function;
@@ -86,6 +87,7 @@ export interface IWxComponentCtor<T extends IComponentProps = IComponentProps> {
 }
 
 export interface IWxPageCtor {
+  [key: string]: any;
   route?: string;
 
   onLoad?: (query: { [key: string]: string }) => void;
@@ -130,6 +132,7 @@ export interface IWxPageCtor {
 export interface IAliComponentCtor<
   T extends IComponentProps = IComponentProps
 > {
+  [key: string]: any;
   is?: string;
   $id?: number;
   $page?: IAliPageCtor;
@@ -146,6 +149,7 @@ export interface IAliComponentCtor<
 }
 
 export interface IAliPageCtor {
+  [key: string]: any;
   route?: string;
 
   onLoad?: (query: { [key: string]: string }) => void;
