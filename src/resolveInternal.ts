@@ -140,7 +140,7 @@ export function resolveEntry(opt: BindOption) {
       triggerWatch(path, newVal, oldVal) {
         const func = proxy.watch[path];
         if (func) {
-          func(newVal, oldVal);
+          func.call(internal, newVal, oldVal);
         }
       },
     };
